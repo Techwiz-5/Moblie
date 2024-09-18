@@ -32,22 +32,17 @@ class _HospitalScreenState extends State<HospitalScreen> {
         ),
         centerTitle: true,
         actions: [
-          ElevatedButton(
+          IconButton(
             onPressed: () async {
               await AuthServices().logout();
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
-                ),
-              ),
+            icon: const Icon(
+              Icons.exit_to_app_rounded,
+              color: Colors.white,
             ),
-            child: const Text('Log Out', style: TextStyle(color: Colors.white),),
           ),
         ],
       ),

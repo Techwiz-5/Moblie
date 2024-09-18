@@ -22,7 +22,7 @@ class _HospitalScreenState extends State<HospitalScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
-          'User Screen',
+          'Hospital',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

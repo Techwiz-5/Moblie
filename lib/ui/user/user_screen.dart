@@ -29,7 +29,7 @@ class _AccountScreenState extends State<AccountScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
-          'User Screen',
+          'User Profile',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

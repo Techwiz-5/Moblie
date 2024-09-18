@@ -53,12 +53,12 @@ class HospitalCard extends StatelessWidget {
                 child: Stack(
               alignment: Alignment.bottomLeft,
               children: <Widget>[
-                // Image.network(
-                //   hospital['image'],
-                //   width: double.infinity,
-                //   height: 205,
-                //   fit: BoxFit.cover,
-                // ),
+                Image.network(
+                  hospital['image'],
+                  width: double.infinity,
+                  height: 205,
+                  fit: BoxFit.cover,
+                ),
               ],
             )),
           ),
@@ -108,6 +108,5 @@ class HospitalCard extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }
