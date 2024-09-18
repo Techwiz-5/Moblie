@@ -1,15 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crud/edit_screen.dart';
-import 'package:crud/login_screen.dart';
-import 'package:crud/manager_screen.dart';
-import 'package:crud/myapp.dart';
-import 'package:crud/services/authentication.dart';
-import 'package:crud/services/google_auth.dart';
-import 'package:crud/user_screen.dart';
-import 'package:crud/widgets/button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:techwiz_5/ui/manager_screen.dart';
+import 'package:techwiz_5/ui/user_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -23,7 +16,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<DocumentSnapshot> getUserData() async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    return await _firestore.collection('users').doc(uid).get();
+    return await _firestore.collection('account').doc(uid).get();
   }
 
   @override
@@ -55,9 +48,9 @@ class _AccountScreenState extends State<AccountScreen> {
               return const Center(child: Text('User data not found'));
             }
             var userData = snapshot.data!.data() as Map<String, dynamic>;
-            if(userData['role'] == 'user'){
+            if(userData['role'] == '0'){
               return UserScreen(userData: userData);
-            } else if(userData['role'] == 'manager') {
+            } else if(userData['role'] == '2') {
               return ManagerScreen(userData: userData);
             }
             return const CircularProgressIndicator();

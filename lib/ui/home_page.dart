@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/account_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> pages = [
     // const CRUDScreen(),
-    // const AccountScreen(),
+    const AccountScreen(),
   ];
 
   @override
@@ -35,10 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.home),
+          //   label: 'Home',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'User',
