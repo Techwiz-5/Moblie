@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
+import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance.dart';
 
 class AmbulanceCard extends StatelessWidget {
   const AmbulanceCard({super.key, required this.ambulance});
@@ -6,6 +8,7 @@ class AmbulanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final ambulanceId = ambulance['id'];
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -62,59 +65,92 @@ class AmbulanceCard extends StatelessWidget {
             )),
           ),
           Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 30,
-                  child: Text(
-                    'Plate Number : ${ambulance['plate_number']} ',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
+            padding: const EdgeInsets.all(0.5),
+            child: Card(
+              color: Colors.white,
+              borderOnForeground: false,
+              shadowColor: Colors.white,
+              child: ListTile(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Plate Number : ${ambulance['plate_number']} ',
+                      style: const TextStyle(
+                        height: 2,
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                    Text(
+                      'Type : ${ambulance['type']} ',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Text(
+                      'Enable : ${ambulance['enable'] == 0 ? 'Yes' : 'No'} ',
+                      style: const TextStyle(
+                        height: 1.5,
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Type : ${ambulance['type']} ',
-                  style: const TextStyle(
-                    // color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+                trailing: PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 1,
+                      child: ListTile(
+                        title: const Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 10, left: 10),
+                            ),
+                            Expanded(
+                              child: Text('Edit'),
+                            ),
+                            Icon(Icons.edit),
+                          ],
+                        ),
+                        onTap: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      // const documentSnashot = ambulance['id'];
+                                      const AmbulanceEditFormScreen(
+                                          // ambulanceId: ambulanceId,
+                                          )))
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      // padding: EdgeInsets.all(10),
+                      value: 2,
+                      child: ListTile(
+                        title: const Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 10, left: 10),
+                            ),
+                            Expanded(
+                              child: Text('Delete'),
+                            ),
+                            Icon(Icons.delete),
+                          ],
+                        ),
+                        onTap: () {},
+                      ),
+                    )
+                  ],
+                  icon: const Icon(Icons.more_vert_rounded),
                 ),
-                Text(
-                  'Latitude : ${ambulance['latitude']} ',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                ),
-                Text(
-                  'Longitude : ${ambulance['longitude']} ',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                ),
-                const SizedBox(height: 8),
-                // SizedBox(
-                //   width: double.infinity,
-                //   child: ElevatedButton(
-                //     onPressed: () => Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) =>
-                //             HospitalDetailScreen(hospital: hospital),
-                //       ),
-                //     ),
-                //     child: Text("View detail"),
-                //     style: ElevatedButton.styleFrom(
-                //         backgroundColor: Colors.blue[100]),
-                //   ),
-                // ),
-              ],
+              ),
             ),
           )
         ],
