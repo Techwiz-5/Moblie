@@ -48,9 +48,9 @@ class _AccountScreenState extends State<AccountScreen> {
               return const Center(child: Text('User data not found'));
             }
             var userData = snapshot.data!.data() as Map<String, dynamic>;
-            if(userData['role'] == '0'){
+            if(userData['role'] == 'user'){
               return UserScreen(userData: userData);
-            } else if(userData['role'] == '2') {
+            } else if(userData['role'] == 'manager') {
               return ManagerScreen(userData: userData);
             }
             return const CircularProgressIndicator();

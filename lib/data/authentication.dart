@@ -15,7 +15,7 @@ class AuthServices {
           'email': email,
           'phone': phone,
           'address': address,
-          'role': '0',
+          'role': 'user',
           'uid': credential.user!.uid,
         });
         res = 'Successfully';

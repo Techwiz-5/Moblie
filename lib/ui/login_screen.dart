@@ -16,11 +16,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKeyLogin = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
 
   void loginUser() async {
+    final isValid = _formKeyLogin.currentState!.validate();
+    if(!isValid) return;
+    _formKeyLogin.currentState!.save();
     String res = await AuthServices().loginUser(
         email: emailController.text, password: passwordController.text);
 
@@ -54,118 +58,133 @@ class _LoginScreenState extends State<LoginScreen> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: SizedBox(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                height: height / 2.7,
-                child: Image.asset('images/login.jpg'),
-              ),
-              TextFieldInput(
-                textEditingController: emailController,
-                hintText: 'Enter your email',
-                icon: Icons.email,
-                textInputType: TextInputType.text,
-              ),
-              TextFieldInput(
-                textEditingController: passwordController,
-                hintText: 'Enter your password',
-                icon: Icons.lock,
-                textInputType: TextInputType.text,
-                isPass: true,
-              ),
-              const ForgotPassword(),
-              MyButtons(onTap: loginUser, text: 'Log In'),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: Colors.black26,
-                    ),
-                  ),
-                  const Text(' or '),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: Colors.black26,
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 10,
+      body: Form(
+        key: _formKeyLogin,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: height / 2.7,
+                  child: Image.asset('images/login.jpg'),
                 ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey),
-                  onPressed: () async {
-                    await FirebaseServices().signInWithGoogle();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
+                TextFieldInput(
+                  textEditingController: emailController,
+                  hintText: 'Enter your email',
+                  icon: Icons.email,
+                  textInputType: TextInputType.text,
+                  errorMessage: (value) {
+                    if(value.trim() == '' || !value.contains('@') || value.startsWith(" ")){
+                      return 'Email is not valid';
+                    }
+                    return null;
                   },
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Image.asset(
-                          'images/logo_google.png',
-                          height: 35,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text(
-                        "Continue with Google",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Don't have an account?",
-                    style: TextStyle(
-                      fontSize: 16,
+                TextFieldInput(
+                  textEditingController: passwordController,
+                  hintText: 'Enter your password',
+                  icon: Icons.lock,
+                  textInputType: TextInputType.text,
+                  isPass: true,
+                  errorMessage: (value) {
+                    if(value == ''){
+                      return 'Password is required';
+                    }
+                    return null;
+                  },
+                ),
+                const ForgotPassword(),
+                MyButtons(onTap: loginUser, text: 'Log In'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: Colors.black26,
+                      ),
                     ),
+                    const Text(' or '),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 10,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueGrey),
+                    onPressed: () async {
+                      await FirebaseServices().signInWithGoogle();
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) {
-                          return const SignUpScreen();
-                        }),
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
                       );
                     },
-                    child: const Text(
-                      " SignUp",
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Image.asset(
+                            'images/logo_google.png',
+                            height: 35,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text(
+                          "Continue with Google",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Don't have an account?",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                  )
-                ],
-              )
-            ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return const SignUpScreen();
+                          }),
+                        );
+                      },
+                      child: const Text(
+                        " SignUp",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

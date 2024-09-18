@@ -6,12 +6,14 @@ class TextFieldInput extends StatelessWidget {
   final String hintText;
   final IconData? icon;
   final TextInputType textInputType;
+  final Function(String value)? errorMessage;
   const TextFieldInput({
     super.key,
     required this.textEditingController,
     this.isPass = false,
     required this.hintText,
     this.icon,
+    this.errorMessage,
     required this.textInputType,
   });
 
@@ -19,9 +21,10 @@ class TextFieldInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: TextField(
+      child: TextFormField(
         style: const TextStyle(fontSize: 20),
         controller: textEditingController,
+        validator: (value) => errorMessage!(value!),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.black54),
           hintText: hintText,
@@ -32,6 +35,10 @@ class TextFieldInput extends StatelessWidget {
           ),
           border: InputBorder.none,
           focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.blue, width: 2),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          errorBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.blue, width: 2),
             borderRadius: BorderRadius.circular(30),
           ),
