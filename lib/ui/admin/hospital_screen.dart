@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/data/authentication.dart';
+import 'package:techwiz_5/ui/admin/create_hospital_screen.dart';
+import 'package:techwiz_5/ui/login_screen.dart';
+import 'package:techwiz_5/ui/widgets/button.dart';
 import 'package:techwiz_5/ui/widgets/hospital_card.dart';
 
 class HospitalScreen extends StatefulWidget {
@@ -10,7 +14,9 @@ class HospitalScreen extends StatefulWidget {
 }
 
 class _HospitalScreenState extends State<HospitalScreen> {
-  final CollectionReference myItems = FirebaseFirestore.instance.collection('hospital');
+  final CollectionReference myItems =
+      FirebaseFirestore.instance.collection('hospital');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +31,25 @@ class _HospitalScreenState extends State<HospitalScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          ElevatedButton(
+            onPressed: () async {
+              await AuthServices().logout();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30),
+                ),
+              ),
+            ),
+            child: const Text('Log Out', style: TextStyle(color: Colors.white),),
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: myItems.snapshots(),
@@ -41,8 +66,9 @@ class _HospitalScreenState extends State<HospitalScreen> {
                     // borderRadius: BorderRadius.circular(20),
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: HospitalCard(hospital: documentSnapshot,)
-                    ),
+                        child: HospitalCard(
+                          hospital: documentSnapshot,
+                        )),
                   ),
                 );
               },
@@ -56,8 +82,9 @@ class _HospitalScreenState extends State<HospitalScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
-        child: const Icon(Icons.add),
+        onPressed: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => HospitalFormScreen())),
+        child: Icon(Icons.add),
       ),
     );
   }

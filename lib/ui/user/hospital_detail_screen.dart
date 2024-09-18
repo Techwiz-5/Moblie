@@ -9,7 +9,7 @@ class HospitalDetailScreen extends StatelessWidget {
   String get locationImage {
     final lat = hospital['latitude'];
     final lng = hospital['longitude'];
-    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyCKrEqluT4tRUv3YoQ8CGSBG1Zj-vtGJNU';
+    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyC_19MaU_WZ5JxTMP90muqcGhCV_0l-9kc';
   }
 
   @override
