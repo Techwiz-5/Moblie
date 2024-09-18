@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 
-class HospitalCard extends StatelessWidget {
-  const HospitalCard({super.key, required this.hospital});
-  final dynamic hospital;
+class AmbulanceCard extends StatelessWidget {
+  const AmbulanceCard({super.key, required this.ambulance});
+  final dynamic ambulance;
 
   @override
   Widget build(BuildContext context) {
@@ -53,24 +52,24 @@ class HospitalCard extends StatelessWidget {
                 child: Stack(
               alignment: Alignment.bottomLeft,
               children: <Widget>[
-                // Image.network(
-                //   hospital['image'],
-                //   width: double.infinity,
-                //   height: 205,
-                //   fit: BoxFit.cover,
-                // ),
+                Image.network(
+                  ambulance['image'],
+                  width: double.infinity,
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
               ],
             )),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 40,
+                  height: 30,
                   child: Text(
-                    hospital['name'],
+                    'Plate Number : ${ambulance['plate_number']} ',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     softWrap: true,
@@ -81,27 +80,40 @@ class HospitalCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  hospital['description'],
+                  'Type : ${ambulance['type']} ',
+                  style: const TextStyle(
+                    // color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Latitude : ${ambulance['latitude']} ',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                ),
+                Text(
+                  'Longitude : ${ambulance['longitude']} ',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
                 ),
                 const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            HospitalDetailScreen(hospital: hospital),
-                      ),
-                    ),
-                    child: Text("View detail"),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[100]),
-                  ),
-                ),
+                // SizedBox(
+                //   width: double.infinity,
+                //   child: ElevatedButton(
+                //     onPressed: () => Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (context) =>
+                //             HospitalDetailScreen(hospital: hospital),
+                //       ),
+                //     ),
+                //     child: Text("View detail"),
+                //     style: ElevatedButton.styleFrom(
+                //         backgroundColor: Colors.blue[100]),
+                //   ),
+                // ),
               ],
             ),
           )

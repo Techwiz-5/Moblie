@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/data/authentication.dart';
+import 'package:techwiz_5/ui/admin/ambulance/ambulance_screen.dart';
 import 'package:techwiz_5/ui/admin/driver_screen.dart';
 import 'package:techwiz_5/ui/admin/hospital_screen.dart';
-import 'package:techwiz_5/ui/login_screen.dart';
-import 'package:techwiz_5/ui/widgets/button.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key, required this.userData});
@@ -18,6 +16,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   final List<Widget> pages = [
     const HospitalScreen(),
+    const AmbulanceScreen(),
     const DriverScreen(),
   ];
   @override
@@ -35,6 +34,10 @@ class _AdminScreenState extends State<AdminScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.local_hospital),
             label: 'Hospital',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_hospital_rounded),
+            label: 'Ambulance',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.drive_eta),
