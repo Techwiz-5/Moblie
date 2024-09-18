@@ -26,20 +26,15 @@ class AuthServices {
     return res;
   }
 
-  Future<String> loginUser({required String email, required String password}) async{
-    String res = 'Something went wrong';
+  Future<dynamic> loginUser({required String email, required String password}) async{
     try{
-      if(email.isNotEmpty || password.isNotEmpty){
-        await _auth.signInWithEmailAndPassword(email: email, password: password);
-        res = 'Successfully';
-      }
-      else {
-        res = 'Please enter all the field';
-      }
+        var loggedUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
+        // res = 'Successfully';
+      return loggedUser;
     } catch (e) {
-      return e.toString();
+      print(e.toString());
+      return null;
     }
-    return res;
   }
 
   Future<void> logout() async{

@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/authentication.dart';
 import 'package:techwiz_5/data/google_auth.dart';
+import 'package:techwiz_5/ui/admin/admin_screen.dart';
 import 'package:techwiz_5/ui/forgot_password.dart';
-import 'package:techwiz_5/ui/home_page.dart';
+import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/sign_up_screen.dart';
 import 'package:techwiz_5/ui/widgets/button.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
@@ -19,29 +22,66 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKeyLogin = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool isLoading = false;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<DocumentSnapshot> getUserData() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    return await _firestore.collection('account').doc(uid).get();
+  }
 
   void loginUser() async {
     final isValid = _formKeyLogin.currentState!.validate();
     if(!isValid) return;
     _formKeyLogin.currentState!.save();
-    String res = await AuthServices().loginUser(
-        email: emailController.text, password: passwordController.text);
-
-    if (res == 'Successfully') {
-      setState(() {
-        isLoading = true;
-      });
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
-        ),
+    try{
+      UserCredential userData = await _auth.signInWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
       );
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      showSnackBar(context, res);
+
+      if(userData != null){
+        String uid = FirebaseAuth.instance.currentUser!.uid;
+        final userDoc = await _firestore.collection('account').doc(uid).get();
+        Map<String, dynamic> userRole = userDoc.data()!;
+
+        switch(userRole!['role']){
+          case 'admin':
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => AdminScreen(userData: userData),
+              ),
+            );
+          case 'driver':
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
+          case 'user':
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
+          default:
+            return;
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      switch(e.code){
+        case 'network-request-failed':
+          showSnackBar(context, 'No Internet Connection');
+        case 'wrong-password':
+          showSnackBar(context, 'Please Enter correct password');
+        case 'user-not-found':
+          showSnackBar(context, 'Email not found');
+        case 'too-many-requests':
+          showSnackBar(context, 'Too many attempts please try later');
+        default:
+          showSnackBar(context, 'Authentication failed');
+      }
     }
   }
 

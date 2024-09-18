@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/authentication.dart';
-import 'package:techwiz_5/ui/home_page.dart';
+import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/login_screen.dart';
 import 'package:techwiz_5/ui/widgets/button.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
