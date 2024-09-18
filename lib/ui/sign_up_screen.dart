@@ -18,21 +18,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
   bool isLoading = false;
 
   void signUpUser() async {
     String res = await AuthServices().signUpUser(
-        name: nameController.text,
-        email: emailController.text,
-        password: passwordController.text,
-        phone: phoneController.text);
+      name: nameController.text,
+      email: emailController.text,
+      password: passwordController.text,
+      phone: phoneController.text,
+      address: addressController.text,
+    );
 
     if (res == 'Successfully') {
       setState(() {
         isLoading = true;
       });
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()));
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
     } else {
       setState(() {
         isLoading = false;
@@ -49,6 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     passwordController.dispose();
     nameController.dispose();
     phoneController.dispose();
+    addressController.dispose();
   }
 
   @override
@@ -76,6 +80,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 textEditingController: phoneController,
                 hintText: 'Enter your phone',
                 icon: Icons.phone,
+                textInputType: TextInputType.text,
+              ),
+              TextFieldInput(
+                textEditingController: addressController,
+                hintText: 'Enter your address',
+                icon: Icons.home,
                 textInputType: TextInputType.text,
               ),
               TextFieldInput(
