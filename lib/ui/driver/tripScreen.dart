@@ -14,7 +14,7 @@ class Tripscreen extends StatefulWidget {
 class TripScreenState extends State<Tripscreen> {
   @override
   void initState() {
-    Timer.periodic(new Duration(seconds: 1), (timer) {
+    Timer.periodic(new Duration(seconds: 10), (timer) {
       getCurrentLocation();
       polylinesDraw();
     });
