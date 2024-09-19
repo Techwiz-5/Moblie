@@ -18,7 +18,7 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
   Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
     try {
       final Reference oldImgRef =
-      FirebaseStorage.instance.refFromURL(oldImageUrl);
+          FirebaseStorage.instance.refFromURL(oldImageUrl);
       await oldImgRef.delete();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -28,6 +28,7 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -142,10 +143,9 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  EditAmbulanceScreen(
-                                      ambulanceId: widget.ambulance['id'],
-                                      ),
+                              builder: (context) => EditAmbulanceScreen(
+                                ambulanceId: widget.ambulance['id'],
+                              ),
                             ),
                           )
                         },
@@ -167,12 +167,14 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                           ],
                         ),
                         onTap: () async {
-                          await FirebaseFirestore.instance.collection('ambulance').doc(widget.ambulance['id']).delete();
-                          await _deleteOldImageFromFirebase(widget.ambulance['image']);
+                          await FirebaseFirestore.instance
+                              .collection('ambulance')
+                              .doc(widget.ambulance['id'])
+                              .delete();
+                          await _deleteOldImageFromFirebase(
+                              widget.ambulance['image']);
                           showSnackBar(context, 'Delete successfully');
-                          setState(() {
-
-                          });
+                          setState(() {});
                         },
                       ),
                     )
