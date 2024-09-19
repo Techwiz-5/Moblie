@@ -34,9 +34,6 @@ class TripScreenState extends State<Tripscreen> {
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocation;
   void getCurrentLocation() {
-    setState(() {
-      polylines.removeWhere((p) => p.polylineId == "currentLocation");
-    });
     Location location = Location();
     location.getLocation().then((location) {
       currentLocation = location;
@@ -48,22 +45,23 @@ class TripScreenState extends State<Tripscreen> {
     });
   }
 
-  void getPolylinepoints() async {
-    PolylinePoints polyLinePoints = PolylinePoints();
-    PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
-        "AIzaSyCKrEqluT4tRUv3YoQ8CGSBG1Zj-vtGJNU",
-        PointLatLng(37.33500926, -122.03272188),
-        PointLatLng(37.33429383, -122.06600055));
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) =>
-          polylineCoordinates.add(LatLng(point.latitude, point.longitude)));
-      setState(() {});
-    }
-  }
+  // void getPolylinepoints() async {
+  //   PolylinePoints polyLinePoints = PolylinePoints();
+  //   PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
+  //       "AIzaSyCKrEqluT4tRUv3YoQ8CGSBG1Zj-vtGJNU",
+  //       PointLatLng(37.33500926, -122.03272188),
+  //       PointLatLng(37.33429383, -122.06600055));
+  //   if (result.points.isNotEmpty) {
+  //     result.points.forEach((PointLatLng point) =>
+  //         polylineCoordinates.add(LatLng(point.latitude, point.longitude)));
+  //     setState(() {});
+  //   }
+  // }
 
   polylinesDraw() async {
+    polylines.removeWhere((p) => p.polylineId == "draw" );
     polylines.add(Polyline(
-      polylineId: PolylineId(sourceLocaion.toString()),
+      polylineId: const PolylineId("draw"),
       visible: true,
       width: 5,
       points: [
@@ -109,9 +107,9 @@ class TripScreenState extends State<Tripscreen> {
                       markerId: const MarkerId("currentLocation"),
                       position: LatLng(currentLocation!.latitude!,
                           currentLocation!.longitude!)),
-              Marker(
-                  markerId: const MarkerId("sourceLocaion"),
-                  position: sourceLocaion),
+              // Marker(
+              //     markerId: const MarkerId("sourceLocaion"),
+              //     position: sourceLocaion),
               Marker(
                   markerId: const MarkerId("destination"),
                   position: destination)
