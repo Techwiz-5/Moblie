@@ -22,14 +22,13 @@ class TripScreenState extends State<Tripscreen> {
   }
 
   final Completer<GoogleMapController> _controller = Completer();
-  GoogleMapController? mapController;
   Set<Polyline> polylines = {};
   static LatLng sourceLocaion = LatLng(37.33500926, -122.03272188);
   static LatLng destination = LatLng(37.33429383, -122.06600055);
 
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocation;
-  void getCurrentLocation() {
+  void getCurrentLocation() async {
     Location location = Location();
     location.getLocation().then((location) {
       currentLocation = location;
@@ -38,6 +37,13 @@ class TripScreenState extends State<Tripscreen> {
 
     location.onLocationChanged.listen((newLog) {
       currentLocation = newLog;
+      GoogleMapController mapController =
+          _controller.future as GoogleMapController;
+
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(newLog.latitude!, newLog.longitude!))));
+
+      setState(() {});
     });
     polylinesDraw();
   }
@@ -88,10 +94,10 @@ class TripScreenState extends State<Tripscreen> {
                     zoom: 13.5),
                 polylines: polylines,
                 mapType: MapType.normal,
-                onMapCreated: (controller) {
+                onMapCreated: (mapController) {
 //method called when map is created
                   setState(() {
-                    mapController = controller;
+                    _controller.complete(mapController);
                   });
                 },
                 markers: {
