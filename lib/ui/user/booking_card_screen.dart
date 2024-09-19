@@ -16,22 +16,29 @@ class _BookingCardScreenState extends State<BookingCardScreen> {
   double longitude = 0.0;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _getCurrentLocation();
+    getUserCurrentLocation();
   }
 
-  void _getCurrentLocation() async {
+  Future<void> getUserCurrentLocation() async {
     Location location = Location();
 
     bool serviceEnabled;
     PermissionStatus permissionGranted;
-    LocationData locationData;
 
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
+        _showNormalConfirmationDialog(
+          'Location Is Disabled',
+          'App wants to access your location',
+          'Enable Location',
+          () {
+            AppSettings.openAppSettings();
+          },
+        );
         return;
       }
     }
@@ -40,34 +47,55 @@ class _BookingCardScreenState extends State<BookingCardScreen> {
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
+        _showNormalConfirmationDialog(
+          'Location Permission Denied',
+          'Please go to settings and enable location permission',
+          'Open Settings',
+          () {
+            AppSettings.openAppSettings();
+          },
+        );
         return;
       }
     }
 
-    locationData = await location.getLocation();
-    final lat = locationData.latitude;
-    final lng = locationData.longitude;
-
-    if (lat == null || lng == null) {
-      return;
-    }
-
-    setState(() {
-      latitude = lat;
-      longitude = lng;
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      setState(() {
+        latitude = currentLocation.latitude!;
+        longitude = currentLocation.longitude!;
+      });
     });
   }
 
-  String distanceKm(double lat, double lng){
-    if(widget.hospital['latitude'] == null || widget.hospital['longitude'] == null) return '';
-    double distance = 0.0;
-    distance = FlutterMapMath().distanceBetween(
-        lat,
-        lng,
-        double.parse(widget.hospital['latitude']),
-        double.parse(widget.hospital['longitude']),
-        'kilometers');
-    return '${distance.toStringAsFixed(2)} kilometers';
+  void _showNormalConfirmationDialog(
+      String title, String message, String buttonText, VoidCallback onPressed) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            ElevatedButton(
+              onPressed: onPressed,
+              child: Text(buttonText),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String distanceKm(double lat, double lng) {
+    double result = FlutterMapMath()
+        .distanceBetween(latitude, longitude, lat, lng, 'kilometers');
+    return '${result.toStringAsFixed(2)} km';
   }
 
   @override
@@ -151,7 +179,8 @@ class _BookingCardScreenState extends State<BookingCardScreen> {
                     SizedBox(
                       height: 40,
                       child: Text(
-                        distanceKm(latitude, longitude),
+                        distanceKm(double.parse(widget.hospital['latitude']),
+                            double.parse(widget.hospital['longitude'])),
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         style: const TextStyle(

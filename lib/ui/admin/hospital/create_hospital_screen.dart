@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/models/place.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,7 +33,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   String _phone = '';
   String _latitude = '0';
   String _longitude = '0';
-  PlaceLocation? _selectedLocation;
+  LatLng? _selectedLocation;
 
   @override
   void initState() {
@@ -236,10 +237,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),
-                      child: IconButton(
-                        onPressed: () => pickImage(),
-                        icon: Icon(Icons.camera_alt),
-                      ),
+                      child: Icon(Icons.camera_alt),
                     ),
                   ),
                   const SizedBox(height: 16),

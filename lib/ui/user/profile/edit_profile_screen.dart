@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/models/place.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,30 +11,27 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../widgets/location_input.dart';
 
-class EditHospitalScreen extends StatefulWidget {
-  const EditHospitalScreen({super.key, required this.hospitalId});
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key, required this.hospitalId});
   final String hospitalId;
 
   @override
-  State<EditHospitalScreen> createState() => _EditHospitalScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreen();
 }
 
-class _EditHospitalScreenState extends State<EditHospitalScreen> {
+class _EditProfileScreen extends State<EditProfileScreen> {
   final _formKeyCV = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
   File? _pickedImage;
   final CollectionReference myItems =
-      FirebaseFirestore.instance.collection('hospital');
+  FirebaseFirestore.instance.collection('account');
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   late String _name = '';
-  late String _description;
   late String _address;
+  late String _email;
   late String _phone;
-  late String _latitude;
-  late String _longitude;
-  LatLng? _selectedLocation;
 
   @override
   void initState() {
@@ -46,23 +42,21 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   void getData() async {
     try {
       DocumentSnapshot docSnapshot =
-          await _firestore.collection('hospital').doc(widget.hospitalId).get();
+      await _firestore.collection('account').doc(widget.hospitalId).get();
       if (docSnapshot.exists) {
-        var hospitalData = docSnapshot.data() as Map<String, dynamic>;
+        var accountData = docSnapshot.data() as Map<String, dynamic>;
         setState(() {
-          _name = hospitalData['name'];
-          _latitude = hospitalData['latitude'];
-          _longitude = hospitalData['longitude'];
-          _description = hospitalData['description'];
-          _address = hospitalData['address'];
-          _phone = hospitalData['phone'];
-          imageUrl = hospitalData['image'];
+          _name = accountData['name'];
+          _email = accountData['email'];
+          _address = accountData['address'];
+          _phone = accountData['phone'];
+          accountData['image'] != null ? imageUrl = accountData['image'] : null;
         });
       } else {
-        print('No data found for this hospital');
+        print('No data found for this account');
       }
     } catch (e) {
-      print('Error fetching hospital data: $e');
+      print('Error fetching account data: $e');
     }
   }
 
@@ -86,7 +80,7 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
     try {
       final Reference oldImgRef =
-          FirebaseStorage.instance.refFromURL(oldImageUrl);
+      FirebaseStorage.instance.refFromURL(oldImageUrl);
       await oldImgRef.delete();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,7 +98,7 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
           await _deleteOldImageFromFirebase(imageUrl!);
         }
         Reference reference = FirebaseStorage.instance.ref().child(
-            "image/hospital/${DateTime.now().microsecondsSinceEpoch}.png");
+            "image/user/${DateTime.now().microsecondsSinceEpoch}.png");
         await reference.putFile(_pickedImage!).whenComplete(() {
           print('Upload image success');
         });
@@ -127,16 +121,14 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
     _formKeyCV.currentState!.save();
     try {
       await _uploadImageToFirebase();
-      await _firestore.collection('hospital').doc(widget.hospitalId).update({
+      await _firestore.collection('account').doc(FirebaseAuth.instance.currentUser!.uid).update({
         'name': _name,
-        'description': _description,
+        'email': _email,
         'address': _address,
         'phone': _phone,
-        'latitude': _latitude,
-        'longitude': _longitude,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
-      Navigator.pop(context, () {});
+      Navigator.pop(context, true);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
@@ -147,28 +139,9 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        // title: const Text('Create CV', style: TextStyle(fontWeight: FontWeight.bold),),
         centerTitle: true,
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: ElevatedButton(
-              onPressed: () async {
-                _editHospital();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              child: const Text('Edit Hospital'),
-            ),
-          ),
-        ],
       ),
       body: (_name.isEmpty)
           ? const Center(
@@ -181,6 +154,42 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
             key: _formKeyCV,
             child: Column(
               children: [
+                Stack(
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 100,
+                        backgroundImage: _pickedImage != null
+                            ? FileImage(_pickedImage!)
+                            : (imageUrl != null && imageUrl!.isNotEmpty
+                            ? NetworkImage(imageUrl!)
+                            : null) as ImageProvider?,
+                        child: imageUrl == null && _pickedImage == null
+                            ? const Icon(
+                          Icons.person,
+                          size: 200,
+                          color: Colors.grey,
+                        )
+                            : null,
+                      ),
+                    ),
+                    Positioned(
+                      right: 130,
+                      top: 7,
+                      child: GestureDetector(
+                        onTap: () {
+                          pickImage();
+                        },
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.grey,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 TextFormField(
                   initialValue: _name,
                   decoration: cvFormField('Name'),
@@ -212,19 +221,17 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  initialValue: _description,
-                  decoration: cvFormField('Description'),
-                  keyboardType: TextInputType.multiline,
-                  minLines: 5,
-                  maxLines: 5,
+                  initialValue: _email,
+                  decoration: cvFormField('Address'),
+                  autocorrect: true,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in description';
+                      return 'Please fill in address';
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    _description = value!;
+                    _email = value!;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -245,36 +252,9 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
                 const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: _pickedImage != null
-                        ? DecorationImage(
-                            image: FileImage(_pickedImage!),
-                            fit: BoxFit.cover,
-                          )
-                        : (imageUrl != null && imageUrl!.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(imageUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey[200],
-                  ),
-                  child: imageUrl == null && _pickedImage == null
-                      ? const Icon(
-                          Icons.image,
-                          size: 200,
-                          color: Colors.grey,
-                        )
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      pickImage();
+                    onPressed: () async {
+                      _editHospital();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -283,16 +263,9 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    child: IconButton(
-                      onPressed: () => pickImage(),
-                      icon: Icon(Icons.camera_alt),
-                    ),
+                    child: const Text('Edit Profile'),
                   ),
                 ),
-                const SizedBox(height: 16),
-                LocationInput(onSelectLocation: (location) {
-                  _selectedLocation = location;
-                })
               ],
             ),
           ),

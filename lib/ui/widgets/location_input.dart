@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
 
-import '../../models/place.dart';
+// import '../../models/place.dart';
 import '../admin/map.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key, required this.onSelectLocation});
 
-  final void Function(PlaceLocation location) onSelectLocation;
+  final void Function(LatLng location) onSelectLocation;
 
   @override
   State<LocationInput> createState() {
@@ -19,8 +20,12 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInputState extends State<LocationInput> {
-  PlaceLocation? _pickedLocation;
+  final MapController mapController = MapController();
+  LocationData? currentLocation;
+  LatLng? _pickedLocation;
   var _isGettingLocation = false;
+  final String orsApiKey =
+      '5b3ce3597851110001cf62482a3bbccce840449baea616641f870310'; // Replace with your OpenRouteService API key
 
   String get locationImage {
     if (_pickedLocation == null) {
@@ -28,23 +33,34 @@ class _LocationInputState extends State<LocationInput> {
     }
     final lat = _pickedLocation!.latitude;
     final lng = _pickedLocation!.longitude;
-    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyC_19MaU_WZ5JxTMP90muqcGhCV_0l-9kc';
+    print(lat);
+    print(lng);
+    // return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyCOaEIViy3KsNPhxg8Nfd9RaD_rVzzDsow';
+
+    return 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${lng},${lat}';
   }
 
   Future<void> _savePlace(double latitude, double longitude) async{
+    // final url = Uri.parse(
+    //     'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyCOaEIViy3KsNPhxg8Nfd9RaD_rVzzDsow');
     final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyC_19MaU_WZ5JxTMP90muqcGhCV_0l-9kc');
+        'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${longitude},${latitude}');
     final response = await http.get(url);
-    final resData = json.decode(response.body);
-    final address = resData['results'][0]['formatted_address'];
-    setState(() {
-      _pickedLocation = PlaceLocation(
-        latitude: latitude,
-        longitude: longitude,
-        address: address,
-      );
+    print(json.decode(response.body));
+    // final resData = json.decode(response.body);
+    // final address = resData['results'][0]['formatted_address'];
+
+    final data = json.decode(response.body);
+    final List<dynamic> coords =
+    data['features'][0]['geometry']['coordinates'];
+    // setState(() {
+    //   // _pickedLocation = PlaceLocation(
+    //   //   latitude: latitude,
+    //   //   longitude: longitude,
+    //   //   address: address,
+    //   // );
       _isGettingLocation = false;
-    });
+    // });
 
     widget.onSelectLocation(_pickedLocation!);
   }
@@ -77,6 +93,8 @@ class _LocationInputState extends State<LocationInput> {
     });
 
     locationData = await location.getLocation();
+
+
     final lat = locationData.latitude;
     final lng = locationData.longitude;
 
@@ -136,7 +154,35 @@ class _LocationInputState extends State<LocationInput> {
                 width: 1,
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
           ),
-          child: previewContent,
+          child: SizedBox(
+            height: 300,
+            child: _pickedLocation == null ? SizedBox.shrink()  : FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                initialCenter: LatLng(
+                    _pickedLocation!.latitude!, _pickedLocation!.longitude!),
+                initialZoom: 17.0,
+                onTap: (tapPosition, point) {
+
+                },
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: const ['a', 'b', 'c'],
+                ),
+                MarkerLayer(
+                  markers: [Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: _pickedLocation!,
+                    child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
+                  ),]
+                ),
+              ],
+            ),
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

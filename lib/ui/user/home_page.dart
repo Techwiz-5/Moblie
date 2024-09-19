@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/user/appointment_screen.dart';
 import 'package:techwiz_5/ui/user/booking_screen.dart';
-import 'package:techwiz_5/ui/user/user_screen.dart';
+import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,18 +14,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController positionController = TextEditingController();
-  final TextEditingController searchController = TextEditingController();
-  final CollectionReference myItems =
-      FirebaseFirestore.instance.collection('hospital');
-  bool isSearch = false;
   int _pageIndex = 0;
 
   final List<Widget> pages = [
     const HospitalScreen(),
-    const BookingScreen(),
-    const AccountScreen(),
+    const AppointmentScreen(),
+    const ProfileScreen(),
     const BookingScreen(),
   ];
 

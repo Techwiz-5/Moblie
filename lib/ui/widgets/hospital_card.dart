@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
@@ -13,8 +14,29 @@ class HospitalCard extends StatefulWidget {
 }
 
 class _HospitalCardState extends State<HospitalCard> {
+  bool isAdmin = false;
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('hospital');
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAdminRole();
+  }
+
+  Future<void> _checkAdminRole() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('account')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        isAdmin = userDoc.get('role') == 'admin';
+      });
+    }
+  }
+
   Future<void> _showPopupMenu(Offset offset) async {
     double left = offset.dx;
     double top = offset.dy;
@@ -186,12 +208,13 @@ class _HospitalCardState extends State<HospitalCard> {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTapDown: (TapDownDetails details) async {
-                        await _showPopupMenu(details.globalPosition);
-                      },
-                      child: const Icon(Icons.more_vert_rounded),
-                    ),
+                    if (isAdmin)
+                      GestureDetector(
+                        onTapDown: (TapDownDetails details) async {
+                          await _showPopupMenu(details.globalPosition);
+                        },
+                        child: const Icon(Icons.more_vert_rounded),
+                      ),
                   ],
                 ),
                 Text(

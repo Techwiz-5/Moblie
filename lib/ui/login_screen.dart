@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/authentication.dart';
 import 'package:techwiz_5/data/google_auth.dart';
 import 'package:techwiz_5/ui/admin/admin_screen.dart';
-import 'package:techwiz_5/ui/driver/tripScreen.dart';
+import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/forgot_password.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/sign_up_screen.dart';
@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           case 'driver':
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
+                builder: (context) => const DriverScreen(),
               ),
             );
             break;
@@ -218,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            return const Tripscreen();
+                            return const SignUpScreen();
                           }),
                         );
                       },

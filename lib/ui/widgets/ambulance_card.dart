@@ -169,6 +169,7 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                 ),
               ),
               Container(
+                padding: const EdgeInsets.all(8),
                 child: ClipPath(
                   clipper: ArcClipper(),
                   child: Container(
