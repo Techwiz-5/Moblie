@@ -25,24 +25,44 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   String? imageUrl;
   File? _pickedImage;
   final CollectionReference myItems =
-  FirebaseFirestore.instance.collection('hospital');
+      FirebaseFirestore.instance.collection('hospital');
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String _name = '';
-  String _description = '';
-  String _address = '';
-  String _phone = '';
-  String _latitude = '0';
-  String _longitude = '0';
+  late String _name = '';
+  late String _description;
+  late String _address;
+  late String _phone;
+  late String _latitude;
+  late String _longitude;
   PlaceLocation? _selectedLocation;
 
   @override
   void initState() {
     super.initState();
+    getData();
   }
 
-  Future<DocumentSnapshot> getData() async {
-    return await _firestore.collection('hospital').doc(widget.hospitalId).get();
+  void getData() async {
+    try {
+      DocumentSnapshot docSnapshot =
+          await _firestore.collection('hospital').doc(widget.hospitalId).get();
+      if (docSnapshot.exists) {
+        var hospitalData = docSnapshot.data() as Map<String, dynamic>;
+        setState(() {
+          _name = hospitalData['name'];
+          _latitude = hospitalData['latitude'];
+          _longitude = hospitalData['longitude'];
+          _description = hospitalData['description'];
+          _address = hospitalData['address'];
+          _phone = hospitalData['phone'];
+          imageUrl = hospitalData['image'];
+        });
+      } else {
+        print('No data found for this hospital');
+      }
+    } catch (e) {
+      print('Error fetching hospital data: $e');
+    }
   }
 
   Future<void> pickImage() async {
@@ -65,7 +85,7 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
     try {
       final Reference oldImgRef =
-      FirebaseStorage.instance.refFromURL(oldImageUrl);
+          FirebaseStorage.instance.refFromURL(oldImageUrl);
       await oldImgRef.delete();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,9 +102,8 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
         if (imageUrl != null && imageUrl!.isNotEmpty) {
           await _deleteOldImageFromFirebase(imageUrl!);
         }
-        Reference reference = FirebaseStorage.instance
-            .ref()
-            .child("image/hospital/${DateTime.now().microsecondsSinceEpoch}.png");
+        Reference reference = FirebaseStorage.instance.ref().child(
+            "image/hospital/${DateTime.now().microsecondsSinceEpoch}.png");
         await reference.putFile(_pickedImage!).whenComplete(() {
           print('Upload image success');
         });
@@ -125,177 +144,160 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        // title: const Text('Create CV', style: TextStyle(fontWeight: FontWeight.bold),),
+        centerTitle: true,
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          // title: const Text('Create CV', style: TextStyle(fontWeight: FontWeight.bold),),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 16),
-              child: ElevatedButton(
-                onPressed: () async {
-                  _editHospital();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+        surfaceTintColor: Colors.white,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            child: ElevatedButton(
+              onPressed: () async {
+                _editHospital();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text('Edit Hospital'),
               ),
+              child: const Text('Edit Hospital'),
             ),
-          ],
-        ),
-        body: FutureBuilder(
-          future: getData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return const Center(child: Text('Error fetching user data'));
-            }
-            if (!snapshot.hasData || !snapshot.data!.exists) {
-              return const Center(child: Text('User data not found'));
-            }
-            var ambulanceData = snapshot.data!.data() as Map<String, dynamic>;
-            _name = ambulanceData['name'];
-            _latitude = ambulanceData['latitude'];
-            _longitude = ambulanceData['longitude'];
-            _address = ambulanceData['address'];
-            _phone = ambulanceData['phone'];
-            imageUrl = ambulanceData['image'];
-            _description = ambulanceData['description'];
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKeyCV,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        initialValue: _name,
-                        decoration: cvFormField('Name'),
-                        autocorrect: true,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please fill name';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _name = value!;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _address,
-                        decoration: cvFormField('Address'),
-                        autocorrect: true,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please fill in address';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _address = value!;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _description,
-                        decoration: cvFormField('Description'),
-                        keyboardType: TextInputType.multiline,
-                        minLines: 5,
-                        maxLines: 5,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please fill in description';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _description = value!;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _phone,
-                        decoration: cvFormField('Phone number'),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please fill in phone number';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.phone,
-                        onSaved: (value) {
-                          _phone = value!;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: double.infinity,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          image: _pickedImage != null
-                              ? DecorationImage(
+          ),
+        ],
+      ),
+      body: (_name.isEmpty)
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
+          : SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKeyCV,
+            child: Column(
+              children: [
+                TextFormField(
+                  initialValue: _name,
+                  decoration: cvFormField('Name'),
+                  autocorrect: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please fill name';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _name = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _address,
+                  decoration: cvFormField('Address'),
+                  autocorrect: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please fill in address';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _address = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _description,
+                  decoration: cvFormField('Description'),
+                  keyboardType: TextInputType.multiline,
+                  minLines: 5,
+                  maxLines: 5,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please fill in description';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _description = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _phone,
+                  decoration: cvFormField('Phone number'),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please fill in phone number';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
+                  onSaved: (value) {
+                    _phone = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    image: _pickedImage != null
+                        ? DecorationImage(
                             image: FileImage(_pickedImage!),
                             fit: BoxFit.cover,
                           )
-                              : (imageUrl != null && imageUrl!.isNotEmpty
-                              ? DecorationImage(
-                            image: NetworkImage(imageUrl!),
-                            fit: BoxFit.cover,
-                          )
-                              : null),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.grey[200],
-                        ),
-                        child: imageUrl == null && _pickedImage == null
-                            ? const Icon(
+                        : (imageUrl != null && imageUrl!.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(imageUrl!),
+                                fit: BoxFit.cover,
+                              )
+                            : null),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey[200],
+                  ),
+                  child: imageUrl == null && _pickedImage == null
+                      ? const Icon(
                           Icons.image,
                           size: 200,
                           color: Colors.grey,
                         )
-                            : null,
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      pickImage();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            pickImage();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          child: IconButton(
-                            onPressed: () => pickImage(),
-                            icon: Icon(Icons.camera_alt),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      LocationInput(onSelectLocation: (location) {
-                        _selectedLocation = location;
-                      })
-                    ],
+                    ),
+                    child: IconButton(
+                      onPressed: () => pickImage(),
+                      icon: Icon(Icons.camera_alt),
+                    ),
                   ),
                 ),
-              ),
-            );
-          }
-        ));
+                const SizedBox(height: 16),
+                LocationInput(onSelectLocation: (location) {
+                  _selectedLocation = location;
+                })
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   InputDecoration cvFormField(String text) {

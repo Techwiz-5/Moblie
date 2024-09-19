@@ -15,18 +15,96 @@ class AmbulanceCard extends StatefulWidget {
 }
 
 class _AmbulanceCardState extends State<AmbulanceCard> {
+  Future<void> _showPopupMenu(Offset offset) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    final result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, left + 1, top + 1),
+      items: [
+        PopupMenuItem(
+          value: 'edit',
+          child: const Text('Edit'),
+        ),
+        PopupMenuItem(
+          value: 'delete',
+          child: const Text('Delete'),
+        ),
+      ],
+      elevation: 8.0,
+    );
+
+    if (result == 'edit') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              EditAmbulanceScreen(ambulanceId: widget.ambulance['id']),
+        ),
+      );
+    } else if (result == 'delete') {
+      _showDialogConfirm();
+    }
+  }
+
+  _onDelete() async {
+    await FirebaseFirestore.instance
+        .collection('ambulance')
+        .doc(widget.ambulance['id'])
+        .delete();
+    await _deleteOldImageFromFirebase(widget.ambulance['image']);
+  }
+
   Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
     try {
       final Reference oldImgRef =
-          FirebaseStorage.instance.refFromURL(oldImageUrl);
+      FirebaseStorage.instance.refFromURL(oldImageUrl);
       await oldImgRef.delete();
     } catch (e) {
+      print(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
         ),
       );
     }
+  }
+
+  Future<void> _showDialogConfirm() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Are you sure you want to delete?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _onDelete();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
+              style:
+              ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -123,63 +201,11 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                     ),
                   ],
                 ),
-                trailing: PopupMenuButton(
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: ListTile(
-                        title: const Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 10, left: 10),
-                            ),
-                            Expanded(
-                              child: Text('Edit'),
-                            ),
-                            Icon(Icons.edit),
-                          ],
-                        ),
-                        onTap: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditAmbulanceScreen(
-                                ambulanceId: widget.ambulance['id'],
-                              ),
-                            ),
-                          )
-                        },
-                      ),
-                    ),
-                    PopupMenuItem(
-                      // padding: EdgeInsets.all(10),
-                      value: 2,
-                      child: ListTile(
-                        title: const Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 10, left: 10),
-                            ),
-                            Expanded(
-                              child: Text('Delete'),
-                            ),
-                            Icon(Icons.delete),
-                          ],
-                        ),
-                        onTap: () async {
-                          await FirebaseFirestore.instance
-                              .collection('ambulance')
-                              .doc(widget.ambulance['id'])
-                              .delete();
-                          await _deleteOldImageFromFirebase(
-                              widget.ambulance['image']);
-                          showSnackBar(context, 'Delete successfully');
-                          setState(() {});
-                        },
-                      ),
-                    )
-                  ],
-                  icon: const Icon(Icons.more_vert_rounded),
+                trailing: GestureDetector(
+                  onTapDown: (TapDownDetails details) async {
+                    await _showPopupMenu(details.globalPosition);
+                  },
+                  child: const Icon(Icons.more_vert_rounded),
                 ),
               ),
             ),
