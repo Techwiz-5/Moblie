@@ -16,7 +16,6 @@ class TripScreenState extends State<Tripscreen> {
   void initState() {
     Timer.periodic(new Duration(seconds: 10), (timer) {
       getCurrentLocation();
-      polylinesDraw();
     });
 
     super.initState();
@@ -27,9 +26,6 @@ class TripScreenState extends State<Tripscreen> {
   Set<Polyline> polylines = {};
   static LatLng sourceLocaion = LatLng(37.33500926, -122.03272188);
   static LatLng destination = LatLng(37.33429383, -122.06600055);
-//   LatLng location1 = const LatLng(28.612898, 77.365930);
-// LatLng location2 = const LatLng(28.5897989, 77.3368915);
-// LatLng location3 = const LatLng(28.6029172, 77.3195082);
 
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocation;
@@ -43,6 +39,7 @@ class TripScreenState extends State<Tripscreen> {
     location.onLocationChanged.listen((newLog) {
       currentLocation = newLog;
     });
+    polylinesDraw();
   }
 
   // void getPolylinepoints() async {
@@ -59,18 +56,17 @@ class TripScreenState extends State<Tripscreen> {
   // }
 
   polylinesDraw() async {
-    polylines.removeWhere((p) => p.polylineId == "draw" );
+    polylines.removeWhere((p) => p.polylineId == "draw");
     polylines.add(Polyline(
       polylineId: const PolylineId("draw"),
       visible: true,
       width: 5,
       points: [
-        sourceLocaion,
+        LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
         destination,
       ],
       color: Colors.red,
     ));
-
     setState(() {});
   }
 
