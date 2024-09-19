@@ -34,6 +34,9 @@ class TripScreenState extends State<Tripscreen> {
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocation;
   void getCurrentLocation() {
+    setState(() {
+      polylines.removeWhere((p) => p.polylineId == "currentLocation");
+    });
     Location location = Location();
     location.getLocation().then((location) {
       currentLocation = location;
@@ -42,7 +45,6 @@ class TripScreenState extends State<Tripscreen> {
 
     location.onLocationChanged.listen((newLog) {
       currentLocation = newLog;
-      setState(() {});
     });
   }
 
