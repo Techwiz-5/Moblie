@@ -22,7 +22,8 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
   File? _pickedImage;
-
+  final CollectionReference _hospitalsCollection =
+      FirebaseFirestore.instance.collection('hospital');
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('ambulance');
 
@@ -31,11 +32,27 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   String _longitude = '';
   String _plate_number = '';
   int _enable = 0;
+  String? _selectedHospital;
+  List<Map<String, dynamic>> _hospitals = [];
   // PlaceLocation? _selectedLocation;
 
   @override
   void initState() {
     super.initState();
+    _fetchHospitals();
+  }
+
+  void _fetchHospitals() async {
+    try {
+      QuerySnapshot querySnapshot = await _hospitalsCollection.get();
+      setState(() {
+        _hospitals = querySnapshot.docs.map((doc) {
+          return {'id': doc.id, 'name': doc['name']};
+        }).toList();
+      });
+    } catch (e) {
+      print('Error fetching hospitals: $e');
+    }
   }
 
   Future<void> pickImage() async {
@@ -58,9 +75,8 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   Future<void> _uploadImageToFirebase() async {
     if (_pickedImage != null) {
       try {
-        Reference reference = FirebaseStorage.instance
-            .ref()
-            .child("image/ambulance/${DateTime.now().microsecondsSinceEpoch}.png");
+        Reference reference = FirebaseStorage.instance.ref().child(
+            "image/ambulance/${DateTime.now().microsecondsSinceEpoch}.png");
         await reference.putFile(_pickedImage!).whenComplete(() {
           print('Upload image success');
         });
@@ -90,6 +106,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
         'longitude': _longitude,
         'plate_number': _plate_number,
         'enable': _enable,
+        'hospital': _selectedHospital,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
       await docRef.update({
@@ -226,30 +243,59 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  DropdownButtonFormField(
+                    isDense: true,
+                    hint: const Text('Hospital'),
+                    decoration: InputDecoration(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(20.0),
+                    items: _hospitals.map(
+                      (val) {
+                        return DropdownMenuItem<String>(
+                          value: val['name'].toString(),
+                          child: Text(val['name']),
+                        );
+                      },
+                    ).toList(),
+                    onChanged: (val) async {
+                      setState(
+                        () {
+                          _selectedHospital = val;
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
                   Container(
                     width: double.infinity,
                     height: 200,
                     decoration: BoxDecoration(
                       image: _pickedImage != null
                           ? DecorationImage(
-                        image: FileImage(_pickedImage!),
-                        fit: BoxFit.cover,
-                      )
+                              image: FileImage(_pickedImage!),
+                              fit: BoxFit.cover,
+                            )
                           : (imageUrl != null && imageUrl!.isNotEmpty
-                          ? DecorationImage(
-                        image: NetworkImage(imageUrl!),
-                        fit: BoxFit.cover,
-                      )
-                          : null),
+                              ? DecorationImage(
+                                  image: NetworkImage(imageUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null),
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.grey[200],
                     ),
                     child: imageUrl == null && _pickedImage == null
                         ? const Icon(
-                      Icons.image,
-                      size: 200,
-                      color: Colors.grey,
-                    )
+                            Icons.image,
+                            size: 200,
+                            color: Colors.grey,
+                          )
                         : null,
                   ),
                   const SizedBox(height: 16),

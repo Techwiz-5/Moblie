@@ -23,12 +23,16 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
   String? imageUrl;
   File? _pickedImage;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference _hospitalsCollection =
+      FirebaseFirestore.instance.collection('hospital');
 
   late String _type = '';
   late String _latitude;
   late String _longitude;
   late String _plate_number;
   late int _enable;
+  String? _selectedHospital;
+  List<Map<String, dynamic>> _hospitals = [];
 
   @override
   void initState() {
@@ -44,6 +48,7 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
           .get();
       if (docSnapshot.exists) {
         var ambulanceData = docSnapshot.data() as Map<String, dynamic>;
+        QuerySnapshot querySnapshot = await _hospitalsCollection.get();
         setState(() {
           _type = ambulanceData['type'];
           _latitude = ambulanceData['latitude'];
@@ -51,6 +56,10 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
           _plate_number = ambulanceData['plate_number'];
           _enable = ambulanceData['enable'];
           imageUrl = ambulanceData['image'];
+          _selectedHospital = ambulanceData['hospital'];
+          _hospitals = querySnapshot.docs.map((doc) {
+            return {'id': doc.id, 'name': doc['name']};
+          }).toList();
         });
       } else {
         print('No data found for this ambulance');
@@ -128,6 +137,7 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
         'longitude': _longitude,
         'plate_number': _plate_number,
         'enable': _enable,
+        'hospital': _selectedHospital,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
 
@@ -266,6 +276,36 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
                           },
                           onSaved: (value) {
                             _plate_number = value!;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField(
+                          isDense: true,
+                          value: _selectedHospital,
+                          hint: const Text('Hospital'),
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                          ),
+                          isExpanded: true,
+                          borderRadius: BorderRadius.circular(20.0),
+                          items: _hospitals.map(
+                            (val) {
+                              return DropdownMenuItem<String>(
+                                value: val['name'].toString(),
+                                child: Text(val['name']),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (val) async {
+                            setState(
+                              () {
+                                _selectedHospital = val;
+                              },
+                            );
                           },
                         ),
                         const SizedBox(height: 16),
