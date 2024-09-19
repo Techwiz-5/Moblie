@@ -14,17 +14,17 @@ class Tripscreen extends StatefulWidget {
 class TripScreenState extends State<Tripscreen> {
   @override
   void initState() {
-    Timer.periodic(new Duration(seconds: 10), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
       getCurrentLocation();
     });
-
+    getPolylinepoints();
     super.initState();
   }
 
   final Completer<GoogleMapController> _controller = Completer();
   Set<Polyline> polylines = {};
-  static LatLng sourceLocaion = LatLng(37.33500926, -122.03272188);
-  static LatLng destination = LatLng(37.33429383, -122.06600055);
+  static LatLng sourceLocaion = const LatLng(37.33500926, -122.03272188);
+  static LatLng destination = const LatLng(37.33429383, -122.06600055);
 
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocation;
@@ -48,18 +48,18 @@ class TripScreenState extends State<Tripscreen> {
     polylinesDraw();
   }
 
-  // void getPolylinepoints() async {
-  //   PolylinePoints polyLinePoints = PolylinePoints();
-  //   PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
-  //       "AIzaSyCKrEqluT4tRUv3YoQ8CGSBG1Zj-vtGJNU",
-  //       PointLatLng(37.33500926, -122.03272188),
-  //       PointLatLng(37.33429383, -122.06600055));
-  //   if (result.points.isNotEmpty) {
-  //     result.points.forEach((PointLatLng point) =>
-  //         polylineCoordinates.add(LatLng(point.latitude, point.longitude)));
-  //     setState(() {});
-  //   }
-  // }
+  void getPolylinepoints() async {
+    PolylinePoints polyLinePoints = PolylinePoints();
+    PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
+        "AIzaSyAd4rEAQqf58fCJGABqW99teDP9BcuyN08",
+        PointLatLng(sourceLocaion.latitude, sourceLocaion.longitude),
+        PointLatLng(destination.latitude, destination.longitude));
+    // if (result.points.isNotEmpty) {
+    result.points.forEach((PointLatLng point) =>
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude)));
+    setState(() {});
+    // }
+  }
 
   polylinesDraw() async {
     polylines.removeWhere((p) => p.polylineId == "draw");
@@ -68,7 +68,9 @@ class TripScreenState extends State<Tripscreen> {
       visible: true,
       width: 5,
       points: [
-        LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+        currentLocation != null
+            ? LatLng(currentLocation!.latitude!, currentLocation!.longitude!)
+            : sourceLocaion,
         destination,
       ],
       color: Colors.red,
@@ -84,15 +86,24 @@ class TripScreenState extends State<Tripscreen> {
               // hospital['name'],
               ),
         ),
-        body:
-            // currentLocation ==null? const Center(child: Text("bbb"),):
-            GoogleMap(
+        body: currentLocation == null
+            ? const Center(
+                child: Text("Loading..."),
+              )
+            : GoogleMap(
                 zoomGesturesEnabled: true,
                 initialCameraPosition: CameraPosition(
-                    target: LatLng(currentLocation!.latitude!,
-                        currentLocation!.longitude!),
+                    target: currentLocation != null
+                        ? LatLng(currentLocation!.latitude!,
+                            currentLocation!.longitude!)
+                        : sourceLocaion,
                     zoom: 13.5),
                 polylines: polylines,
+                // polylines: {
+                //   Polyline(
+                //       polylineId: PolylineId("draw"),
+                //       points: polylineCoordinates)
+                // },
                 mapType: MapType.normal,
                 onMapCreated: (mapController) {
 //method called when map is created
@@ -101,20 +112,23 @@ class TripScreenState extends State<Tripscreen> {
                   });
                 },
                 markers: {
-              currentLocation == null
-                  ? Marker(
-                      markerId: const MarkerId("sourceLocaion"),
-                      position: sourceLocaion)
-                  : Marker(
-                      markerId: const MarkerId("currentLocation"),
-                      position: LatLng(currentLocation!.latitude!,
-                          currentLocation!.longitude!)),
-              // Marker(
-              //     markerId: const MarkerId("sourceLocaion"),
-              //     position: sourceLocaion),
-              Marker(
-                  markerId: const MarkerId("destination"),
-                  position: destination)
-            }));
+                    currentLocation == null
+                        ? Marker(
+                            markerId: const MarkerId("sourceLocaion"),
+                            position: sourceLocaion
+                            // icon: Icons.location_history
+                            )
+                        : Marker(
+                            markerId: const MarkerId("currentLocation"),
+                            position: LatLng(currentLocation!.latitude!,
+                                currentLocation!.longitude!),
+                          ),
+                    // Marker(
+                    //     markerId: const MarkerId("sourceLocaion"),
+                    //     position: sourceLocaion),
+                    Marker(
+                        markerId: const MarkerId("destination"),
+                        position: destination)
+                  }));
   }
 }
