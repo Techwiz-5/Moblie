@@ -52,18 +52,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (context) => AdminScreen(userData: userData),
               ),
             );
+            break;
           case 'driver':
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => const HomeScreen(),
               ),
             );
+            break;
           case 'user':
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => const HomeScreen(),
               ),
             );
+            break;
           default:
             return;
         }
@@ -73,14 +76,19 @@ class _LoginScreenState extends State<LoginScreen> {
       switch(e.code){
         case 'network-request-failed':
           showSnackBar(context, 'No Internet Connection');
+          break;
         case 'wrong-password':
           showSnackBar(context, 'Please Enter correct password');
+          break;
         case 'user-not-found':
           showSnackBar(context, 'Email not found');
+          break;
         case 'too-many-requests':
           showSnackBar(context, 'Too many attempts please try later');
+          break;
         default:
           showSnackBar(context, 'Authentication failed');
+          return;
       }
     }
   }

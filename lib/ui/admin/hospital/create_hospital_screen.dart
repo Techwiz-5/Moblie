@@ -9,7 +9,7 @@ import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../widgets/location_input.dart';
+import '../../widgets/location_input.dart';
 
 class HospitalFormScreen extends StatefulWidget {
   const HospitalFormScreen({super.key});
@@ -23,8 +23,8 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
   File? _pickedImage;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final CollectionReference myItems = FirebaseFirestore.instance.collection('hospital');
+  final CollectionReference myItems =
+      FirebaseFirestore.instance.collection('hospital');
 
   String _name = '';
   String _description = '';
@@ -59,7 +59,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
       try {
         Reference reference = FirebaseStorage.instance
             .ref()
-            .child("image/${DateTime.now().microsecondsSinceEpoch}.png");
+            .child("image/hospital/${DateTime.now().microsecondsSinceEpoch}.png");
         await reference.putFile(_pickedImage!).whenComplete(() {
           print('Upload image success');
         });
@@ -72,25 +72,6 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
         );
       }
     }
-
-    // try {
-    //   String uid = FirebaseAuth.instance.currentUser!.uid;
-    //   await _firestore.collection('users').doc(uid).update({
-    //     'name': _nameController.text,
-    //     'email': _emailController.text,
-    //     'image': imageUrl ?? '',
-    //   });
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(content: Text('Profile updated successfully')),
-    //   );
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text(e.toString())),
-    //   );
-    // }
   }
 
   _createHospital() async {
@@ -99,21 +80,24 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
       return;
     }
     _formKeyCV.currentState!.save();
-    try{
-      dynamic result = myItems.add({
+    try {
+      await _uploadImageToFirebase();
+      DocumentReference docRef = await myItems.add({
         'name': _name,
         'description': _description,
         'address': _address,
         'phone': _phone,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
-      print(result);
+      await docRef.update({
+        'id': docRef.id,
+      });
+      // print(result);
       Navigator.pop(context, () {});
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -129,17 +113,16 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
               margin: const EdgeInsets.only(right: 16),
               child: ElevatedButton(
                 onPressed: () async {
-                  await _uploadImageToFirebase();
                   _createHospital();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
-                  shape:RoundedRectangleBorder(
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: const Text('Create CV'),
+                child: const Text('Create Hospital'),
               ),
             ),
           ],
@@ -151,8 +134,6 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
               key: _formKeyCV,
               child: Column(
                 children: [
-                  IconButton(onPressed: () => pickImage(), icon: Icon(Icons.camera_alt)),
-                  const SizedBox(height: 16),
                   TextFormField(
                     decoration: cvFormField('Name'),
                     autocorrect: true,
@@ -211,6 +192,53 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      image: _pickedImage != null
+                          ? DecorationImage(
+                        image: FileImage(_pickedImage!),
+                        fit: BoxFit.cover,
+                      )
+                          : (imageUrl != null && imageUrl!.isNotEmpty
+                          ? DecorationImage(
+                        image: NetworkImage(imageUrl!),
+                        fit: BoxFit.cover,
+                      )
+                          : null),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
+                    ),
+                    child: imageUrl == null && _pickedImage == null
+                        ? const Icon(
+                      Icons.image,
+                      size: 200,
+                      color: Colors.grey,
+                    )
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        pickImage();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: IconButton(
+                        onPressed: () => pickImage(),
+                        icon: Icon(Icons.camera_alt),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   LocationInput(onSelectLocation: (location) {
                     _selectedLocation = location;
                   })
@@ -221,7 +249,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
         ));
   }
 
-  InputDecoration cvFormField (String text){
+  InputDecoration cvFormField(String text) {
     return InputDecoration(
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
       label: Row(

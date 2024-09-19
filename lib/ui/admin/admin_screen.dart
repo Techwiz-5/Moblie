@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/ambulance_screen.dart';
-import 'package:techwiz_5/ui/admin/driver_screen.dart';
-import 'package:techwiz_5/ui/admin/hospital_screen.dart';
+import 'package:techwiz_5/ui/admin/driver/driver_screen.dart';
+import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key, required this.userData});

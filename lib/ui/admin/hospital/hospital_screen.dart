@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/authentication.dart';
-import 'package:techwiz_5/ui/admin/create_hospital_screen.dart';
+import 'package:techwiz_5/ui/admin/hospital/create_hospital_screen.dart';
 import 'package:techwiz_5/ui/login_screen.dart';
 import 'package:techwiz_5/ui/widgets/button.dart';
 import 'package:techwiz_5/ui/widgets/hospital_card.dart';

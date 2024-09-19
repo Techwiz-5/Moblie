@@ -1,14 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
-import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance.dart';
+import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
+import 'package:techwiz_5/ui/widgets/snackbar.dart';
+// import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance.dart';
 
-class AmbulanceCard extends StatelessWidget {
+class AmbulanceCard extends StatefulWidget {
   const AmbulanceCard({super.key, required this.ambulance});
   final dynamic ambulance;
 
   @override
+  State<AmbulanceCard> createState() => _AmbulanceCardState();
+}
+
+class _AmbulanceCardState extends State<AmbulanceCard> {
+  Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
+    try {
+      final Reference oldImgRef =
+      FirebaseStorage.instance.refFromURL(oldImageUrl);
+      await oldImgRef.delete();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+  @override
   Widget build(BuildContext context) {
-    // final ambulanceId = ambulance['id'];
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -56,7 +77,7 @@ class AmbulanceCard extends StatelessWidget {
               alignment: Alignment.bottomLeft,
               children: <Widget>[
                 Image.network(
-                  ambulance['image'],
+                  widget.ambulance['image'],
                   width: double.infinity,
                   height: 150,
                   fit: BoxFit.cover,
@@ -75,7 +96,7 @@ class AmbulanceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Plate Number : ${ambulance['plate_number']} ',
+                      'Plate Number : ${widget.ambulance['plate_number']} ',
                       style: const TextStyle(
                         height: 2,
                         color: Colors.red,
@@ -84,7 +105,7 @@ class AmbulanceCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Type : ${ambulance['type']} ',
+                      'Type : ${widget.ambulance['type']} ',
                       style: const TextStyle(
                         fontSize: 14,
                         height: 1.5,
@@ -92,7 +113,7 @@ class AmbulanceCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Enable : ${ambulance['enable'] == 0 ? 'Yes' : 'No'} ',
+                      'Enable : ${widget.ambulance['enable'] == 0 ? 'Yes' : 'No'} ',
                       style: const TextStyle(
                         height: 1.5,
                         fontSize: 14,
@@ -119,13 +140,14 @@ class AmbulanceCard extends StatelessWidget {
                         ),
                         onTap: () => {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      // const documentSnashot = ambulance['id'];
-                                      const AmbulanceEditFormScreen(
-                                          // ambulanceId: ambulanceId,
-                                          )))
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EditAmbulanceScreen(
+                                      ambulanceId: widget.ambulance['id'],
+                                      ),
+                            ),
+                          )
                         },
                       ),
                     ),
@@ -144,7 +166,14 @@ class AmbulanceCard extends StatelessWidget {
                             Icon(Icons.delete),
                           ],
                         ),
-                        onTap: () {},
+                        onTap: () async {
+                          await FirebaseFirestore.instance.collection('ambulance').doc(widget.ambulance['id']).delete();
+                          await _deleteOldImageFromFirebase(widget.ambulance['image']);
+                          showSnackBar(context, 'Delete successfully');
+                          setState(() {
+
+                          });
+                        },
                       ),
                     )
                   ],
