@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
+import 'package:techwiz_5/ui/widgets/ribbon.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 // import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance.dart';
 
@@ -58,7 +59,7 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
   Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
     try {
       final Reference oldImgRef =
-      FirebaseStorage.instance.refFromURL(oldImageUrl);
+          FirebaseStorage.instance.refFromURL(oldImageUrl);
       await oldImgRef.delete();
     } catch (e) {
       print(e.toString());
@@ -99,7 +100,7 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                 style: TextStyle(color: Colors.white),
               ),
               style:
-              ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             )
           ],
         );
@@ -146,23 +147,46 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-            child: Center(
-                child: Stack(
-              alignment: Alignment.bottomLeft,
-              children: <Widget>[
-                Image.network(
-                  widget.ambulance['image'],
-                  width: double.infinity,
-                  height: 150,
-                  fit: BoxFit.cover,
+          Stack(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
                 ),
-              ],
-            )),
+                child: Center(
+                  child: Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: <Widget>[
+                      Image.network(
+                        widget.ambulance['image'],
+                        width: double.infinity,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                child: ClipPath(
+                  clipper: ArcClipper(),
+                  child: Container(
+                    width: 200,
+                    height: 40.0,
+                    padding: const EdgeInsets.all(8.0),
+                    color: Colors.lightBlue,
+                    child: Text(
+                      '${widget.ambulance['hospital']}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(0.5),
