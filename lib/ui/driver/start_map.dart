@@ -152,6 +152,17 @@ class _StartMapScreen extends State<DriverStartMap> {
         },
         child: const Icon(Icons.my_location),
       ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: Row(children: <Widget>[
+          IconButton(
+            tooltip: 'Open navigation menu',
+            icon: const Icon(Icons.menu),
+            onPressed: () {},
+          ),
+        ]),
+      ),
+      // floatingActionButton: const FloatingActionButton(onPressed: null),
     );
   }
 }
