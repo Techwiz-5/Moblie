@@ -7,27 +7,33 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
-class DriverStartMap extends StatefulWidget {
-  const DriverStartMap({super.key});
+class DriverGoogleMapGoHospital extends StatefulWidget {
+  const DriverGoogleMapGoHospital({super.key});
 
   @override
-  State<DriverStartMap> createState() => _StartMapScreen();
+  State<DriverGoogleMapGoHospital> createState() => _GoogleMapScreen();
 }
 
-class _StartMapScreen extends State<DriverStartMap> {
+class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   final MapController mapController = MapController();
   LocationData? currentLocation;
-  List<LatLng> routePoints = [];
+  List<LatLng> routePointNotPass = [];
+  List<LatLng> routePointPassed = [];
   List<Marker> markers = [];
+  LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
+  LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
   final String orsApiKey =
       '5b3ce3597851110001cf62482754ebba865645388e677911173c5159'; // Replace with your OpenRouteService API key
 
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Duration(seconds: 10), (timer) {
+
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      markers = [];
+
+      _addMarker();
       _getCurrentLocation();
-      _addDestinationMarker(LatLng(37.41948907876784, -122.07982363292577));
     });
   }
 
@@ -59,7 +65,7 @@ class _StartMapScreen extends State<DriverStartMap> {
     });
   }
 
-  Future<void> _getRoute(LatLng destination) async {
+  Future<void> _getRouteNotPassed(LatLng destination) async {
     if (currentLocation == null) return;
 
     final start =
@@ -74,7 +80,7 @@ class _StartMapScreen extends State<DriverStartMap> {
       final List<dynamic> coords =
           data['features'][0]['geometry']['coordinates'];
       setState(() {
-        routePoints =
+        routePointNotPass =
             coords.map((coord) => LatLng(coord[1], coord[0])).toList();
         markers.add(
           Marker(
@@ -85,31 +91,68 @@ class _StartMapScreen extends State<DriverStartMap> {
           ),
         );
       });
-    } else {
-      // Handle errors
-      print('Failed to fetch route');
-    }
+    } else {}
   }
 
-  void _addDestinationMarker(LatLng point) {
+  Future<void> _getRoutePassed(LatLng startPoint) async {
+    if (currentLocation == null) return;
+
+    final start =
+        LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
+    final response = await http.get(
+      Uri.parse(
+          'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${startPoint.longitude},${startPoint.latitude}&end=${start.longitude},${start.latitude}'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<dynamic> coords =
+          data['features'][0]['geometry']['coordinates'];
+      setState(() {
+        routePointPassed =
+            coords.map((coord) => LatLng(coord[1], coord[0])).toList();
+        markers.add(
+          Marker(
+            width: 80.0,
+            height: 80.0,
+            point: startPoint,
+            child: const Icon(Icons.location_on,
+                color: Color.fromARGB(255, 9, 4, 3), size: 40.0),
+          ),
+        );
+      });
+    } else {}
+  }
+
+  void _addMarker() {
     setState(() {
       markers.add(
         Marker(
           width: 80.0,
           height: 80.0,
-          point: point,
-          child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
+          point: startPoint,
+          child: const Icon(Icons.location_on,
+              color: Color.fromARGB(255, 9, 4, 3), size: 40.0),
+        ),
+      );
+      markers.add(
+        Marker(
+          width: 80.0,
+          height: 80.0,
+          point: endPoint,
+          child: const Icon(Icons.local_hospital_outlined, color: Colors.red, size: 40.0),
         ),
       );
     });
-    _getRoute(point);
+    _getRouteNotPassed(const LatLng(37.41948907876784, -122.07982363292577));
+    _getRoutePassed(const LatLng(37.42138907886784, -122.08582363492577));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Address and inf user '),
+        title: const Text('go hospital '),
       ),
       body: currentLocation == null
           ? const Center(child: CircularProgressIndicator())
@@ -119,6 +162,7 @@ class _StartMapScreen extends State<DriverStartMap> {
                 initialCenter: LatLng(
                     currentLocation!.latitude!, currentLocation!.longitude!),
                 initialZoom: 15.0,
+
                 // onTap: (tapPosition, point) => _addDestinationMarker(point),
               ),
               children: [
@@ -133,9 +177,14 @@ class _StartMapScreen extends State<DriverStartMap> {
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: routePoints,
+                      points: routePointNotPass,
                       strokeWidth: 4.0,
                       color: Colors.blue,
+                    ),
+                    Polyline(
+                      points: routePointPassed,
+                      strokeWidth: 4.0,
+                      color: const Color.fromARGB(255, 81, 83, 84),
                     ),
                   ],
                 ),
@@ -156,8 +205,28 @@ class _StartMapScreen extends State<DriverStartMap> {
         color: Colors.white,
         child: Row(children: <Widget>[
           IconButton(
-            tooltip: 'Open navigation menu',
-            icon: const Icon(Icons.menu),
+            tooltip: '-',
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {},
+          ),
+          // But(
+          //   tooltip: 'Open navigation menu',
+          //   icon: const Icon(Icons.menu),
+          //   onPressed: () {},
+          // ),
+          IconButton(
+            tooltip: 'Back',
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {},
+          ),
+          IconButton(
+            tooltip: 'Call',
+            icon: const Icon(Icons.call),
+            onPressed: () {},
+          ),
+          IconButton(
+            tooltip: '+',
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {},
           ),
         ]),
