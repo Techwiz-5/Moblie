@@ -9,6 +9,7 @@ import 'package:techwiz_5/data/google_auth.dart';
 import 'package:techwiz_5/ui/login_screen.dart';
 import 'package:techwiz_5/ui/user/profile/edit_profile_screen.dart';
 import 'package:techwiz_5/ui/widgets/button.dart';
+import 'package:techwiz_5/ui/widgets/snackbar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String? imageUrl;
+  late String imageUrl;
   late String _name;
   late String _email = '';
   late String _phone;
@@ -33,10 +34,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void getUserData() async {
     try {
-      DocumentSnapshot docSnapshot = await _firestore
-          .collection('account')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get();
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      DocumentSnapshot docSnapshot;
+
+      docSnapshot = await _firestore.collection('account').doc(uid).get();
+
+      if (!docSnapshot.exists) {
+        docSnapshot = await _firestore.collection('driver').doc(uid).get();
+      }
+
       if (docSnapshot.exists) {
         var userData = docSnapshot.data() as Map<String, dynamic>;
         setState(() {
@@ -47,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           imageUrl = userData['image'];
         });
       } else {
-        print('No data found for this user');
+        showSnackBar(context, 'User does not exist in both collections');
       }
     } catch (e) {
       print('Error fetching user data: $e');
@@ -149,8 +155,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               radius: 48,
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
-                                backgroundImage: NetworkImage(imageUrl ??
-                                    'https://via.placeholder.com/150'),
+                                backgroundImage: NetworkImage(imageUrl.isEmpty || imageUrl == null
+                                    ? 'https://via.placeholder.com/150'
+                                    : imageUrl),
                                 radius: 44,
                               )),
                         ),

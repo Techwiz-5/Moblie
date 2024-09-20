@@ -50,6 +50,7 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   http:
+  flutter_phone_direct_caller: ^2.1.1
 
 
 

@@ -1,6 +1,7 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:location/location.dart';
 
 class BookingCardScreen extends StatefulWidget {
@@ -199,10 +200,23 @@ class _BookingCardScreenState extends State<BookingCardScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
-                    child: Text("Booking"),
+                    onPressed: () => FlutterPhoneDirectCaller.callNumber(
+                        widget.hospital['phone']),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Call now ",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.call,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[100],
+                      backgroundColor: Colors.red,
                     ),
                   ),
                 ),

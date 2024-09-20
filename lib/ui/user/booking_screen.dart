@@ -24,7 +24,6 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   void _getCurrentLocation() async {
-
     Location location = Location();
 
     bool serviceEnabled;
@@ -55,12 +54,13 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    setState(() {
-      latitude = lat;
-      longitude = lng;
-      isLoading = false;
-    });
-
+    if (mounted) {
+      setState(() {
+        latitude = lat;
+        longitude = lng;
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -105,18 +105,6 @@ class _BookingScreenState extends State<BookingScreen> {
                   }
                   outputData.sort((a,b)=>a['distance'].compareTo(b['distance']));
                   outputData.reversed;
-
-                  // String distanceKm(double lat, double lng){
-                  //   if(widget.hospital['latitude'] == null || widget.hospital['longitude'] == null) return '';
-                  //   double distance = 0.0;
-                  //   distance = FlutterMapMath().distanceBetween(
-                  //       lat,
-                  //       lng,
-                  //       double.parse(widget.hospital['latitude']),
-                  //       double.parse(widget.hospital['longitude']),
-                  //       'kilometers');
-                  //   return '${distance.toStringAsFixed(2)} kilometers';
-                  // }
 
                   return ListView.builder(
                     itemCount: outputData.length,

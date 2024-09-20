@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
@@ -21,13 +24,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('booking');
   final _formKeyAmbulance = GlobalKey<FormState>();
-  String _name = '';
+  String _namePatient = '';
   String _address = '';
   String _zipCode = '';
   String _phoneNumber = '';
   int _ambulanceType = 0;
   String? _selectedHospital;
   List<Map<String, dynamic>> _hospitals = [];
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -56,19 +60,53 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     _formKeyAmbulance.currentState!.save();
     try {
       DocumentReference docRef = await myItems.add({
-        'name': _name,
+        'name_patient': _namePatient,
         'address': _address,
-        'zipCode': _zipCode,
-        'phoneNumber': _phoneNumber,
-        'ambulanceType': _ambulanceType,
-        'selectedHospital': _selectedHospital,
+        'zip_code': _zipCode,
+        'phone_number': _phoneNumber,
+        'ambulance_id': '',
+        'ambulance_type': _ambulanceType,
+        'hospital_id': _selectedHospital,
+        'status': 0,
+        'user_id': FirebaseAuth.instance.currentUser!.uid,
+        'urgent': 0,
+        'create_at': DateTime.now(),
+        'booking_time': selectedDate,
+        'driver_id': '',
       });
       await docRef.update({
         'id': docRef.id,
       });
+      await sendNotificationToDrivers(docRef.id);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
+  }
+
+  Future<void> sendNotificationToDrivers(String bookingId) async {
+    await FirebaseMessaging.instance.subscribeToTopic('allDrivers');
+
+    await FirebaseMessaging.instance.sendMessage(
+      to: '/topics/allDrivers',
+      data: {
+        'title': 'New Ride Request',
+        'body': 'A user has requested a ride.',
+        'bookingId': bookingId,
+      },
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
   }
 
   @override
@@ -104,7 +142,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    _name = value!;
+                    _namePatient = value!;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -195,7 +233,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   items: _hospitals.map(
                     (val) {
                       return DropdownMenuItem<String>(
-                        value: val['name'].toString(),
+                        value: val['id'].toString(),
                         child: Text(val['name']),
                       );
                     },
@@ -208,6 +246,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     );
                   },
                 ),
+                SizedBox(height: 20.0),
+                GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(color: Colors.black)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDate == null
+                              ? 'Select date'
+                              : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
+                        ),
+                        const Icon(Icons.calendar_month_outlined)
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
@@ -215,7 +274,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     onPressed: () async {
                       await _createBooking();
                       Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomeScreen()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

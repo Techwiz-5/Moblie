@@ -22,8 +22,8 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
   File? _pickedImage;
-  final CollectionReference _hospitalsCollection =
-      FirebaseFirestore.instance.collection('hospital');
+  final CollectionReference _driversCollection =
+      FirebaseFirestore.instance.collection('driver');
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('ambulance');
 
@@ -33,21 +33,21 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   String _plate_number = '';
   int _enable = 0;
   String? _selectedHospital;
-  List<Map<String, dynamic>> _hospitals = [];
+  List<Map<String, dynamic>> _drivers = [];
   // PlaceLocation? _selectedLocation;
 
   @override
   void initState() {
     super.initState();
-    _fetchHospitals();
+    _fetchDrivers();
   }
 
-  void _fetchHospitals() async {
+  void _fetchDrivers() async {
     try {
-      QuerySnapshot querySnapshot = await _hospitalsCollection.get();
+      QuerySnapshot querySnapshot = await _driversCollection.get();
       setState(() {
-        _hospitals = querySnapshot.docs.map((doc) {
-          return {'id': doc.id, 'name': doc['name']};
+        _drivers = querySnapshot.docs.map((doc) {
+          return {'id': doc['uid'], 'name': doc['name']};
         }).toList();
       });
     } catch (e) {
@@ -106,7 +106,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
         'longitude': _longitude,
         'plate_number': _plate_number,
         'enable': _enable,
-        'hospital': _selectedHospital,
+        'driver_id': _selectedHospital,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
       await docRef.update({
@@ -234,7 +234,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                     hint: const Text('Type'),
                     decoration: InputDecoration(
                       contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12),
+                          const EdgeInsets.symmetric(horizontal: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50.0),
                       ),
@@ -253,8 +253,8 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                     ],
                     onChanged: (val) async {
                       setState(
-                            () {
-                          _selectedHospital = val;
+                        () {
+                          _type = val!;
                         },
                       );
                     },
@@ -262,7 +262,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField(
                     isDense: true,
-                    hint: const Text('Hospital'),
+                    hint: const Text('Driver'),
                     decoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
@@ -272,10 +272,10 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                     ),
                     isExpanded: true,
                     borderRadius: BorderRadius.circular(20.0),
-                    items: _hospitals.map(
+                    items: _drivers.map(
                       (val) {
                         return DropdownMenuItem<String>(
-                          value: val['name'].toString(),
+                          value: val['id'].toString(),
                           child: Text(val['name']),
                         );
                       },

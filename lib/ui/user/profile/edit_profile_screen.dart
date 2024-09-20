@@ -126,7 +126,7 @@ class _EditProfileScreen extends State<EditProfileScreen> {
         'email': _email,
         'address': _address,
         'phone': _phone,
-        'image': imageUrl ?? 'https://i.pravatar.cc/150',
+        'image': imageUrl,
       });
       Navigator.pop(context, true);
     } on FirebaseException catch (e) {

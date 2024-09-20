@@ -100,7 +100,7 @@ class _AccountManagerScreenState extends State<AccountManagerScreen>
                               BorderRadius.circular(40), // Creates border
                           color: Colors.white),
                       isScrollable: true,
-                      overlayColor: WidgetStateProperty.all(Colors.transparent),
+                      // overlayColor: WidgetStateProperty.all(Colors.transparent),
                       dividerColor: Colors.blue,
                       dividerHeight: 8,
                       padding: const EdgeInsets.symmetric(horizontal: 8),

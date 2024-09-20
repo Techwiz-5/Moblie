@@ -6,14 +6,14 @@ import 'package:techwiz_5/ui/widgets/button.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:techwiz_5/ui/widgets/text_field.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class SignUpDriverScreen extends StatefulWidget {
+  const SignUpDriverScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<SignUpDriverScreen> createState() => _SignUpDriverScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpDriverScreenState extends State<SignUpDriverScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -21,8 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController addressController = TextEditingController();
   bool isLoading = false;
 
-  void signUpUser() async {
-    String res = await AuthServices().signUpUser(
+  void signUpDriver() async {
+    String res = await AuthServices().signUpDriver(
       name: nameController.text,
       email: emailController.text,
       password: passwordController.text,
@@ -101,7 +101,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 icon: Icons.lock,
                 textInputType: TextInputType.text,
               ),
-              MyButtons(onTap: signUpUser, text: 'Sign Up'),
+              MyButtons(onTap: signUpDriver, text: 'Sign Up'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
