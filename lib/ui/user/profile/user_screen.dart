@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:techwiz_5/data/authentication.dart';
 import 'package:techwiz_5/data/google_auth.dart';
 import 'package:techwiz_5/ui/login_screen.dart';
+import 'package:techwiz_5/ui/user/booking_history.dart';
 import 'package:techwiz_5/ui/user/profile/edit_profile_screen.dart';
 import 'package:techwiz_5/ui/widgets/button.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
@@ -155,9 +156,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               radius: 48,
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
-                                backgroundImage: NetworkImage(imageUrl.isEmpty || imageUrl == null
-                                    ? 'https://via.placeholder.com/150'
-                                    : imageUrl),
+                                backgroundImage: NetworkImage(
+                                    imageUrl.isEmpty || imageUrl == null
+                                        ? 'https://via.placeholder.com/150'
+                                        : imageUrl),
                                 radius: 44,
                               )),
                         ),
@@ -220,6 +222,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const BookingHistoryScreen(),
+                            ),
+                          ),
+                          child: Text("Booking History"),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -227,174 +242,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-        // const SizedBox(height: 16),
-        // Container(
-        //   width: double.infinity,
-        //   margin: const EdgeInsets.symmetric(horizontal: 10),
-        //   child: Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-        //       const Text(
-        //         'CONTACT',
-        //         style: TextStyle(fontWeight: FontWeight.bold),
-        //       ),
-        //       Card(
-        //         elevation: 0,
-        //         color: Colors.white,
-        //         margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-        //         child: Padding(
-        //           padding: const EdgeInsets.all(8.0),
-        //           child: Column(
-        //             children: [
-        //               SizedBox(
-        //                 width: double.infinity,
-        //                 child: ElevatedButton.icon(
-        //                   style: ElevatedButton.styleFrom(
-        //                     surfaceTintColor: Colors.white,
-        //                     backgroundColor: Colors.white,
-        //                     alignment: Alignment.centerLeft,
-        //                     foregroundColor: Colors.black54,
-        //                   ),
-        //                   icon: Image.asset('assets/images/zalo.png',
-        //                       height: 22, color: Colors.black54),
-        //                   label: const Text('Zalo'),
-        //                   onPressed: () async {
-        //                     try {
-        //                       await launchUrl(
-        //                         Uri.parse('http://zalo.me/09012345678'),
-        //                       );
-        //                     } catch (e) {
-        //                       throw 'Could not launch url';
-        //                     }
-        //                   },
-        //                 ),
-        //               ),
-        //               SizedBox(
-        //                 width: double.infinity,
-        //                 child: ElevatedButton.icon(
-        //                   style: ElevatedButton.styleFrom(
-        //                     surfaceTintColor: Colors.white,
-        //                     backgroundColor: Colors.white,
-        //                     alignment: Alignment.centerLeft,
-        //                     foregroundColor: Colors.black54,
-        //                   ),
-        //                   icon: Image.asset(
-        //                     'assets/images/facebook_icon.png',
-        //                     height: 22,
-        //                     color: Colors.black54,
-        //                   ),
-        //                   label: const Text('PHTV Fanpage'),
-        //                   onPressed: () async {
-        //                     try {
-        //                       await launchUrl(
-        //                         Uri.parse('https://www.facebook.com/phtvpro'),
-        //                       );
-        //                     } catch (e) {
-        //                       throw 'Could not launch url';
-        //                     }
-        //                   },
-        //                 ),
-        //               ),
-        //               SizedBox(
-        //                 width: double.infinity,
-        //                 child: ElevatedButton.icon(
-        //                   style: ElevatedButton.styleFrom(
-        //                     surfaceTintColor: Colors.white,
-        //                     backgroundColor: Colors.white,
-        //                     alignment: Alignment.centerLeft,
-        //                     foregroundColor: Colors.black54,
-        //                   ),
-        //                   icon: const Icon(EneftyIcons.call_outline),
-        //                   label: const Text('Hotline'),
-        //                   onPressed: () async {
-        //                     final Uri launchUri = Uri(
-        //                       scheme: 'tel',
-        //                       path: '09012345678',
-        //                     );
-        //                     await launchUrl(launchUri);
-        //                   },
-        //                 ),
-        //               ),
-        //               SizedBox(
-        //                 width: double.infinity,
-        //                 child: ElevatedButton.icon(
-        //                   style: ElevatedButton.styleFrom(
-        //                     surfaceTintColor: Colors.white,
-        //                     backgroundColor: Colors.white,
-        //                     alignment: Alignment.centerLeft,
-        //                     foregroundColor: Colors.black54,
-        //                   ),
-        //                   icon: const Icon(Icons.mail_outline),
-        //                   label: const Text('Email'),
-        //                   onPressed: () async {
-        //                     String? encodeQueryParameters(
-        //                         Map<String, String> params) {
-        //                       return params.entries
-        //                           .map((MapEntry<String, String> e) =>
-        //                       '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-        //                           .join('&');
-        //                     }
-        //                     final Uri launchUri = Uri(
-        //                       scheme: 'mailto',
-        //                       path: 'phtvpro@gmail.com',
-        //                       query: encodeQueryParameters(<String, String>{
-        //                         'subject': 'Hello PHTV Pro, I have question',
-        //                       }),
-        //                     );
-        //                     await launchUrl(launchUri);
-        //                   },
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        // TextButton(
-        //   style: TextButton.styleFrom(
-        //     foregroundColor: Colors.red,
-        //   ),
-        //   onPressed: () {
-        //     showDialog(
-        //       context: context,
-        //       builder: (context) {
-        //         return AlertDialog(
-        //           title: const Text('You are signing out?'),
-        //           content: const SingleChildScrollView(
-        //             child: ListBody(
-        //               children: <Widget>[
-        //                 Text('You are about to sign out our app'),
-        //                 Text('Would you please confirm?'),
-        //               ],
-        //             ),
-        //           ),
-        //           backgroundColor: Colors.white,
-        //           elevation: 0,
-        //           actions: <Widget>[
-        //             TextButton(
-        //               child: const Text('Cancel'),
-        //               onPressed: () {
-        //                 Navigator.of(context).pop();
-        //               },
-        //             ),
-        //             ElevatedButton(
-        //               child: const Text('Signout'),
-        //               onPressed: () {
-        //                 deleteAuthAll();
-        //                 Navigator.of(context).pop();
-        //               },
-        //             ),
-        //
-        //           ],
-        //         );
-        //       },
-        //     );
-        //   },
-        //   child: isLoggedIn ? const Text('Sign out') : const SizedBox.shrink(),
-        // ),
-        // const SizedBox(height: 20),
       ],
     );
   }

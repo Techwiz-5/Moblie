@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class HospitalDetailScreen extends StatelessWidget {
   const HospitalDetailScreen({super.key, required this.hospital});
   final dynamic hospital;
-
 
   String get locationImage {
     final lat = hospital['latitude'];
@@ -23,24 +23,52 @@ class HospitalDetailScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          GoogleMap(
-            // onTap: ,
-            initialCameraPosition: CameraPosition(
-              target: LatLng(
+          // GoogleMap(
+          //   initialCameraPosition: CameraPosition(
+          //     target: LatLng(
+          //       double.parse(hospital['latitude']),
+          //       double.parse(hospital['longitude']),
+          //     ),
+          //     zoom: 16,
+          //   ),
+          //   markers: {
+          //     Marker(
+          //       markerId: const MarkerId('m1'),
+          //       position: _pickedLocation ?? LatLng(
+          //         double.parse(hospital['latitude']),
+          //         double.parse(hospital['longitude']),
+          //       ),
+          //     )
+          //   },
+          // ),
+          FlutterMap(
+            options: MapOptions(
+              initialCenter: LatLng(
                 double.parse(hospital['latitude']),
                 double.parse(hospital['longitude']),
               ),
-              zoom: 16,
+              initialZoom: 17.0,
             ),
-            markers: {
-              Marker(
-                markerId: const MarkerId('m1'),
-                position: _pickedLocation ?? LatLng(
-                  double.parse(hospital['latitude']),
-                  double.parse(hospital['longitude']),
-                ),
-              )
-            },
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.app',
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: LatLng(
+                      double.parse(hospital['latitude']),
+                      double.parse(hospital['longitude']),
+                    ),
+                    child: const Icon(Icons.location_on,
+                        color: Colors.red, size: 40.0),
+                  ),
+                ],
+              ),
+            ],
           ),
           Positioned(
             bottom: 0,
@@ -58,7 +86,7 @@ class HospitalDetailScreen extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [

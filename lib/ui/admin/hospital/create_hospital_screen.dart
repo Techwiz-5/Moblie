@@ -31,8 +31,6 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   String _description = '';
   String _address = '';
   String _phone = '';
-  String _latitude = '0';
-  String _longitude = '0';
   LatLng? _selectedLocation;
 
   @override
@@ -90,8 +88,8 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
         'description': _description,
         'address': _address,
         'phone': _phone,
-        'latitude': _latitude,
-        'longitude': _longitude,
+        'latitude': _selectedLocation!.latitude.toString(),
+        'longitude': _selectedLocation!.longitude.toString(),
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
       await docRef.update({

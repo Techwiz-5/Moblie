@@ -34,17 +34,15 @@ class _LocationInputState extends State<LocationInput> {
     }
     final lat = _pickedLocation!.latitude;
     final lng = _pickedLocation!.longitude;
-    print(lat);
-    print(lng);
 
     return 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${lng},${lat}';
   }
 
   Future<void> _savePlace(double latitude, double longitude) async {
     final url = Uri.parse(
-        'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${longitude},${latitude}');
+        'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=$longitude,$latitude');
     final response = await http.get(url);
-
+    print(json.decode(response.body));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
 
@@ -90,6 +88,7 @@ class _LocationInputState extends State<LocationInput> {
       }
     }
 
+
     if (mounted) {
       setState(() {
         _isGettingLocation = true;
@@ -105,12 +104,15 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    _savePlace(lat, lng);
+    // _savePlace(lat, lng);
 
     if (mounted) {
+
       setState(() {
         _pickedLocation = LatLng(lat, lng);
       });
+      widget.onSelectLocation(_pickedLocation!);
+      // print(_pickedLocation);
     }
   }
 

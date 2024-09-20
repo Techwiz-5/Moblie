@@ -7,8 +7,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
+import 'package:techwiz_5/ui/widgets/hospital_card.dart';
+import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 
 class AppointmentScreen extends StatefulWidget {
@@ -32,6 +35,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   String? _selectedHospital;
   List<Map<String, dynamic>> _hospitals = [];
   DateTime? selectedDate;
+  LatLng? _selectedLocation;
+  String selectHospitalId = '';
 
   @override
   void initState() {
@@ -44,7 +49,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       QuerySnapshot querySnapshot = await _hospitalsCollection.get();
       setState(() {
         _hospitals = querySnapshot.docs.map((doc) {
-          return {'id': doc.id, 'name': doc['name']};
+          return {'id': doc.id, 'name': doc['name'], 'image': doc['image'], 'address': doc['address']};
         }).toList();
       });
     } catch (e) {
@@ -66,18 +71,20 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'phone_number': _phoneNumber,
         'ambulance_id': '',
         'ambulance_type': _ambulanceType,
-        'hospital_id': _selectedHospital,
+        'hospital_id': selectHospitalId,
         'status': 0,
         'user_id': FirebaseAuth.instance.currentUser!.uid,
         'urgent': 0,
         'create_at': DateTime.now(),
         'booking_time': selectedDate,
         'driver_id': '',
+        'latitude': _selectedLocation!.latitude,
+        'longitude': _selectedLocation!.longitude,
       });
       await docRef.update({
         'id': docRef.id,
       });
-      await sendNotificationToDrivers(docRef.id);
+      // await sendNotificationToDrivers(docRef.id);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
@@ -219,32 +226,126 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField(
-                  isDense: true,
-                  hint: const Text('Hospital'),
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50.0),
-                    ),
-                  ),
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(20.0),
-                  items: _hospitals.map(
-                    (val) {
-                      return DropdownMenuItem<String>(
-                        value: val['id'].toString(),
-                        child: Text(val['name']),
-                      );
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          builder: (BuildContext context) {
+                            return StatefulBuilder(
+                              builder: (BuildContext context, setState) =>
+                                  Container(
+                                      width: double.infinity,
+                                      height: MediaQuery.of(context).size.height *
+                                          0.85,
+                                      color: Colors.white,
+                                      child: Stack(
+                                        children: [
+                                          Positioned.fill(
+                                              top: 0,
+                                              child: Container(
+                                                padding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 16),
+                                                child: const Text(
+                                                  'Please choose one Hospital to book',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                      FontWeight.bold),
+                                                ),
+                                              )),
+                                          Positioned(
+                                              child: _hospitals.isEmpty
+                                                  ? Container(
+                                                  height: 110,
+                                                  alignment: Alignment.center,
+                                                  child: const Text(
+                                                      'You still not create any CV'))
+                                                  : Container(
+                                                margin:
+                                                const EdgeInsets.only(
+                                                    top: 50),
+                                                // padding: const EdgeInsets.all(8),
+                                                height: 700,
+                                                child:
+                                                SingleChildScrollView(
+                                                  child: Column(
+                                                    children: [
+                                                      ListView.builder(
+                                                        physics:
+                                                        const ClampingScrollPhysics(),
+                                                        shrinkWrap: true,
+                                                        scrollDirection:
+                                                        Axis.vertical,
+                                                        itemCount:
+                                                        _hospitals
+                                                            .length,
+                                                        itemBuilder: (BuildContext
+                                                        context,
+                                                            int index) =>
+                                                            RadioListTile(
+                                                              title: HospitalCard(hospital: _hospitals[index],),
+                                                              value: _hospitals[
+                                                              index]
+                                                              ['id']
+                                                                  .toString(),
+                                                              groupValue:
+                                                              selectHospitalId,
+                                                              onChanged:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  selectHospitalId =
+                                                                  value!;
+                                                                });
+                                                              },
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )),
+                                          Positioned.fill(
+                                              bottom: 10,
+                                              child: Align(
+                                                alignment: Alignment.bottomCenter,
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: SizedBox(
+                                                          child: ElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                            },
+                                                            child: const Text(
+                                                                'Select'),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ))
+                                        ],
+                                      )),
+                            );
+                          });
                     },
-                  ).toList(),
-                  onChanged: (val) async {
-                    setState(
-                      () {
-                        _selectedHospital = val;
-                      },
-                    );
-                  },
+                    child: const Text('Select Hospital'),
+                  ),
                 ),
                 SizedBox(height: 20.0),
                 GestureDetector(
@@ -268,6 +369,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                LocationInput(onSelectLocation: (location) {
+                  setState(() {
+                    _selectedLocation = location;
+                  });
+                }),
+                const SizedBox(height: 16),
+
                 Container(
                   width: double.infinity,
                   child: ElevatedButton(

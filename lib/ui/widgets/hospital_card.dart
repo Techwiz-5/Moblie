@@ -178,9 +178,9 @@ class _HospitalCardState extends State<HospitalCard> {
               alignment: Alignment.bottomLeft,
               children: <Widget>[
                 Image.network(
-                  widget.hospital['image'],
+                  widget.hospital['image'] ?? '',
                   width: double.infinity,
-                  height: 205,
+                  height: 150,
                   fit: BoxFit.cover,
                 ),
               ],
@@ -197,7 +197,7 @@ class _HospitalCardState extends State<HospitalCard> {
                     SizedBox(
                       height: 40,
                       child: Text(
-                        widget.hospital['name'],
+                        widget.hospital['name'] ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
@@ -218,10 +218,18 @@ class _HospitalCardState extends State<HospitalCard> {
                   ],
                 ),
                 Text(
-                  widget.hospital['description'],
+                  widget.hospital['description'] ?? '',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.hospital['address'] ?? '',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
