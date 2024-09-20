@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
+import 'package:techwiz_5/ui/driver/driver_google_map_go_hospital.dart';
 
 class DriverGoogleMapPickupPoint extends StatefulWidget {
-  const DriverGoogleMapPickupPoint({super.key});
-
+  const DriverGoogleMapPickupPoint({super.key, required this.bookingId});
+  final String bookingId;
   @override
   State<DriverGoogleMapPickupPoint> createState() => _GoogleMapScreen();
 }
@@ -22,8 +24,34 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   final String orsApiKey =
       '5b3ce3597851110001cf62482754ebba865645388e677911173c5159'; // Replace with your OpenRouteService API key
 
+  void getData() async {
+    try {
+      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+          .collection('booking')
+          .doc(widget.bookingId)
+          .get();
+      if (docSnapshot.exists) {
+        var bookingData = docSnapshot.data() as Map<String, dynamic>;
+
+        setState(() {
+          bookerLocation = LatLng(double.parse(bookingData['latitude']),
+              double.parse(bookingData["longitude"]));
+
+          hospitalId = bookingData["hospital_id"];
+        });
+      } else {
+        print('No data found for this booking');
+      }
+    } catch (e) {
+      print('Error fetching booking data: $e');
+    }
+  }
+
+  String hospitalId = "";
+  LatLng bookerLocation = LatLng(0, 0);
   @override
   void initState() {
+    getData();
     super.initState();
     Timer.periodic(Duration(seconds: 10), (timer) {
       _getCurrentLocation();
@@ -66,7 +94,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
         LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
     final response = await http.get(
       Uri.parse(
-          'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${start.longitude},${start.latitude}&end=${destination.longitude},${destination.latitude}'),
+          'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${start.longitude},${start.latitude}&end=${bookerLocation.longitude},${bookerLocation.latitude}'),
     );
 
     if (response.statusCode == 200) {
@@ -80,7 +108,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           Marker(
             width: 80.0,
             height: 80.0,
-            point: destination,
+            point: bookerLocation,
             child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
           ),
         );
@@ -93,14 +121,14 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
 
   void _addDestinationMarker(LatLng point) {
     setState(() {
-      markers.add(
-        Marker(
-          width: 80.0,
-          height: 80.0,
-          point: point,
-          child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
-        ),
-      );
+      // markers.add(
+      //   Marker(
+      //     width: 80.0,
+      //     height: 80.0,
+      //     point: point,
+      //     child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
+      //   ),
+      // );
     });
     _getRoute(point);
   }
@@ -177,7 +205,17 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           IconButton(
             tooltip: 'Call',
             icon: const Icon(Icons.call),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DriverGoogleMapGoHospital(
+                          hospitalId: hospitalId,
+                          bookerLocaitonLat: bookerLocation.latitude,
+                          bookerLocaitonLong: bookerLocation.longitude,
+                        )),
+              );
+            },
           ),
         ]),
       ),

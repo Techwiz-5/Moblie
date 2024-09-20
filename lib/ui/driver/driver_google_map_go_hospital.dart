@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -8,7 +10,14 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
 class DriverGoogleMapGoHospital extends StatefulWidget {
-  const DriverGoogleMapGoHospital({super.key});
+  const DriverGoogleMapGoHospital(
+      {super.key,
+      required this.hospitalId,
+      required this.bookerLocaitonLat,
+      required this.bookerLocaitonLong});
+  final String hospitalId;
+  final double bookerLocaitonLat;
+  final double bookerLocaitonLong;
 
   @override
   State<DriverGoogleMapGoHospital> createState() => _GoogleMapScreen();
@@ -25,11 +34,36 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
   final String orsApiKey =
       '5b3ce3597851110001cf62482754ebba865645388e677911173c5159'; // Replace with your OpenRouteService API key
+  void getData() async {
+    try {
+      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+          .collection('hospital')
+          .doc(widget.hospitalId)
+          .get();
+      if (docSnapshot.exists) {
+        var hospitalData = docSnapshot.data() as Map<String, dynamic>;
+
+        setState(() {
+          hospitalLocation = LatLng(double.parse(hospitalData['latitude']),
+              double.parse(hospitalData["longitude"]));
+          // hospitalId = hospitalData["hospital_id"].to;
+          print("aaaaa");
+          print(widget.hospitalId);
+        });
+      } else {
+        print('No data found for this booking');
+      }
+    } catch (e) {
+      print('Error fetching booking data: $e');
+    }
+  }
+
+  LatLng hospitalLocation = LatLng(0, 0);
 
   @override
   void initState() {
+    getData();
     super.initState();
-
     Timer.periodic(const Duration(seconds: 5), (timer) {
       markers = [];
 
@@ -123,7 +157,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         Marker(
           width: 80.0,
           height: 80.0,
-          point: startPoint,
+          point: LatLng(widget.bookerLocaitonLat, widget.bookerLocaitonLong),
           child: const Icon(Icons.location_on,
               color: Color.fromARGB(255, 27, 188, 220), size: 40.0),
         ),
@@ -132,14 +166,15 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         Marker(
           width: 80.0,
           height: 80.0,
-          point: endPoint,
+          point: hospitalLocation,
           child: const Icon(Icons.local_hospital_outlined,
               color: Colors.red, size: 40.0),
         ),
       );
     });
-    _getRouteNotPassed(const LatLng(37.41948907876784, -122.07982363292577));
-    _getRoutePassed(const LatLng(37.42138907886784, -122.08582363492577));
+    _getRouteNotPassed(hospitalLocation);
+    _getRoutePassed(
+        LatLng(widget.bookerLocaitonLat, widget.bookerLocaitonLong));
   }
 
   @override
