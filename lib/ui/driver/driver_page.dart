@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
+import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/user/appointment_screen.dart';
 import 'package:techwiz_5/ui/user/booking_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 
-class DriverScreen extends StatefulWidget {
-  const DriverScreen({super.key});
+class DriverPage extends StatefulWidget {
+  const DriverPage({super.key});
 
   @override
-  State<DriverScreen> createState() => _DriverScreenState();
+  State<DriverPage> createState() => _DriverPageState();
 }
 
-class _DriverScreenState extends State<DriverScreen> {
+class _DriverPageState extends State<DriverPage> {
   int _pageIndex = 0;
 
   final List<Widget> pages = [

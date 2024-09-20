@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           case 'driver':
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => const DriverScreen(),
+                builder: (context) => const DriverPage(),
               ),
             );
             break;

@@ -4,8 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
-
-// import '../../models/place.dart';
+import 'package:techwiz_5/ui/widgets/minimap.dart';
 import '../admin/map.dart';
 
 class LocationInput extends StatefulWidget {
@@ -20,6 +19,8 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInputState extends State<LocationInput> {
+  late double latMinimap;
+  late double lngMinimap;
   final MapController mapController = MapController();
   LocationData? currentLocation;
   LatLng? _pickedLocation;
@@ -35,34 +36,35 @@ class _LocationInputState extends State<LocationInput> {
     final lng = _pickedLocation!.longitude;
     print(lat);
     print(lng);
-    // return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyCOaEIViy3KsNPhxg8Nfd9RaD_rVzzDsow';
 
     return 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${lng},${lat}';
   }
 
-  Future<void> _savePlace(double latitude, double longitude) async{
-    // final url = Uri.parse(
-    //     'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyCOaEIViy3KsNPhxg8Nfd9RaD_rVzzDsow');
+  Future<void> _savePlace(double latitude, double longitude) async {
     final url = Uri.parse(
         'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${longitude},${latitude}');
     final response = await http.get(url);
-    print(json.decode(response.body));
-    // final resData = json.decode(response.body);
-    // final address = resData['results'][0]['formatted_address'];
 
-    final data = json.decode(response.body);
-    final List<dynamic> coords =
-    data['features'][0]['geometry']['coordinates'];
-    // setState(() {
-    //   // _pickedLocation = PlaceLocation(
-    //   //   latitude: latitude,
-    //   //   longitude: longitude,
-    //   //   address: address,
-    //   // );
-      _isGettingLocation = false;
-    // });
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
 
-    widget.onSelectLocation(_pickedLocation!);
+      if (data != null && data['features'] != null && data['features'].isNotEmpty) {
+        final List<dynamic> coords = data['features'][0]['geometry']['coordinates'];
+
+        if (mounted) {
+          setState(() {
+            _pickedLocation = LatLng(latitude, longitude);
+            _isGettingLocation = false;
+          });
+        }
+
+        widget.onSelectLocation(_pickedLocation!);
+      } else {
+        print('Invalid data: features or geometry missing.');
+      }
+    } else {
+      print('Failed to fetch location data: ${response.statusCode}');
+    }
   }
 
   void _getCurrentLocation() async {
@@ -88,12 +90,13 @@ class _LocationInputState extends State<LocationInput> {
       }
     }
 
-    setState(() {
-      _isGettingLocation = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isGettingLocation = true;
+      });
+    }
 
     locationData = await location.getLocation();
-
 
     final lat = locationData.latitude;
     final lng = locationData.longitude;
@@ -102,7 +105,13 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    _savePlace(lat,lng);
+    _savePlace(lat, lng);
+
+    if (mounted) {
+      setState(() {
+        _pickedLocation = LatLng(lat, lng);
+      });
+    }
   }
 
   void _selectOnMap() async {
@@ -112,11 +121,14 @@ class _LocationInputState extends State<LocationInput> {
       ),
     );
 
-    if(pickedLocation == null){
+    if (pickedLocation == null) {
       return;
     }
 
     _savePlace(pickedLocation.latitude, pickedLocation.longitude);
+    setState(() {
+      _pickedLocation = LatLng(pickedLocation.latitude, pickedLocation.longitude);
+    });
   }
 
   @override
@@ -156,31 +168,14 @@ class _LocationInputState extends State<LocationInput> {
           ),
           child: SizedBox(
             height: 300,
-            child: _pickedLocation == null ? SizedBox.shrink()  : FlutterMap(
-              mapController: mapController,
-              options: MapOptions(
-                initialCenter: LatLng(
-                    _pickedLocation!.latitude!, _pickedLocation!.longitude!),
-                initialZoom: 17.0,
-                onTap: (tapPosition, point) {
-
-                },
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: const ['a', 'b', 'c'],
-                ),
-                MarkerLayer(
-                  markers: [Marker(
-                    width: 80.0,
-                    height: 80.0,
-                    point: _pickedLocation!,
-                    child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
-                  ),]
-                ),
-              ],
+            child: (_pickedLocation == null)
+                ? SizedBox.shrink()
+                : SizedBox(
+              width: double.infinity,
+              height: 200,
+              child: MiniMap(
+                  latitude: _pickedLocation!.latitude,
+                  longitude: _pickedLocation!.longitude),
             ),
           ),
         ),

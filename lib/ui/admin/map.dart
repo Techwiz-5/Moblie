@@ -39,6 +39,9 @@ class _MapScreenState extends State<MapScreen> {
 
     try {
       var userLocation = await location.getLocation();
+
+      if (!mounted) return;
+
       setState(() {
         currentLocation = userLocation;
         markers.add(
@@ -46,8 +49,7 @@ class _MapScreenState extends State<MapScreen> {
             width: 80.0,
             height: 80.0,
             point: LatLng(userLocation.latitude!, userLocation.longitude!),
-            child:
-            const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
+            child: const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
           ),
         );
       });
@@ -56,6 +58,8 @@ class _MapScreenState extends State<MapScreen> {
     }
 
     location.onLocationChanged.listen((LocationData newLocation) {
+      if (!mounted) return;
+
       setState(() {
         currentLocation = newLocation;
       });
@@ -65,20 +69,21 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _getRoute(LatLng destination) async {
     if (currentLocation == null) return;
 
-    final start =
-    LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
+    final start = LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
     final response = await http.get(
       Uri.parse(
-          'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${start.longitude},${start.latitude}&end=${destination.longitude},${destination.latitude}'),
+          'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${start.longitude},${start.latitude}&end=${destination.longitude},${destination.latitude}'
+      ),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final List<dynamic> coords =
-      data['features'][0]['geometry']['coordinates'];
+      final List<dynamic> coords = data['features'][0]['geometry']['coordinates'];
+
+      if (!mounted) return;
+
       setState(() {
-        routePoints =
-            coords.map((coord) => LatLng(coord[1], coord[0])).toList();
+        routePoints = coords.map((coord) => LatLng(coord[1], coord[0])).toList();
         markers.add(
           Marker(
             width: 80.0,
@@ -89,7 +94,6 @@ class _MapScreenState extends State<MapScreen> {
         );
       });
     } else {
-      // Handle errors
       print('Failed to fetch route');
     }
   }
