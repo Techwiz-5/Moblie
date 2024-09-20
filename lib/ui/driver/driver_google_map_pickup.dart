@@ -116,6 +116,15 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           : FlutterMap(
               mapController: mapController,
               options: MapOptions(
+                interactionOptions: const InteractionOptions(
+                  enableMultiFingerGestureRace: true,
+                  flags: InteractiveFlag.doubleTapDragZoom |
+                      InteractiveFlag.doubleTapZoom |
+                      InteractiveFlag.drag |
+                      InteractiveFlag.flingAnimation |
+                      InteractiveFlag.pinchZoom |
+                      InteractiveFlag.scrollWheelZoom,
+                ),
                 initialCenter: LatLng(
                     currentLocation!.latitude!, currentLocation!.longitude!),
                 initialZoom: 15.0,
@@ -160,16 +169,16 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           //   icon: const Icon(Icons.menu),
           //   onPressed: () {},
           // ),
-           IconButton(
-              tooltip: 'Back',
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {},
-            ),
-           IconButton(
-              tooltip: 'Call',
-              icon: const Icon(Icons.call),
-              onPressed: () {},
-            ),
+          IconButton(
+            tooltip: 'Back',
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {},
+          ),
+          IconButton(
+            tooltip: 'Call',
+            icon: const Icon(Icons.call),
+            onPressed: () {},
+          ),
         ]),
       ),
       // floatingActionButton: const FloatingActionButton(onPressed: null),

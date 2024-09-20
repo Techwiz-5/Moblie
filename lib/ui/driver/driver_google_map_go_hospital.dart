@@ -20,6 +20,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   List<LatLng> routePointNotPass = [];
   List<LatLng> routePointPassed = [];
   List<Marker> markers = [];
+  //location for driver and hospital
   LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
   LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
   final String orsApiKey =
@@ -49,8 +50,8 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
             width: 80.0,
             height: 80.0,
             point: LatLng(userLocation.latitude!, userLocation.longitude!),
-            child:
-                const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
+            child: const Icon(Icons.location_history,
+                color: Color.fromARGB(255, 11, 11, 11), size: 40.0),
           ),
         );
       });
@@ -82,14 +83,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       setState(() {
         routePointNotPass =
             coords.map((coord) => LatLng(coord[1], coord[0])).toList();
-        markers.add(
-          Marker(
-            width: 80.0,
-            height: 80.0,
-            point: destination,
-            child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
-          ),
-        );
       });
     } else {}
   }
@@ -111,15 +104,15 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       setState(() {
         routePointPassed =
             coords.map((coord) => LatLng(coord[1], coord[0])).toList();
-        markers.add(
-          Marker(
-            width: 80.0,
-            height: 80.0,
-            point: startPoint,
-            child: const Icon(Icons.location_on,
-                color: Color.fromARGB(255, 9, 4, 3), size: 40.0),
-          ),
-        );
+        // markers.add(
+        //   Marker(
+        //     width: 80.0,
+        //     height: 80.0,
+        //     point: startPoint,
+        //     child: const Icon(Icons.location_on,
+        //         color: Color.fromARGB(255, 9, 4, 3), size: 40.0),
+        //   ),
+        // );
       });
     } else {}
   }
@@ -132,7 +125,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
           height: 80.0,
           point: startPoint,
           child: const Icon(Icons.location_on,
-              color: Color.fromARGB(255, 9, 4, 3), size: 40.0),
+              color: Color.fromARGB(255, 27, 188, 220), size: 40.0),
         ),
       );
       markers.add(
@@ -140,7 +133,8 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
           width: 80.0,
           height: 80.0,
           point: endPoint,
-          child: const Icon(Icons.local_hospital_outlined, color: Colors.red, size: 40.0),
+          child: const Icon(Icons.local_hospital_outlined,
+              color: Colors.red, size: 40.0),
         ),
       );
     });
@@ -159,6 +153,15 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
           : FlutterMap(
               mapController: mapController,
               options: MapOptions(
+                interactionOptions: const InteractionOptions(
+                  enableMultiFingerGestureRace: true,
+                  flags: InteractiveFlag.doubleTapDragZoom |
+                      InteractiveFlag.doubleTapZoom |
+                      InteractiveFlag.drag |
+                      InteractiveFlag.flingAnimation |
+                      InteractiveFlag.pinchZoom |
+                      InteractiveFlag.scrollWheelZoom,
+                ),
                 initialCenter: LatLng(
                     currentLocation!.latitude!, currentLocation!.longitude!),
                 initialZoom: 15.0,
