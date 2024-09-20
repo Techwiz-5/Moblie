@@ -10,21 +10,20 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Platform.isAndroid
       ? await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyAOz406oyWzjEMHlghknA2kZt6AjSIdPSM',
-      appId: '1:686425174562:android:b75204e9cca846e849107b',
-      messagingSenderId: '686425174562',
-      projectId: 'techwiz-e0599',
-      storageBucket: 'gs://techwiz-e0599.appspot.com',
-    ),
-  )
+          options: const FirebaseOptions(
+            apiKey: 'AIzaSyAOz406oyWzjEMHlghknA2kZt6AjSIdPSM',
+            appId: '1:686425174562:android:b75204e9cca846e849107b',
+            messagingSenderId: '686425174562',
+            projectId: 'techwiz-e0599',
+            storageBucket: 'gs://techwiz-e0599.appspot.com',
+          ),
+        )
       : await Firebase.initializeApp();
   await NotiService().initNotifications();
   // WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

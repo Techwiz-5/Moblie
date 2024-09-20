@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/admin/account_manager.dart';
 import 'package:techwiz_5/ui/admin/ambulance/ambulance_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
@@ -18,7 +19,7 @@ class _AdminScreenState extends State<AdminScreen> {
   final List<Widget> pages = [
     const HospitalScreen(),
     const AmbulanceScreen(),
-    const DriverScreen(),
+    const AccountManagerScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -41,8 +42,8 @@ class _AdminScreenState extends State<AdminScreen> {
             label: 'Ambulance',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.drive_eta),
-            label: 'Driver',
+            icon: Icon(Icons.account_circle_outlined),
+            label: 'Account',
           ),
         ],
       ),

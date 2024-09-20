@@ -51,9 +51,11 @@ class _HospitalScreenState extends State<HospitalScreen> {
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasData) {
             final items = streamSnapshot.data!.docs;
+            print(items.length);
             return ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
+                print(index);
                 final DocumentSnapshot documentSnapshot = items[index];
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
