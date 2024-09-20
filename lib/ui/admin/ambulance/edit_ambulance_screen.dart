@@ -56,7 +56,7 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
           _plate_number = ambulanceData['plate_number'];
           _enable = ambulanceData['enable'];
           imageUrl = ambulanceData['image'];
-          _selectedHospital = ambulanceData['hospital'];
+          _selectedHospital = ambulanceData['hospital_id'];
           _hospitals = querySnapshot.docs.map((doc) {
             return {'id': doc.id, 'name': doc['name']};
           }).toList();
@@ -130,17 +130,15 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
     _formKeyAmbulance.currentState!.save();
     try {
       await _uploadImageToFirebase();
-
       await _firestore.collection('ambulance').doc(widget.ambulanceId).update({
         'type': _type,
         'latitude': _latitude,
         'longitude': _longitude,
         'plate_number': _plate_number,
         'enable': _enable,
-        'hospital': _selectedHospital,
+        'hospital_id': _selectedHospital,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
-
       Navigator.pop(context, () {});
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
@@ -218,35 +216,6 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        TextFormField(
-                          initialValue: _latitude,
-                          decoration: ambulanceFormField('Latitude'),
-                          autocorrect: true,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please fill in latitude';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _latitude = value!;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          initialValue: _longitude,
-                          decoration: ambulanceFormField('Longitude'),
-                          autocorrect: true,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please fill in longitude';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _longitude = value!;
-                          },
-                        ),
                         Row(
                           children: [
                             const Text('Enable : '),
@@ -312,7 +281,7 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
                           items: _hospitals.map(
                             (val) {
                               return DropdownMenuItem<String>(
-                                value: val['name'].toString(),
+                                value: val['id'],
                                 child: Text(val['name']),
                               );
                             },

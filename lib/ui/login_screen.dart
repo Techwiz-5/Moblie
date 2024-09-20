@@ -40,7 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (userData.user != null) {
         String uid = userData.user!.uid;
-        DocumentSnapshot userDoc = await _firestore.collection('account').doc(uid).get();
+        DocumentSnapshot userDoc =
+            await _firestore.collection('account').doc(uid).get();
 
         if (!userDoc.exists) {
           userDoc = await _firestore.collection('driver').doc(uid).get();
@@ -138,7 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: Icons.email,
                   textInputType: TextInputType.text,
                   errorMessage: (value) {
-                    if (value.trim().isEmpty || !value.contains('@') || value.startsWith(" ")) {
+                    if (value.trim().isEmpty ||
+                        !value.contains('@') ||
+                        value.startsWith(" ")) {
                       return 'Email is not valid';
                     }
                     return null;
@@ -161,32 +164,41 @@ class _LoginScreenState extends State<LoginScreen> {
                 MyButtons(onTap: loginUser, text: 'Log In'),
                 Row(
                   children: [
-                    Expanded(child: Container(height: 1, color: Colors.black26)),
+                    Expanded(
+                        child: Container(height: 1, color: Colors.black26)),
                     const Text(' or '),
-                    Expanded(child: Container(height: 1, color: Colors.black26)),
+                    Expanded(
+                        child: Container(height: 1, color: Colors.black26)),
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueGrey),
                     onPressed: () async {
                       await FirebaseServices().signInWithGoogle();
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
                       );
                     },
                     child: Row(
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Image.asset('images/logo_google.png', height: 35),
+                          child:
+                              Image.asset('images/logo_google.png', height: 35),
                         ),
                         const SizedBox(width: 10),
                         const Text(
                           "Continue with Google",
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 20),
                         ),
                       ],
                     ),
@@ -195,12 +207,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?", style: TextStyle(fontSize: 16)),
+                    const Text("Don't have an account?",
+                        style: TextStyle(fontSize: 16)),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpScreen()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpScreen()));
                       },
-                      child: const Text(" SignUp", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      child: const Text(" SignUp",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
                     )
                   ],
                 ),
@@ -208,12 +226,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Sign up to become a driver ", style: TextStyle(fontSize: 16)),
+                    const Text("Sign up to become a driver ",
+                        style: TextStyle(fontSize: 16)),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpDriverScreen()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const SignUpDriverScreen()));
                       },
-                      child: const Text("here", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue)),
+                      child: const Text("here",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.blue)),
                     )
                   ],
                 )

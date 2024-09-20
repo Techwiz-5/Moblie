@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/account_manager.dart';
 import 'package:techwiz_5/ui/admin/ambulance/ambulance_screen.dart';
+import 'package:techwiz_5/ui/admin/booking/booking_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
+import 'package:techwiz_5/ui/widgets/booking_card.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key, required this.userData});
@@ -19,7 +21,8 @@ class _AdminScreenState extends State<AdminScreen> {
   final List<Widget> pages = [
     const HospitalScreen(),
     const AmbulanceScreen(),
-    const AccountManagerScreen(),
+    const BookingScreen(),
+    // const AccountManagerScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -42,9 +45,13 @@ class _AdminScreenState extends State<AdminScreen> {
             label: 'Ambulance',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined),
-            label: 'Account',
+            icon: Icon(Icons.book_online_rounded),
+            label: 'Booking',
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.account_circle_outlined),
+          //   label: 'Account',
+          // ),
         ],
       ),
     );
