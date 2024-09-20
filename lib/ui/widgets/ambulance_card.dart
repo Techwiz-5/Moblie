@@ -16,6 +16,10 @@ class AmbulanceCard extends StatefulWidget {
 }
 
 class _AmbulanceCardState extends State<AmbulanceCard> {
+  String? hospitalName;
+  String? hospitalPhone;
+  String? hospitalAddress;
+
   Future<void> _showPopupMenu(Offset offset) async {
     double left = offset.dx;
     double top = offset.dy;
@@ -23,11 +27,11 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
       context: context,
       position: RelativeRect.fromLTRB(left, top, left + 1, top + 1),
       items: [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: const Text('Edit'),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'delete',
           child: const Text('Delete'),
         ),
@@ -109,7 +113,31 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchHospital();
+  }
+
+  void _fetchHospital() async {
+    DocumentSnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('hospital')
+        .doc(widget.ambulance['hospital_id'])
+        .get();
+    print(querySnapshot.toString());
+    var ambulanceData = querySnapshot.data() as Map<String, dynamic>;
+    setState(() {
+      hospitalName = ambulanceData['name'];
+      hospitalPhone = ambulanceData['phone'];
+      hospitalAddress = ambulanceData['address'];
+    });
+    print(hospitalPhone);
+    print(hospitalName);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // print(widget.ambulance['hospital_id']);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -200,16 +228,32 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Plate Number : ${widget.ambulance['plate_number']} ',
+                      'Hospital Name : ${hospitalName} ',
                       style: const TextStyle(
-                        height: 2,
+                        // height: 2,
                         color: Colors.red,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
+                      'Phone Hospital : ${hospitalPhone} ',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Text(
                       'Type : ${widget.ambulance['type']} ',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Text(
+                      'Plate Number : ${widget.ambulance['plate_number']} ',
                       style: const TextStyle(
                         fontSize: 14,
                         height: 1.5,

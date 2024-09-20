@@ -21,27 +21,35 @@ class _DriverFromScreenState extends State<DriverFormScreen> {
   File? _pickedImage;
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('driver');
-
+  final CollectionReference _hospitalsCollection =
+      FirebaseFirestore.instance.collection('hospital');
   String _name = '';
   String _email = '';
   String _phone = '';
   String _password = '';
   String _address = '';
+  String _card_indentity = '';
+  String? _selectedHospital;
+  List<Map<String, dynamic>> _hospitals = [];
 
-//  'name': _name,
-//         'email': _email,
-//         'phone': _phone,
-//         'address': _address,
-//         'password': _password,
-//         'role': 'driver',
-//         'uid': credential.user!.uid,
-//         'image': imageUrl ?? "",
-//         'latitude': "",
-//         'longitude': "",
-//         'enable': 1
   @override
   void initState() {
     super.initState();
+    _fetchHospitals();
+  }
+
+  void _fetchHospitals() async {
+    try {
+      QuerySnapshot querySnapshot = await _hospitalsCollection.get();
+      setState(() {
+        // lấy trường từ bảng
+        _hospitals = querySnapshot.docs.map((doc) {
+          return {'id': doc.id, 'name': doc['name']};
+        }).toList();
+      });
+    } catch (e) {
+      print('Error fetching hospitals: $e');
+    }
   }
 
   Future<void> pickImage() async {
@@ -104,6 +112,8 @@ class _DriverFromScreenState extends State<DriverFormScreen> {
         'role': 'driver',
         'uid': credential.user!.uid,
         'image': imageUrl ?? "",
+        'hospital_id': _selectedHospital,
+        'card_indentity': _card_indentity,
         'latitude': "",
         'longitude': "",
         'enable': 1,
@@ -209,6 +219,20 @@ class _DriverFromScreenState extends State<DriverFormScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
+                    decoration: driverFormField('Card Identity'),
+                    autocorrect: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please fill in card identity';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _card_indentity = value!;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
                     decoration: driverFormField('Phone'),
                     autocorrect: true,
                     validator: (value) {
@@ -224,6 +248,35 @@ class _DriverFromScreenState extends State<DriverFormScreen> {
                     },
                     onSaved: (value) {
                       _phone = value!;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField(
+                    isDense: true,
+                    hint: const Text('Hospital'),
+                    decoration: InputDecoration(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(20.0),
+                    items: _hospitals.map(
+                      (val) {
+                        return DropdownMenuItem<String>(
+                          value: val['id'].toString(),
+                          child: Text(val['name']),
+                        );
+                      },
+                    ).toList(),
+                    onChanged: (val) async {
+                      setState(
+                        () {
+                          _selectedHospital = val;
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 16),

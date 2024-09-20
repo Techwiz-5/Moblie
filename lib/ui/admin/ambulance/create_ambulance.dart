@@ -1,11 +1,7 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/models/place.dart';
-import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -22,8 +18,8 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
   File? _pickedImage;
-  final CollectionReference _driversCollection =
-      FirebaseFirestore.instance.collection('driver');
+  final CollectionReference _hospitalCollection =
+      FirebaseFirestore.instance.collection('hospital');
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('ambulance');
 
@@ -33,21 +29,21 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   String _plate_number = '';
   int _enable = 0;
   String? _selectedHospital;
-  List<Map<String, dynamic>> _drivers = [];
+  List<Map<String, dynamic>> _hospitals = [];
   // PlaceLocation? _selectedLocation;
 
   @override
   void initState() {
     super.initState();
-    _fetchDrivers();
+    _fetchHospital();
   }
 
-  void _fetchDrivers() async {
+  void _fetchHospital() async {
     try {
-      QuerySnapshot querySnapshot = await _driversCollection.get();
+      QuerySnapshot querySnapshot = await _hospitalCollection.get();
       setState(() {
-        _drivers = querySnapshot.docs.map((doc) {
-          return {'id': doc['uid'], 'name': doc['name']};
+        _hospitals = querySnapshot.docs.map((doc) {
+          return {'id': doc.id, 'name': doc['name']};
         }).toList();
       });
     } catch (e) {
@@ -106,7 +102,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
         'longitude': _longitude,
         'plate_number': _plate_number,
         'enable': _enable,
-        'driver_id': _selectedHospital,
+        'hospital_id': _selectedHospital,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
       await docRef.update({
@@ -168,33 +164,6 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // TextFormField(
-                  //   decoration: ambulanceFormField('Latitude'),
-                  //   autocorrect: true,
-                  //   validator: (value) {
-                  //     if (value == null || value.trim().isEmpty) {
-                  //       return 'Please fill in latitude';
-                  //     }
-                  //     return null;
-                  //   },
-                  //   onSaved: (value) {
-                  //     _latitude = value!;
-                  //   },
-                  // ),
-                  // const SizedBox(height: 16),
-                  // TextFormField(
-                  //   decoration: ambulanceFormField('Longitude'),
-                  //   autocorrect: true,
-                  //   validator: (value) {
-                  //     if (value == null || value.trim().isEmpty) {
-                  //       return 'Please fill in longitude';
-                  //     }
-                  //     return null;
-                  //   },
-                  //   onSaved: (value) {
-                  //     _longitude = value!;
-                  //   },
-                  // ),
                   Row(
                     children: [
                       const Text('Enable : '),
@@ -236,11 +205,11 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                     isExpanded: true,
-                    borderRadius: BorderRadius.circular(20.0),
+                    borderRadius: BorderRadius.circular(10.0),
                     items: const [
                       DropdownMenuItem<String>(
                         value: 'Basic Life Support',
@@ -262,17 +231,17 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField(
                     isDense: true,
-                    hint: const Text('Driver'),
+                    hint: const Text('Hospital'),
                     decoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                     isExpanded: true,
-                    borderRadius: BorderRadius.circular(20.0),
-                    items: _drivers.map(
+                    borderRadius: BorderRadius.circular(10.0),
+                    items: _hospitals.map(
                       (val) {
                         return DropdownMenuItem<String>(
                           value: val['id'].toString(),

@@ -186,18 +186,35 @@ class _EditAmbulanceScreenState extends State<EditAmbulanceScreen> {
                     child: Column(
                       children: [
                         const SizedBox(height: 16),
-                        TextFormField(
-                          initialValue: _type,
-                          decoration: ambulanceFormField('Type'),
-                          autocorrect: true,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please fill type';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _type = value!;
+                        DropdownButtonFormField(
+                          isDense: true,
+                          value: _type,
+                          hint: const Text('Type'),
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          isExpanded: true,
+                          borderRadius: BorderRadius.circular(10.0),
+                          items: const [
+                            DropdownMenuItem<String>(
+                              value: 'Basic Life Support',
+                              child: Text('Basic Life Support'),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Advanced Life Support',
+                              child: Text('Advanced Life Support'),
+                            ),
+                          ],
+                          onChanged: (val) async {
+                            setState(
+                              () {
+                                _type = val!;
+                              },
+                            );
                           },
                         ),
                         const SizedBox(height: 16),
