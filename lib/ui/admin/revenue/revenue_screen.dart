@@ -121,7 +121,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
                   }
                   final revenueData = chatSnapshot.data!.docs;
                   double money = 0;
-                  chatSnapshot.data!.docs.forEach((f) => money += double.parse(f['latitude']));
+                  chatSnapshot.data!.docs.forEach((f) => money += f['money']);
                   return Column(
                     children: [
                       Container(
@@ -144,7 +144,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
                               width: double.infinity,
                               child: ListTile(
                                 title: Text('Booking created date: ${dateFormat.format(revenueData[index]['create_at'].toDate())}'),
-                                subtitle: Text('Amount'),
+                                subtitle: Text('Amount \$${revenueData[index]['money'].toStringAsFixed(2)}'),
                                 tileColor: Colors.blue[50],
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
