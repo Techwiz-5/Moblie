@@ -140,7 +140,7 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
               mapController: mapController,
               options: MapOptions(
                 initialCenter:
-                    LatLng(driverLocation.latitude, driverLocation.longitude),
+                    LatLng(widget.driverLocationLat, widget.driverLocationLong),
                 initialZoom: 15.0,
                 // onTap: (tapPosition, point) => _addDestinationMarker(point),
               ),
@@ -166,12 +166,10 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (driverLocation != null) {
-            mapController.move(
-              LatLng(driverLocation.latitude, driverLocation.longitude),
-              15.0,
-            );
-          }
+          mapController.move(
+            LatLng(widget.driverLocationLat!, widget.driverLocationLong),
+            15.0,
+          );
         },
         child: const Icon(Icons.my_location),
       ),
