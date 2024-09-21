@@ -44,6 +44,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   dynamic selectHospital;
   double money = 0;
   var isEmergency = false;
+  List bookedAmbulance = [];
+  List lstAmbulance = [];
+  String plate_number = '';
 
   @override
   void initState() {
@@ -77,12 +80,20 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
   }
 
+  getAllAmbulance() async {
+    QuerySnapshot querySnapshot = await myItems
+        .where('hospital_id', isEqualTo: selectHospital['id'])
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    setState(() {
+      lstAmbulance = allData;
+    });
+  }
+
   getBookedSlot() async {
     DateTime bkgDate = selectedDate;
     var fromDate = DateTime(bkgDate.year, bkgDate.month, bkgDate.day);
     var toDate = DateTime(bkgDate.year, bkgDate.month, bkgDate.day + 1);
-    print(fromDate);
-    List dt = [];
     QuerySnapshot querySnapshot = await myItems
         .where('hospital_id', isEqualTo: selectHospital['id'])
         .where('booking_time', isGreaterThanOrEqualTo: fromDate)
@@ -90,11 +101,32 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         .where('time_range', isEqualTo: _timeRange)
         .get();
     final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    setState(() {
+      bookedAmbulance = allData;
+    });
+  }
 
-    print(allData);
-    // setState(() {
-    //
-    // });
+  void getAmbulancePlate(){
+    String rs = '';
+    List bkgedAmbulance = [];
+    List avaiAmbulance = [];
+    for(var dt in bookedAmbulance){
+      bkgedAmbulance.add(dt['plate_number']);
+    }
+    for(var dt in lstAmbulance){
+      avaiAmbulance.add(dt['plate_number']);
+    }
+
+    for(var dt in avaiAmbulance){
+      if(!bkgedAmbulance.contains(dt)){
+        rs = dt;
+        break;
+      }
+    }
+    setState(() {
+      plate_number = rs;
+    });
+    print(plate_number);
   }
 
   void setupPushNotification() async {
@@ -141,6 +173,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'booking_time': selectedDate,
         'time_range': _timeRange,
         'driver_id': '',
+        'plate_number': plate_number,
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
       });
@@ -180,8 +213,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
   }
 
-  onGoBack() {
-    getBookedSlot();
+  onGoBack() async {
+    await getAllAmbulance();
+    await getBookedSlot();
+    getAmbulancePlate();
     setState(() {});
   }
 
@@ -553,6 +588,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         child: Text(selectHospital != null ? selectHospital['name'] : 'Select Hospital'),
                       ),
                     ),
+                    selectHospital != null ? Text('Plate number: $plate_number') : const SizedBox.shrink()
                   ],
                 ),
               ),
