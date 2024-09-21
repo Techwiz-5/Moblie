@@ -17,6 +17,7 @@ class AuthServices {
           'address': address,
           'image': '',
           'role': 'user',
+          'online': false,
           'uid': credential.user!.uid,
         });
         res = 'Successfully';
@@ -41,6 +42,7 @@ class AuthServices {
           'role': 'driver',
           'enable': 1,
           'status': 0,
+          'online': false,
           'uid': credential.user!.uid,
         });
         res = 'Successfully';

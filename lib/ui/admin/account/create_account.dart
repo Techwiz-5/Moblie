@@ -94,6 +94,7 @@ class _AccountFromScreenState extends State<AccountFormScreen> {
         'address': _address,
         'password': _password,
         'role': 'user',
+        'online': false,
         'uid': credential.user!.uid,
         'image': imageUrl ?? ""
       });

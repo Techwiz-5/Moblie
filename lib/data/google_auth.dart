@@ -48,6 +48,7 @@ class FirebaseServices {
         'uid': user.uid,
         'phone': '',
         'address': '',
+        'online': false,
         'image': user.photoURL,
         'role': 'user',
       });
