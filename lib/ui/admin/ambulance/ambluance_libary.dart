@@ -1,24 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/ui/admin/account/create_account.dart';
-import 'package:techwiz_5/ui/driver/dirvier_manager/create_admin_driver.dart';
-import 'package:techwiz_5/ui/widgets/account_card.dart';
-import 'package:techwiz_5/ui/widgets/driver_card.dart';
+import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
+import 'package:techwiz_5/ui/widgets/ambulance_card.dart';
 
-class DriverScreenAdmin extends StatefulWidget {
-  const DriverScreenAdmin({super.key});
+class AmbulanceLibraryScreen extends StatefulWidget {
+  const AmbulanceLibraryScreen({super.key});
 
   @override
-  State<DriverScreenAdmin> createState() => _DriverScreenAdminState();
+  State<AmbulanceLibraryScreen> createState() => _AmbulanceLibraryScreenState();
 }
 
-class _DriverScreenAdminState extends State<DriverScreenAdmin> {
+class _AmbulanceLibraryScreenState extends State<AmbulanceLibraryScreen> {
   final CollectionReference myItems =
-      FirebaseFirestore.instance.collection('driver');
+      FirebaseFirestore.instance.collection('ambulance');
   @override
   Widget build(BuildContext context) {
-    print(myItems);
     return Scaffold(
+      backgroundColor: Colors.blue.withOpacity(0.15),
       body: StreamBuilder(
         stream: myItems.snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
@@ -27,16 +25,14 @@ class _DriverScreenAdminState extends State<DriverScreenAdmin> {
             return ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
-                print(index);
                 final DocumentSnapshot documentSnapshot = items[index];
                 return Padding(
-                  padding: const EdgeInsets.all(1.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    // borderRadius: BorderRadius.circular(20),
                     child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: DriverCard(
-                        account: documentSnapshot,
+                      padding: const EdgeInsets.all(8.0),
+                      child: AmbulanceCard(
+                        ambulance: documentSnapshot,
                       ),
                     ),
                   ),
@@ -52,8 +48,10 @@ class _DriverScreenAdminState extends State<DriverScreenAdmin> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const DriverFormScreen())),
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AmbulanceFormScreen())),
         child: const Icon(Icons.add),
       ),
     );

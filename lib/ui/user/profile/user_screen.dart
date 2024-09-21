@@ -188,50 +188,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: _role == 'user' ? Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.edit),
-                            title: const Text('Edit Profile'),
-                            onTap: () async {
-                              bool? result = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => EditProfileScreen(
-                                    hospitalId: FirebaseAuth.instance.currentUser!.uid,
-                                  ),
+                  child: _role == 'user'
+                      ? Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                child: ListTile(
+                                  leading: const Icon(Icons.edit),
+                                  title: const Text('Edit Profile'),
+                                  onTap: () async {
+                                    bool? result =
+                                        await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => EditProfileScreen(
+                                          hospitalId: FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                        ),
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      // Profile was updated, refresh the data
+                                      getUserData();
+                                    }
+                                  },
                                 ),
-                              );
-                              if (result == true) {
-                                // Profile was updated, refresh the data
-                                getUserData();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.history),
-                            title: const Text('Booking History'),
-                            onTap: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                  const BookingHistoryScreen(),
+                              ),
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                child: ListTile(
+                                  leading: const Icon(Icons.history),
+                                  title: const Text('Booking History'),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BookingHistoryScreen(),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ) : const SizedBox.shrink(),
+                              ),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
                 ),
               ),
             ],

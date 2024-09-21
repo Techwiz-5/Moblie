@@ -60,13 +60,6 @@ class _BookingScreenState extends State<BookingScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const AmbulanceFormScreen())),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

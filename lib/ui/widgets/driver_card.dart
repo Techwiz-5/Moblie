@@ -4,17 +4,18 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
+import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 
-class AccountCard extends StatefulWidget {
-  const AccountCard({super.key, required this.account});
+class DriverCard extends StatefulWidget {
+  const DriverCard({super.key, required this.account});
   final dynamic account;
 
   @override
-  State<AccountCard> createState() => _AccountCardState();
+  State<DriverCard> createState() => _DriverCardState();
 }
 
-class _AccountCardState extends State<AccountCard> {
+class _DriverCardState extends State<DriverCard> {
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('driver');
 
@@ -23,7 +24,7 @@ class _AccountCardState extends State<AccountCard> {
     // print(widget.account['email']);
     // print(widget.account['phone']);
     // print(widget.account['name']);
-    // print(widget.account['uid']);
+    // print(widget.account['role']);
 
     return Padding(
         padding: const EdgeInsets.all(0),
@@ -146,6 +147,34 @@ class _AccountCardState extends State<AccountCard> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (widget.account['role'] == 'driver')
+                      Center(
+                        child: SizedBox(
+                          // width: ,
+                          // () => Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => DriverBookingDetailScreen(
+                          //           driverId: widget.account['uid']),
+                          //     ),
+                          //   ),
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DriverPage(driverId: widget.account['uid']),
+                              ),
+                            ),
+                            child: Text("Work diary"),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
