@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/google_auth.dart';
 import 'package:techwiz_5/ui/admin/admin_screen.dart';
+import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
 import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/forgot_password.dart';
 import 'package:techwiz_5/ui/sign_up_driver.dart';
@@ -69,7 +70,9 @@ class _LoginScreenState extends State<LoginScreen> {
           case 'driver':
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => const DriverPage(),
+                builder: (context) => DriverPage(
+                  driverId: userRole['uid'],
+                ),
               ),
             );
             break;
@@ -214,7 +217,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SignUpScreen()));
+                                builder: (context) =>
+                                    DriverGoogleMapPickupPoint(
+                                      bookingId: 'NOgUVUkAyFqHjC9I2i5S',
+                                    )));
                       },
                       child: const Text(" SignUp",
                           style: TextStyle(

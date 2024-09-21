@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
-import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 
-class Schedule_card extends StatefulWidget {
-  const Schedule_card({super.key, required this.booking});
+class Schedule_card_not_receive extends StatefulWidget {
+  const Schedule_card_not_receive(
+      {super.key, required this.booking, required this.driverId});
   final dynamic booking;
+  final String driverId;
   @override
-  State<Schedule_card> createState() => _ScheduleCardState();
+  State<Schedule_card_not_receive> createState() =>
+      _ScheduleCardNotReceiveState();
 }
 
-class _ScheduleCardState extends State<Schedule_card> {
+class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
   bool isAdmin = false;
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('booking');
@@ -19,6 +22,50 @@ class _ScheduleCardState extends State<Schedule_card> {
   void initState() {
     super.initState();
   }
+
+  void receiveBooking() async {
+    await FirebaseFirestore.instance
+        .collection('booking')
+        .doc(widget.booking["id"])
+        .update({
+      'driver_id': widget.driverId,
+    });
+  }
+  Future<void> _showMyDialog() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Are you sure you want to take this booking??'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('This is a demo alert dialog.'),
+              Text('Would you like to approve of this message?'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              // receiveBooking();
+              Navigator.of(context).pop();
+            },
+          ),
+            TextButton(
+            child: const Text('Receive'),
+            onPressed: () {
+              receiveBooking();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -117,15 +164,8 @@ class _ScheduleCardState extends State<Schedule_card> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DriverGoogleMapPickupPoint(
-                          bookingId: widget.booking['id'],
-                        ),
-                      ),
-                    ),
-                    child: const Text("go to map"),
+                    onPressed: () => _showMyDialog(),
+                    child: const Text("Receive!"),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[100]),
                   ),

@@ -22,7 +22,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   List<LatLng> routePoints = [];
   List<Marker> markers = [];
   final String orsApiKey =
-      '5b3ce3597851110001cf62482754ebba865645388e677911173c5159'; // Replace with your OpenRouteService API key
+      '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
 
   void getData() async {
     try {
@@ -34,8 +34,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
         var bookingData = docSnapshot.data() as Map<String, dynamic>;
 
         setState(() {
-          bookerLocation = LatLng(double.parse(bookingData['latitude']),
-              double.parse(bookingData["longitude"]));
+          bookerLocation =  LatLng(bookingData['latitude'], bookingData["longitude"]);
 
           hospitalId = bookingData["hospital_id"];
         });
@@ -56,9 +55,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
     Timer.periodic(Duration(seconds: 10), (timer) {
       _getCurrentLocation();
       _addDestinationMarker(LatLng(37.41948907876784, -122.07982363292577));
-    });
-    Timer.periodic(Duration(seconds: 10), (timer) {
-      print("phuslee");
     });
   }
 
@@ -95,6 +91,14 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
 
     final start =
         LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
+    markers.add(
+      Marker(
+        width: 80.0,
+        height: 80.0,
+        point: bookerLocation,
+        child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
+      ),
+    );
     final response = await http.get(
       Uri.parse(
           'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${start.longitude},${start.latitude}&end=${bookerLocation.longitude},${bookerLocation.latitude}'),
@@ -107,14 +111,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
       setState(() {
         routePoints =
             coords.map((coord) => LatLng(coord[1], coord[0])).toList();
-        markers.add(
-          Marker(
-            width: 80.0,
-            height: 80.0,
-            point: bookerLocation,
-            child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
-          ),
-        );
       });
     } else {
       // Handle errors
@@ -147,7 +143,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           : FlutterMap(
               mapController: mapController,
               options: MapOptions(
-              
                 initialCenter: LatLng(
                     currentLocation!.latitude!, currentLocation!.longitude!),
                 initialZoom: 15.0,

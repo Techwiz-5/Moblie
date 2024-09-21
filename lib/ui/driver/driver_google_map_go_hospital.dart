@@ -33,7 +33,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
   LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
   final String orsApiKey =
-      '5b3ce3597851110001cf62482754ebba865645388e677911173c5159'; // Replace with your OpenRouteService API key
+      '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
   void getData() async {
     try {
       DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
@@ -44,11 +44,9 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         var hospitalData = docSnapshot.data() as Map<String, dynamic>;
 
         setState(() {
-          hospitalLocation = LatLng(double.parse(hospitalData['latitude']),
-              double.parse(hospitalData["longitude"]));
+          hospitalLocation =
+              LatLng(hospitalData['latitude'], hospitalData["longitude"]);
           // hospitalId = hospitalData["hospital_id"].to;
-          print("aaaaa");
-          print(widget.hospitalId);
         });
       } else {
         print('No data found for this booking');
