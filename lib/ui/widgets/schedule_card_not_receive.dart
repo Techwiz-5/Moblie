@@ -37,7 +37,7 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
         .doc(widget.booking["id"])
         .update({
       'driver_id': widget.driverId,
-      'status': "1",
+      'status': 1,
     });
   }
 

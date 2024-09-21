@@ -190,7 +190,7 @@ void receiveBooking() async {
         .collection('booking')
         .doc(widget.bookingId)
         .update({
-      'status': "2",
+      'status': 2,
     });
   }
 
