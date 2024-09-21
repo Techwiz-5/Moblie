@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
@@ -158,7 +159,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
     _formKeyAmbulance.currentState!.save();
     try {
-      myItems.add({
+      DocumentReference docRef = await myItems.add({
         'name_patient': _namePatient,
         'address': _address,
         'zip_code': _zipCode,
@@ -177,26 +178,39 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
       });
-      // await docRef.update({
-      //   'id': docRef.id,
-      // });
-      // await sendNotificationToDrivers(docRef.id);
+      await docRef.update({
+        'id': docRef.id,
+      });
+      await sendNotificationToDrivers(docRef.id);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
   }
 
-  Future<void> sendNotificationToDrivers(String bookingId) async {
-    await FirebaseMessaging.instance.subscribeToTopic('allDrivers');
+  Future<List<String>> _fetchInactiveDriversTokens() async {
+    List<String> driverTokens = [];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('driver')
+          .where('enable', isEqualTo: 0)
+          .get();
 
-    await FirebaseMessaging.instance.sendMessage(
-      to: '/topics/allDrivers',
-      data: {
-        'title': 'New Ride Request',
-        'body': 'A user has requested a ride.',
-        'bookingId': bookingId,
-      },
-    );
+      for (var doc in querySnapshot.docs) {
+        driverTokens.add(doc['fcm_token']);
+      }
+    } catch (e) {
+      print('Error fetching drivers: $e');
+    }
+    return driverTokens;
+  }
+
+
+  Future<void> sendNotificationToDrivers(String bookingId) async {
+    List<String> driverTokens = await _fetchInactiveDriversTokens();
+
+    for (String token in driverTokens) {
+      await NotiService().pushNotifications(title: 'Test ', body: "Test body", token: token);
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/login_screen.dart';
 import 'firebase_options.dart';
 
@@ -25,6 +26,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  NotiService().init();
   runApp(const MyApp());
 }
 
