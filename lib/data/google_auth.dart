@@ -39,13 +39,16 @@ class FirebaseServices {
   }
 
   Future<void> saveUserToFirestore(User user) async {
-    DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(user.uid).get();
+    DocumentSnapshot documentSnapshot = await _firestore.collection('account').doc(user.uid).get();
 
     if(!documentSnapshot.exists){
-      await _firestore.collection('users').doc(user.uid).set({
+      await _firestore.collection('account').doc(user.uid).set({
         'name': user.displayName,
         'email': user.email,
         'uid': user.uid,
+        'phone': '',
+        'address': '',
+        'image': user.photoURL,
         'role': 'user',
       });
     }

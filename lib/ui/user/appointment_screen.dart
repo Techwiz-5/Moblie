@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -49,6 +50,25 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   @override
   void initState() {
     super.initState();
+    setupPushNotification();
+  }
+
+  void setupPushNotification() async {
+    final fcm = FirebaseMessaging.instance;
+
+    final notificationSettings = await fcm.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    final token = await fcm.getToken();
+
+    fcm.subscribeToTopic('booking');
   }
 
 
@@ -59,7 +79,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
     _formKeyAmbulance.currentState!.save();
     try {
-      DocumentReference docRef = await myItems.add({
+      myItems.add({
         'name_patient': _namePatient,
         'address': _address,
         'zip_code': _zipCode,
@@ -76,13 +96,57 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
       });
-      await docRef.update({
-        'id': docRef.id,
-      });
-      await sendNotificationToDrivers(docRef.id);
+      // await docRef.update({
+      //   'id': docRef.id,
+      // });
+      // await sendNotificationToDrivers(docRef.id);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
+  }
+
+  Future<void> sendPushMessage() async {
+    // if (_token == null) {
+    //   print('Unable to send FCM message, no token exists.');
+    //   return;
+    // }
+
+
+    final fcm = FirebaseMessaging.instance;
+
+    final token = await fcm.getToken();
+
+
+
+    try {
+      await http.post(
+        Uri.parse('https://api.rnfirebase.io/messaging/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: constructFCMPayload(token),
+      );
+      print('FCM request for device sent!');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  int _messageCount = 0;
+
+  String constructFCMPayload(String? token) {
+    _messageCount++;
+    return jsonEncode({
+      'token': token,
+      'data': {
+        'via': 'FlutterFire Cloud Messaging!!!',
+        'count': _messageCount.toString(),
+      },
+      'notification': {
+        'title': 'Hello FlutterFire!',
+        'body': 'This notification (#$_messageCount) was created via FCM!',
+      },
+    });
   }
 
   Future<void> sendNotificationToDrivers(String bookingId) async {
@@ -136,6 +200,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: Builder(
+        builder: (context) => FloatingActionButton(
+          onPressed: sendPushMessage,
+          backgroundColor: Colors.white,
+          child: const Icon(Icons.send),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(

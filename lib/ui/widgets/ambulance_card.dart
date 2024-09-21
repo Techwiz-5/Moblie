@@ -196,25 +196,6 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                   ),
                 ),
               ),
-              // Container(
-              //   padding: const EdgeInsets.all(8),
-              //   child: ClipPath(
-              //     clipper: ArcClipper(),
-              //     child: Container(
-              //       width: 200,
-              //       height: 40.0,
-              //       padding: const EdgeInsets.all(8.0),
-              //       color: Colors.lightBlue,
-              //       child: Text(
-              //         '${widget.ambulance['hospital']}',
-              //         style: const TextStyle(
-              //             color: Colors.white,
-              //             fontWeight: FontWeight.bold,
-              //             fontSize: 18.0),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
           Padding(

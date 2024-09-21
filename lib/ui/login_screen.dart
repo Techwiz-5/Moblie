@@ -213,15 +213,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text("Don't have an account?",
                         style: TextStyle(fontSize: 16)),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    DriverGoogleMapPickupPoint(
-                                      bookingId: 'NOgUVUkAyFqHjC9I2i5S',
-                                    )));
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpScreen(),
+                        ),
+                      ),
                       child: const Text(" SignUp",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16)),

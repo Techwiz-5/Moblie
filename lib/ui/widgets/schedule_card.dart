@@ -5,8 +5,10 @@ import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 
 class Schedule_card extends StatefulWidget {
-  const Schedule_card({super.key, required this.booking});
+  const Schedule_card(
+      {super.key, required this.booking, required this.roleCurrent});
   final dynamic booking;
+  final dynamic roleCurrent;
   @override
   State<Schedule_card> createState() => _ScheduleCardState();
 }
@@ -85,9 +87,14 @@ class _ScheduleCardState extends State<Schedule_card> {
                         children: [
                           Text(
                             DateFormat('dd-MM-yyyy hh:mm').format(
-                                widget.booking['booking_time'].toDate()),
+                              widget.booking['booking_time'].toDate(),
+                            ),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Badge(
@@ -173,24 +180,26 @@ class _ScheduleCardState extends State<Schedule_card> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Center(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DriverGoogleMapPickupPoint(
-                                bookingId: widget.booking['id'],
+                    if (widget.roleCurrent == 'driver')
+                      Center(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DriverGoogleMapPickupPoint(
+                                  bookingId: widget.booking['id'],
+                                ),
                               ),
                             ),
+                            child: const Text("View Google Map"),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
                           ),
-                          child: const Text("View Google Map"),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[100]),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
