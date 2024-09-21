@@ -4,7 +4,12 @@ import 'package:techwiz_5/ui/widgets/schedule_card.dart';
 import 'package:techwiz_5/ui/widgets/schedule_card_not_receive.dart';
 
 class DriverScreen extends StatefulWidget {
-  const DriverScreen({super.key, required this.driverId});
+  const DriverScreen({
+    super.key,
+    required this.driverId,
+    required this.roleCurrent,
+  });
+  final String roleCurrent;
   final String driverId;
 
   @override
@@ -23,28 +28,41 @@ class _DriverScreenState extends State<DriverScreen> {
         initialIndex: 0,
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.blue[100],
+          backgroundColor: const Color.fromARGB(255, 241, 242, 243),
           appBar: AppBar(
             backgroundColor: Colors.blue,
-            title: const Text('Driver Screen'),
-            bottom: TabBar(
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicator: BoxDecoration(
-                gradient: const LinearGradient(colors: [
-                  Color.fromARGB(255, 35, 158, 225),
-                  Color.fromARGB(255, 250, 250, 250)
-                ]),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              tabs: const <Widget>[
-                Tab(
-                  icon: Icon(Icons.event_available_rounded),
-                ),
-                Tab(
-                  icon: Icon(Icons.event_note_rounded),
-                ),
-              ],
-            ),
+            title: widget.roleCurrent == 'admin'
+                ? const Text(
+                    'Work Diary',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  )
+                : const Text(
+                    'Booking Manager',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+            bottom: (widget.roleCurrent == 'driver')
+                ? TabBar(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                    indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(40),
+                        color: Colors.white),
+                    tabs: [
+                      if (widget.roleCurrent == 'driver')
+                        const Tab(
+                          icon: Icon(Icons.event_available_rounded),
+                        ),
+                      if (widget.roleCurrent == 'driver')
+                        const Tab(
+                          icon: Icon(Icons.event_note_rounded),
+                        ),
+                    ],
+                  )
+                : null,
           ),
           body: TabBarView(
             children: <Widget>[
@@ -72,8 +90,8 @@ class _DriverScreenState extends State<DriverScreen> {
                                 child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Schedule_card(
-                                      booking: documentSnapshot,
-                                    )),
+                                        booking: documentSnapshot,
+                                        roleCurrent: widget.roleCurrent)),
                               ),
                             );
                           },
@@ -92,9 +110,8 @@ class _DriverScreenState extends State<DriverScreen> {
                 // searchInput(),
                 Flexible(
                   child: StreamBuilder(
-                    stream: myItems
-                        .where('driver_id', isEqualTo: "")
-                        .snapshots(),
+                    stream:
+                        myItems.where('driver_id', isEqualTo: "").snapshots(),
                     builder:
                         (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                       if (streamSnapshot.hasData) {
@@ -112,8 +129,8 @@ class _DriverScreenState extends State<DriverScreen> {
                                 child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Schedule_card_not_receive(
-                                      booking: documentSnapshot,driverId: widget.driverId
-                                    )),
+                                        booking: documentSnapshot,
+                                        driverId: widget.driverId)),
                               ),
                             );
                           },
@@ -188,4 +205,3 @@ class _DriverScreenState extends State<DriverScreen> {
     // );
   }
 }
-

@@ -17,17 +17,17 @@ class _AmbulanceScreenState extends State<AmbulanceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.withOpacity(0.15),
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text(
-          'Ambulance',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.blue,
+      //   title: const Text(
+      //     'Ambulance',
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      // ),
       body: StreamBuilder(
         stream: myItems.snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {

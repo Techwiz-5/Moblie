@@ -174,28 +174,7 @@ class _AccountCardState extends State<AccountCard> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              if (widget.account['role'] == 'driver')
-                Center(
-                  child: SizedBox(
-                    // width: ,
-                    // () => Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => DriverBookingDetailScreen(
-                    //           driverId: widget.account['uid']),
-                    //     ),
-                    //   ),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text("Work diary"),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[100]),
-                    ),
-                  ),
-                ),
+              
             ],
           ),
         ));
