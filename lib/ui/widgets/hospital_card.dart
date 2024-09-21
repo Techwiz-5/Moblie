@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
+import 'package:techwiz_5/ui/user/hospital_gallery_screen.dart';
 
 class HospitalCard extends StatefulWidget {
   const HospitalCard({super.key, required this.hospital});
@@ -44,13 +45,13 @@ class _HospitalCardState extends State<HospitalCard> {
       context: context,
       position: RelativeRect.fromLTRB(left, top, left + 1, top + 1),
       items: [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
-          child: const Text('Edit'),
+          child: Text('Edit'),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'delete',
-          child: const Text('Delete'),
+          child: Text('Delete'),
         ),
       ],
       elevation: 8.0,
@@ -116,12 +117,12 @@ class _HospitalCardState extends State<HospitalCard> {
                 _onDelete();
                 Navigator.of(context).pop();
               },
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
               child: const Text(
                 'Delete',
                 style: TextStyle(color: Colors.white),
               ),
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             )
           ],
         );
@@ -238,7 +239,7 @@ class _HospitalCardState extends State<HospitalCard> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -257,25 +258,45 @@ class _HospitalCardState extends State<HospitalCard> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            HospitalDetailScreen(hospital: widget.hospital),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                HospitalDetailScreen(hospital: widget.hospital),
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[100]),
+                        child: const Text("View detail"),
                       ),
                     ),
-                    child: const Text("View detail"),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[100]),
-                  ),
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                HospitalGalleryScreen(hospital: widget.hospital),
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[100]),
+                        child: const Text("Gallery"),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
