@@ -8,6 +8,7 @@ import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 
+import '../widgets/MapSearchAndPick.dart';
 import 'hospital_select_card.dart';
 
 class AppointmentScreen extends StatefulWidget {
@@ -21,6 +22,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   double latitude = 0.0;
   double longitude = 0.0;
   bool isLoading = true;
+  bool _showError = false;
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  TextEditingController _phoneController = TextEditingController();
+
   final CollectionReference _hospitalsCollection =
       FirebaseFirestore.instance.collection('hospital');
   final CollectionReference myItems =
@@ -43,6 +49,32 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   void initState() {
     super.initState();
     setupPushNotification();
+    getPhone();
+  }
+
+  getPhone() async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      DocumentSnapshot docSnapshot;
+
+      docSnapshot = await _firestore.collection('account').doc(uid).get();
+
+      if (!docSnapshot.exists) {
+        docSnapshot = await _firestore.collection('driver').doc(uid).get();
+      }
+
+      if (docSnapshot.exists) {
+        var userData = docSnapshot.data() as Map<String, dynamic>;
+        setState(() {
+          _phoneNumber = userData['phone'];
+          _phoneController.text = _phoneNumber;
+        });
+      } else {
+        showSnackBar(context, 'User does not exist in both collections');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   getBookedSlot() async {
@@ -77,6 +109,17 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
 
   _createBooking() async {
+    if (_selectedLocation == null || _address == null || _address!.isEmpty) {
+      setState(() {
+        _showError = true;
+      });
+      return;
+    } else {
+      setState(() {
+        _showError = false;
+      });
+    }
+
     final isValid = _formKeyAmbulance.currentState!.validate();
     if (!isValid) {
       return;
@@ -154,6 +197,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   void setEmergencyBooking(){
     setState(() {
+      _address = '';
       isEmergency = !isEmergency;
     });
   }
@@ -249,6 +293,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      controller: _phoneController, // Link controller here
                       decoration: ambulanceFormField('Phone Number'),
                       autocorrect: true,
                       validator: (value) {
@@ -262,18 +307,63 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+                    // TextFormField(
+                    //   decoration: ambulanceFormField('Address'),
+                    //   autocorrect: true,
+                    //   validator: (value) {
+                    //     if (value == null || value.trim().isEmpty) {
+                    //       return 'Please fill in address';
+                    //     }
+                    //     return null;
+                    //   },
+                    //   onSaved: (value) {
+                    //     _address = value!;
+                    //   },
+                    // ),
+                    SizedBox(
+                      height: 330, // Specify a height
+                      child: MapSearchAndPickWidget(
+                        onPicked: (pickedData) {
+                          // print('===================================');
+                          // print(pickedData.latLong.latitude);
+                          // print(pickedData.latLong.longitude);
+                          // print(pickedData.address);
+                          // print(pickedData.addressName);
+                          // print('===================================');
+                          setState(() {
+                            _selectedLocation = LatLng(
+                              pickedData.latLong.latitude,
+                              pickedData.latLong.longitude,
+                            );
+                            _address = pickedData.addressName;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_showError)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'Please select a valid location and address before creating.',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    // const SizedBox(height: 16),
+                    if(_address != '' && _address != null)
                     TextFormField(
-                      decoration: ambulanceFormField('Address'),
-                      autocorrect: true,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please fill in address';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _address = value!;
-                      },
+                      keyboardType: TextInputType.multiline,
+                      minLines: 2,
+                      maxLines: 2,
+                      decoration: const InputDecoration(
+                        labelText: 'Address',
+                        border: OutlineInputBorder(),
+                      ),
+                      controller: TextEditingController(text: _address),
+                      enabled: false,
                     ),
                     isEmergency ? const SizedBox.shrink() : const SizedBox(height: 16),
                     isEmergency ? const SizedBox.shrink() : TextFormField(
@@ -332,12 +422,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       ],
                     ),
                     isEmergency ? const SizedBox.shrink() : const SizedBox(height: 16),
-                    const Text('Select location'),
-                    LocationInput(onSelectLocation: (location) {
-                      setState(() {
-                        _selectedLocation = location;
-                      });
-                    }),
+                    // const Text('Select location'),
+                    // LocationInput(onSelectLocation: (location) {
+                    //   setState(() {
+                    //     _selectedLocation = location;
+                    //   });
+                    // }),
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,

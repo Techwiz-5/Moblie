@@ -2,17 +2,13 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
 import '../../widgets/MapSearchAndPick.dart';
-import '../../widgets/location_input.dart';
 
 class HospitalFormScreen extends StatefulWidget {
   const HospitalFormScreen({super.key});
