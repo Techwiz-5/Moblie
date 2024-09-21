@@ -28,6 +28,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  Future<void> updateUserStatus(String userId, bool isOnline, bool isDriver) async {
+    String collection = isDriver ? 'driver' : 'account';
+    await FirebaseFirestore.instance.collection(collection).doc(userId).update({
+      'online': isOnline,
+    });
+  }
+
   void loginUser() async {
     final isValid = _formKeyLogin.currentState!.validate();
     if (!isValid) return;
@@ -38,6 +45,20 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text,
         password: passwordController.text,
       );
+
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+        bool isDriver = false;
+        if (userSnapshot.exists && userSnapshot.data() != null) {
+          var userData = userSnapshot.data() as Map<String, dynamic>;
+          if (userData.containsKey('role') && userData['role'] == 'driver') {
+            isDriver = true;
+          }
+        }
+        await updateUserStatus(user.uid, true, isDriver);
+      }
 
       if (userData.user != null) {
         String uid = userData.user!.uid;

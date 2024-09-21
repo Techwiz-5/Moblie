@@ -15,17 +15,54 @@ class DriverPage extends StatefulWidget {
   State<DriverPage> createState() => _DriverPageState();
 }
 
-class _DriverPageState extends State<DriverPage> {
+class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    getUserData();
+    notificationHander();
+  }
+
+  Future<void> updateUserStatus(String userId, bool isOnline) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      Map<String, dynamic> userRole = userDoc.data() as Map<String, dynamic>;
+
+      if (userRole['role'] == 'driver') {
+        await FirebaseFirestore.instance.collection('drivers').doc(userId).update({
+          'online': isOnline,
+        });
+      } else if (userRole['role'] == 'user') {
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'online': isOnline,
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.detached) {
+        await updateUserStatus(user.uid, false);
+      } else if (state == AppLifecycleState.resumed) {
+        await updateUserStatus(user.uid, true);
+      }
+    }
+  }
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   int _pageIndex = 0;
   String _role = '';
   var isLoading = true;
-  @override
-  initState() {
-    super.initState();
-    getUserData();
-    notificationHander();
-  }
 
   void notificationHander(){
     FirebaseMessaging.onMessage.listen((event) async {

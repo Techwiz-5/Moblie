@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/ambluance_libary.dart';
@@ -12,8 +14,49 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _pageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> updateUserStatus(String userId, bool isOnline) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      Map<String, dynamic> userRole = userDoc.data() as Map<String, dynamic>;
+
+      if (userRole['role'] == 'driver') {
+        await FirebaseFirestore.instance.collection('drivers').doc(userId).update({
+          'online': isOnline,
+        });
+      } else if (userRole['role'] == 'user') {
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'online': isOnline,
+        });
+      }
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.detached) {
+        await updateUserStatus(user.uid, false);
+      } else if (state == AppLifecycleState.resumed) {
+        await updateUserStatus(user.uid, true);
+      }
+    }
+  }
 
   final List<Widget> pages = [
     const HospitalScreen(),
