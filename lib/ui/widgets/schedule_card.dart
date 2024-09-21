@@ -30,6 +30,13 @@ class _ScheduleCardState extends State<Schedule_card> {
     return 'Finish';
   }
 
+  setColor(int status) {
+    if (status == 0)
+      return Colors.red;
+    else if (status == 1) return Colors.red;
+    return Colors.blue;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -98,6 +105,7 @@ class _ScheduleCardState extends State<Schedule_card> {
                             width: 10,
                           ),
                           Badge(
+                            backgroundColor: setColor(widget.booking['status']),
                             label: Text(statusText(widget.booking['status'])),
                           ),
                         ],

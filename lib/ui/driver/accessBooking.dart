@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:techwiz_5/ui/widgets/schedule_card.dart';
 import 'package:techwiz_5/ui/widgets/schedule_card_not_receive.dart';
 
-class DriverScreen extends StatefulWidget {
-  const DriverScreen({
+class AccessBooking extends StatefulWidget {
+  const AccessBooking({
     super.key,
     required this.driverId,
     required this.roleCurrent,
@@ -14,10 +14,10 @@ class DriverScreen extends StatefulWidget {
   final String driverId;
 
   @override
-  State<DriverScreen> createState() => _DriverScreenState();
+  State<AccessBooking> createState() => _AccessBookingState();
 }
 
-class _DriverScreenState extends State<DriverScreen> {
+class _AccessBookingState extends State<AccessBooking> {
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('booking');
   @override

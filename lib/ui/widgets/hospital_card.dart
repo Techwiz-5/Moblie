@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/ui/admin/ambulance/amabulance.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_gallery_screen.dart';
@@ -268,14 +267,15 @@ class _HospitalCardState extends State<HospitalCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AmabulanceOfHospitalScreen(
-                            hospital_id: widget.hospital['id'],
-                          ),
-                        ),
-                      ),
+                      onPressed: () =>  {},
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => AmabulanceOfHospitalScreen(
+                      //       hospital_id: widget.hospital['id'],
+                      //     ),
+                      //   ),
+                      // ),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue[100]),
                       icon: Icon(Icons.remove_red_eye_outlined),

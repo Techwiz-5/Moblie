@@ -24,6 +24,23 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   final String orsApiKey =
       '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
 
+  updateLocation() async {
+    try {
+      if (currentLocation != null) {
+        await FirebaseFirestore.instance
+            .collection('booking')
+            .doc(widget.bookingId)
+            .update({
+          'uptLat': currentLocation!.latitude,
+          'uptLng': currentLocation!.longitude,
+        });
+      }
+      // Navigator.pop(context, () {});
+    } on FirebaseException catch (e) {
+      // showSnackBar(context, e.toString());
+    }
+  }
+
   void getData() async {
     try {
       DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
@@ -34,8 +51,8 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
         var bookingData = docSnapshot.data() as Map<String, dynamic>;
 
         setState(() {
-          bookerLocation =
-              LatLng(double.parse(bookingData['latitude']), double.parse(bookingData["longitude"]));
+          bookerLocation = LatLng(double.parse(bookingData['latitude']),
+              double.parse(bookingData["longitude"]));
 
           hospitalId = bookingData["hospital_id"];
         });
@@ -76,6 +93,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           ),
         );
       });
+      updateLocation();
     } on Exception {
       currentLocation = null;
     }
@@ -185,7 +203,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
         child:
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           TextButton(
-            style:  ButtonStyle(
+            style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
             ),
@@ -194,11 +212,10 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => DriverGoogleMapGoHospital(
-                          hospitalId: hospitalId,
-                          bookerLocaitonLat: bookerLocation.latitude,
-                          bookerLocaitonLong: bookerLocation.longitude,
-                          bookingId:widget.bookingId
-                        )),
+                        hospitalId: hospitalId,
+                        bookerLocaitonLat: bookerLocation.latitude,
+                        bookerLocaitonLong: bookerLocation.longitude,
+                        bookingId: widget.bookingId)),
               );
             },
             child: const Text('The patient has been picked up'),

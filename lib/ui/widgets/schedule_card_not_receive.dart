@@ -9,16 +9,18 @@ class Schedule_card_not_receive extends StatefulWidget {
       {super.key, required this.booking, required this.driverId});
   final dynamic booking;
   final String driverId;
+
   @override
   State<Schedule_card_not_receive> createState() =>
       _ScheduleCardNotReceiveState();
 }
 
 class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
+  // late final myItems;
   bool isAdmin = false;
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('booking');
-
+  late final Stream<QuerySnapshot<Map<String, dynamic>>> bookingOfDriver;
   @override
   void initState() {
     super.initState();
@@ -32,6 +34,7 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
   }
 
   void receiveBooking() async {
+
     await FirebaseFirestore.instance
         .collection('booking')
         .doc(widget.booking["id"])
@@ -123,119 +126,119 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
               borderOnForeground: false,
               shadowColor: Colors.white,
               child: ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              DateFormat('dd-MM-yyyy hh:mm').format(
-                                  widget.booking['booking_time'].toDate()),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Badge(
-                              label: Text(statusText(widget.booking['status'])),
-                            ),
-                          ],
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            DateFormat('dd-MM-yyyy hh:mm').format(
+                                widget.booking['booking_time'].toDate()),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Badge(
+                            label: Text(statusText(widget.booking['status'])),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Color.fromARGB(255, 147, 148, 148),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: Color.fromARGB(255, 147, 148, 148),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Address : ${widget.booking['address']} ' ?? '',
-                              // maxLines: ,
-                              // overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                fontWeight: FontWeight.normal,
-                              ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Address : ${widget.booking['address']} ' ?? '',
+                            // maxLines: ,
+                            // overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              height: 1.5,
+                              fontWeight: FontWeight.normal,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.accessible_rounded,
-                            color: Color.fromARGB(255, 147, 148, 148),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Name Patient : ${widget.booking['name_patient']}' ??
-                                  '',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.phone,
-                            color: Color.fromARGB(255, 147, 148, 148),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Phone : ${widget.booking['phone_number']}' ?? '',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => _showMyDialog(),
-                            child: const Text("Receive!"),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue[100]),
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.accessible_rounded,
+                          color: Color.fromARGB(255, 147, 148, 148),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Name Patient : ${widget.booking['name_patient']}' ??
+                                '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              height: 1.5,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.phone,
+                          color: Color.fromARGB(255, 147, 148, 148),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Phone : ${widget.booking['phone_number']}' ?? '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              height: 1.5,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _showMyDialog(),
+                          child: const Text("Receive!"),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[100]),
+                        ),
                       ),
-                    ],
-                  ),
-                 ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           )
         ],
