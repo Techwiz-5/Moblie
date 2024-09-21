@@ -40,9 +40,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   String _phoneNumber = '';
   int _ambulanceType = 0;
   List<Map<String, dynamic>> _hospitals = [];
-  DateTime? selectedDate;
+  DateTime selectedDate = DateTime.now();
   LatLng? _selectedLocation;
   dynamic selectHospital;
+  double money = 0;
+  var isEmergency = false;
 
   @override
   void initState() {
@@ -114,6 +116,22 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     setState(() {});
   }
 
+  String totalMoney(var hospital){
+    String rs = '\$0';
+    if (selectHospital != null) {
+      double mn = (selectHospital['distance'] * selectHospital['price']);
+      if (isEmergency) mn * 1.2;
+      rs = '\$${mn.toStringAsFixed(2)}';
+    }
+    return rs;
+  }
+
+  void setEmergencyBooking(){
+    setState(() {
+      isEmergency = !isEmergency;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +146,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           ),
         ),
         actions: [
-          const SizedBox(height: 20.0),
+          Text(totalMoney(selectHospital),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold
+          ),),
+          const SizedBox(width: 6.0),
           ElevatedButton(
             onPressed: () async {
               await _createBooking();
@@ -144,32 +168,38 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKeyAmbulance,
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                TextFormField(
-                  decoration: ambulanceFormField('Patient name'),
-                  autocorrect: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill type';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _namePatient = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text('You are booking: '),
+                  ElevatedButton(onPressed: setEmergencyBooking, child: Text(isEmergency ? 'Emergency Booking' : 'Normal Booking')),
+                ],
+              ),
+              Form(
+                key: _formKeyAmbulance,
+                child: Column(
                   children: [
-                    const Text('Ambulance type : '),
+                    const SizedBox(height: 10),
+                    isEmergency ? const SizedBox.shrink() : TextFormField(
+                      decoration: ambulanceFormField('Patient name'),
+                      autocorrect: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please fill type';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _namePatient = value!;
+                      },
+                    ),
+                    isEmergency ? const SizedBox.shrink() : const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Text('Basic Life Support'),
+                        const Text('Ambulance type : '),
+                        const Spacer(),
+                        const Text('Basic'),
                         Radio(
                           value: 0,
                           groupValue: _ambulanceType,
@@ -179,7 +209,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             });
                           },
                         ),
-                        const Text('Advanced Life Support'),
+                        const Text('Advanced'),
                         Radio(
                           value: 1,
                           groupValue: _ambulanceType,
@@ -191,202 +221,196 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         ),
                       ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  decoration: ambulanceFormField('Phone Number'),
-                  autocorrect: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in phone number';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _phoneNumber = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  decoration: ambulanceFormField('Address'),
-                  autocorrect: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in address';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _address = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  decoration: ambulanceFormField('Zip code'),
-                  autocorrect: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in address';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _zipCode = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () => _selectDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: Colors.black)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          selectedDate == null
-                              ? 'Select date'
-                              : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
-                        ),
-                        const Icon(Icons.calendar_month_outlined)
-                      ],
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      decoration: ambulanceFormField('Phone Number'),
+                      autocorrect: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please fill in phone number';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _phoneNumber = value!;
+                      },
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text('Select location'),
-                LocationInput(onSelectLocation: (location) {
-                  setState(() {
-                    _selectedLocation = location;
-                  });
-                }),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if(_selectedLocation == null) {
-                        showSnackBar(context, 'Please select location first');
-                        return;
-                      }
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      decoration: ambulanceFormField('Address'),
+                      autocorrect: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please fill in address';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _address = value!;
+                      },
+                    ),
+                    isEmergency ? const SizedBox.shrink() : const SizedBox(height: 16),
+                    isEmergency ? const SizedBox.shrink() : TextFormField(
+                      decoration: ambulanceFormField('Zip code'),
+                      autocorrect: true,
+                      onSaved: (value) {
+                        _zipCode = value!;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Colors.black)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              selectedDate == null
+                                  ? 'Select date'
+                                  : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
                             ),
-                          ),
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          builder: (BuildContext context) {
-                            return Container(
-                              width: double.infinity,
-                              height: MediaQuery.of(context).size.height * 0.9,
-                              child: Scaffold(
-                                appBar: AppBar(
-                                  title: const Text('Select Hospital'),
-                                  centerTitle: true,
-                                ),
-                                body: Column(
-                                  children: [
-                                    Flexible(
-                                      child: StreamBuilder(
-                                        stream: _hospitalsCollection.snapshots(),
-                                        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                                          var isLoading2 = true;
-                                          if (streamSnapshot.hasData) {
-                                            final dataList = streamSnapshot.data!.docs;
-                                            List outputData = [];
-                                            for(var i =0; i <dataList.length; i++) {
-                                              var object = dataList[i].data() as Map;
-                                              object.putIfAbsent('distance', () => FlutterMapMath().distanceBetween(
-                                                  _selectedLocation!.latitude,
-                                                  _selectedLocation!.longitude,
-                                                  double.parse(dataList[i]['latitude']),
-                                                  double.parse(dataList[i]['longitude']),
-                                                  'kilometers'));
-                                              object['distance'] = FlutterMapMath().distanceBetween(
-                                                  _selectedLocation!.latitude,
-                                                  _selectedLocation!.longitude,
-                                                  double.parse(dataList[i]['latitude']),
-                                                  double.parse(dataList[i]['longitude']),
-                                                  'kilometers');
-                                              outputData.add(object);
-                                            }
-                                            outputData.sort((a,b)=>a['distance'].compareTo(b['distance']));
-                                            outputData.reversed;
-
-                                            return StatefulBuilder(
-                                                builder: (BuildContext context, setState) {
-                                                  if(outputData.isNotEmpty){
-                                                    setState((){
-                                                      isLoading2 = false;
-                                                    });
-                                                  }
-
-                                                  print(_selectedLocation!.latitude);
-                                                  return isLoading2 ? CircularProgressIndicator() : SingleChildScrollView(
-                                                    child: ListView.builder(
-                                                      physics: const ClampingScrollPhysics(),
-                                                      shrinkWrap: true,
-                                                      scrollDirection: Axis.vertical,
-                                                      itemCount: outputData.length,
-                                                      itemBuilder: (context, index) {
-                                                        final data = outputData[index];
-                                                        return RadioListTile(
-                                                          selectedTileColor: Colors.blue,
-                                                          title: HospitalSelectCard(
-                                                            hospital: data,
-                                                            color: selectHospital != null && data['id'] == selectHospital['id'] ? Colors.blue.shade50: Colors.white,),
-                                                          value: data,
-                                                          groupValue: selectHospital,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              selectHospital = value!;
-                                                            });
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                                  );
-                                                }
-                                            );
-                                          }
-                                          return const Center(
-                                            child: CircularProgressIndicator(
-                                              color: Colors.blue,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                bottomNavigationBar: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue,
-                                        foregroundColor: Colors.white
-                                    ),
-                                    child: const Text('Select'),
-                                  ),
+                            const Icon(Icons.calendar_month_outlined)
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Select location'),
+                    LocationInput(onSelectLocation: (location) {
+                      setState(() {
+                        _selectedLocation = location;
+                      });
+                    }),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if(_selectedLocation == null) {
+                            showSnackBar(context, 'Please select location first');
+                            return;
+                          }
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
                                 ),
                               ),
-                            );
-                          }).whenComplete(onGoBack);
-                    },
-                    child: Text(selectHospital != null ? selectHospital['name'] : 'Select Hospital'),
-                  ),
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  width: double.infinity,
+                                  height: MediaQuery.of(context).size.height * 0.9,
+                                  child: Scaffold(
+                                    appBar: AppBar(
+                                      title: const Text('Select Hospital'),
+                                      centerTitle: true,
+                                    ),
+                                    body: Column(
+                                      children: [
+                                        Flexible(
+                                          child: StreamBuilder(
+                                            stream: _hospitalsCollection.snapshots(),
+                                            builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                                              var isLoading2 = true;
+                                              if (streamSnapshot.hasData) {
+                                                final dataList = streamSnapshot.data!.docs;
+                                                List outputData = [];
+                                                for(var i =0; i <dataList.length; i++) {
+                                                  var object = dataList[i].data() as Map;
+                                                  object.putIfAbsent('distance', () => FlutterMapMath().distanceBetween(
+                                                      _selectedLocation!.latitude,
+                                                      _selectedLocation!.longitude,
+                                                      double.parse(dataList[i]['latitude']),
+                                                      double.parse(dataList[i]['longitude']),
+                                                      'kilometers'));
+                                                  object['distance'] = FlutterMapMath().distanceBetween(
+                                                      _selectedLocation!.latitude,
+                                                      _selectedLocation!.longitude,
+                                                      double.parse(dataList[i]['latitude']),
+                                                      double.parse(dataList[i]['longitude']),
+                                                      'kilometers');
+                                                  outputData.add(object);
+                                                }
+                                                outputData.sort((a,b)=>a['distance'].compareTo(b['distance']));
+                                                outputData.reversed;
+
+                                                return StatefulBuilder(
+                                                    builder: (BuildContext context, setState) {
+                                                      if(outputData.isNotEmpty){
+                                                        setState((){
+                                                          isLoading2 = false;
+                                                        });
+                                                      }
+
+                                                      print(_selectedLocation!.latitude);
+                                                      return isLoading2 ? CircularProgressIndicator() : SingleChildScrollView(
+                                                        child: ListView.builder(
+                                                          physics: const ClampingScrollPhysics(),
+                                                          shrinkWrap: true,
+                                                          scrollDirection: Axis.vertical,
+                                                          itemCount: outputData.length,
+                                                          itemBuilder: (context, index) {
+                                                            final data = outputData[index];
+                                                            return RadioListTile(
+                                                              selectedTileColor: Colors.blue,
+                                                              title: HospitalSelectCard(
+                                                                hospital: data,
+                                                                color: selectHospital != null && data['id'] == selectHospital['id'] ? Colors.blue.shade50: Colors.white,),
+                                                              value: data,
+                                                              groupValue: selectHospital,
+                                                              onChanged: (value) {
+                                                                setState(() {
+                                                                  selectHospital = value!;
+                                                                });
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    }
+                                                );
+                                              }
+                                              return const Center(
+                                                child: CircularProgressIndicator(
+                                                  color: Colors.blue,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    bottomNavigationBar: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.blue,
+                                            foregroundColor: Colors.white
+                                        ),
+                                        child: const Text('Select'),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).whenComplete(onGoBack);
+                        },
+                        child: Text(selectHospital != null ? selectHospital['name'] : 'Select Hospital'),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

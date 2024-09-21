@@ -91,25 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ],
-        leading: IconButton(
-          onPressed: () async {
-            bool? result = await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => EditProfileScreen(
-                  hospitalId: FirebaseAuth.instance.currentUser!.uid,
-                ),
-              ),
-            );
-            if (result == true) {
-              // Profile was updated, refresh the data
-              getUserData();
-            }
-          },
-          icon: const Icon(
-            Icons.edit,
-            color: Colors.white,
-          ),
-        ),
       ),
       body: (_email.isEmpty)
           ? const Center(
@@ -142,6 +123,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold),
                                   ),
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.email),
+                                  title: Text(_email),
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.home),
+                                  title: Text(_address),
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.call),
+                                  title: Text(_phone),
                                 ),
                               ],
                             ),
@@ -195,14 +188,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
+                  child: _role == 'user' ? Column(
                     children: [
                       SizedBox(
                         width: double.infinity,
                         child: Card(
                           child: ListTile(
-                            leading: const Icon(Icons.person),
-                            title: Text(_name),
+                            leading: const Icon(Icons.edit),
+                            title: const Text('Edit Profile'),
+                            onTap: () async {
+                              bool? result = await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfileScreen(
+                                    hospitalId: FirebaseAuth.instance.currentUser!.uid,
+                                  ),
+                                ),
+                              );
+                              if (result == true) {
+                                // Profile was updated, refresh the data
+                                getUserData();
+                              }
+                            },
                           ),
                         ),
                       ),
@@ -210,36 +216,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         child: Card(
                           child: ListTile(
-                            leading: const Icon(Icons.home),
-                            title: Text(_address),
+                            leading: const Icon(Icons.history),
+                            title: const Text('Booking History'),
+                            onTap: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  const BookingHistoryScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.call),
-                            title: Text(_phone),
-                          ),
-                        ),
-                      ),
-                      if (_role == 'user')
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const BookingHistoryScreen(),
-                              ),
-                            ),
-                            child: Text("Booking History"),
-                          ),
-                        ),
                     ],
-                  ),
+                  ) : const SizedBox.shrink(),
                 ),
               ),
             ],

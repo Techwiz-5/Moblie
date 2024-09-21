@@ -253,7 +253,7 @@ class _HospitalCardState extends State<HospitalCard> {
                       width: 10,
                     ),
                     Text(
-                      widget.hospital['price'] ?? '',
+                      '${widget.hospital['price'].toString()}/km' ,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,

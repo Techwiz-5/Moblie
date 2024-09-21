@@ -20,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
     const HospitalScreen(),
     const AppointmentScreen(),
     const ProfileScreen(),
-    const BookingScreen(),
   ];
 
   @override
@@ -41,35 +40,25 @@ class _HomeScreenState extends State<HomeScreen> {
             activeIcon: Icon(Icons.home, color: Colors.blue,),
             label: 'Home',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            activeIcon: Icon(Icons.calendar_today, color: Colors.blue,),
-            label: 'Booking',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            activeIcon: Icon(Icons.person, color: Colors.blue,),
-            label: 'User',
-          ),
           BottomNavigationBarItem(
             activeIcon: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                  border: Border.all(width: 4.0, color: Colors.white),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Icon(Icons.call)
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                    border: Border.all(width: 4.0, color: Colors.white),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(Icons.call)
 
               ),
             ),
@@ -95,6 +84,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             label: '',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            activeIcon: Icon(Icons.person, color: Colors.blue,),
+            label: 'User',
           ),
         ],
       ),
