@@ -177,6 +177,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'plate_number': plate_number,
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
+        'money': money
       });
       await docRef.update({
         'id': docRef.id,
@@ -236,9 +237,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   String totalMoney(var hospital){
     String rs = '\$0';
+    double stress1 = isEmergency ? 0.2 : 0;
+    double stress2 = _ambulanceType == 1 ? 0.2 : 0;
     if (selectHospital != null) {
       double mn = (selectHospital['distance'] * selectHospital['price']);
-      if (isEmergency) mn * 1.2;
+      mn = mn + mn*stress1 + mn*stress2;
       rs = '\$${mn.toStringAsFixed(2)}';
     }
     return rs;
@@ -317,6 +320,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     Row(
                       children: [
                         const Text('Ambulance type : '),
+                        Tooltip(
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          message: 'Basic: Basic life saver \nAdvance: More life saver facilities',
+                          child: Icon(Icons.info),
+                        ),
                         const Spacer(),
                         const Text('Basic'),
                         Radio(
@@ -386,6 +397,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             );
                             _address = pickedData.addressName;
                           });
+                          print(_selectedLocation);
                         },
                       ),
                     ),

@@ -14,6 +14,7 @@ class MapSearchAndPickWidget extends StatelessWidget {
     return OpenStreetMapSearchAndPick(
       buttonColor: Colors.blue,
       buttonText: 'Set Current Location',
+        buttonHeight: 35,
       onPicked: onPicked ?? (pickedData) {
         print('Location picked: ${pickedData.latLong}');
       },
