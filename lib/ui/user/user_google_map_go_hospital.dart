@@ -9,8 +9,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
-class DriverGoogleMapGoHospital extends StatefulWidget {
-  const DriverGoogleMapGoHospital(
+class UserGoogleMapGoHospital extends StatefulWidget {
+  const UserGoogleMapGoHospital(
       {super.key,
       required this.hospitalId,
       required this.bookerLocaitonLat,
@@ -26,10 +26,10 @@ class DriverGoogleMapGoHospital extends StatefulWidget {
   final double driverLocationLong;
 
   @override
-  State<DriverGoogleMapGoHospital> createState() => _GoogleMapScreen();
+  State<UserGoogleMapGoHospital> createState() => _UserGoogleMapScreen();
 }
 
-class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
+class _UserGoogleMapScreen extends State<UserGoogleMapGoHospital> {
   final MapController mapController = MapController();
   LocationData? currentLocation;
   List<LatLng> routePointNotPass = [];
@@ -110,9 +110,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         );
       });
       // updateLocation();
-    } on Exception {
-      currentLocation = null;
-    }
+    } on Exception {}
   }
 
   Future<void> _getRouteNotPassed(LatLng destination) async {
@@ -237,7 +235,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       appBar: AppBar(
         title: const Text('Map to Hospital'),
       ),
-      body: currentLocation == null
+      body: widget.driverLocationLat == null
           ? const Center(child: CircularProgressIndicator())
           : FlutterMap(
               mapController: mapController,
@@ -252,7 +250,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
                       InteractiveFlag.scrollWheelZoom,
                 ),
                 initialCenter: LatLng(
-                    currentLocation!.latitude!, currentLocation!.longitude!),
+                    widget.driverLocationLat, widget.driverLocationLong!),
                 initialZoom: 15.0,
 
                 // onTap: (tapPosition, point) => _addDestinationMarker(point),
@@ -284,9 +282,9 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (currentLocation != null) {
+          if (widget.driverLocationLat != null) {
             mapController.move(
-              LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+              LatLng(widget.driverLocationLat, widget.driverLocationLong),
               15.0,
             );
           }

@@ -8,9 +8,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:techwiz_5/ui/driver/driver_google_map_go_hospital.dart';
+import 'package:techwiz_5/ui/user/user_google_map_go_hospital.dart';
 
-class DriverGoogleMapPickupPoint extends StatefulWidget {
-  const DriverGoogleMapPickupPoint(
+class UserGoogleMapPickupPoint extends StatefulWidget {
+  const UserGoogleMapPickupPoint(
       {super.key,
       required this.bookingId,
       required this.driverLocationLat,
@@ -19,12 +20,11 @@ class DriverGoogleMapPickupPoint extends StatefulWidget {
   final double driverLocationLat;
   final double driverLocationLong;
   @override
-  State<DriverGoogleMapPickupPoint> createState() => _GoogleMapScreen();
+  State<UserGoogleMapPickupPoint> createState() => _UserGoogleMapScreen();
 }
 
-class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
+class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
   final MapController mapController = MapController();
-  LocationData? currentLocation;
   List<LatLng> routePoints = [];
   List<Marker> markers = [];
   final String orsApiKey =
@@ -82,9 +82,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
           ),
         );
       });
-    } on Exception {
-      currentLocation = null;
-    }
+    } on Exception {}
   }
 
   Future<void> _getRoute(LatLng destination) async {
@@ -136,13 +134,13 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
       appBar: AppBar(
         title: const Text('Map to booker'),
       ),
-      body: currentLocation == null
+      body: widget.driverLocationLat == null
           ? const Center(child: CircularProgressIndicator())
           : FlutterMap(
               mapController: mapController,
               options: MapOptions(
-                initialCenter: LatLng(
-                    currentLocation!.latitude!, currentLocation!.longitude!),
+                initialCenter:
+                    LatLng(driverLocation.latitude, driverLocation.longitude),
                 initialZoom: 15.0,
                 // onTap: (tapPosition, point) => _addDestinationMarker(point),
               ),
@@ -168,9 +166,9 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (currentLocation != null) {
+          if (driverLocation != null) {
             mapController.move(
-              LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+              LatLng(driverLocation.latitude, driverLocation.longitude),
               15.0,
             );
           }
@@ -190,11 +188,16 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DriverGoogleMapGoHospital(
-                        hospitalId: hospitalId,
-                        bookerLocaitonLat: bookerLocation.latitude,
-                        bookerLocaitonLong: bookerLocation.longitude,
-                        bookingId: widget.bookingId)),
+                    builder: (context) => UserGoogleMapGoHospital(
+                          hospitalId: hospitalId,
+                          bookerLocaitonLat: bookerLocation.latitude,
+                          bookerLocaitonLong: bookerLocation.longitude,
+                          bookingId: widget.bookingId,
+                          driverLocationLat:
+                              double.parse(widget.driverLocationLat.toString()),
+                          driverLocationLong: double.parse(
+                              widget.driverLocationLong.toString()),
+                        )),
               );
             },
             child: const Text('The patient has been picked up'),

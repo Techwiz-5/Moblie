@@ -6,6 +6,7 @@ import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
 import 'package:techwiz_5/ui/admin/booking/booking_detail.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
+import 'package:techwiz_5/ui/user/user_google_map_pickup.dart';
 import 'package:techwiz_5/ui/widgets/ribbon.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 // import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance.dart';
@@ -289,6 +290,26 @@ class _BookingCardState extends State<BookingCard> {
                           ),
                           const SizedBox(height: 8),
                         ],
+                      ),
+                      Center(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserGoogleMapPickupPoint(
+                                  bookingId: widget.booking['id'],
+                                  driverLocationLat: double.parse(widget.booking["uptLat"]),
+                                  driverLocationLong: double.parse(widget.booking["uptLng"]),
+                                ),
+                              ),
+                            ),
+                            child: const Text("View Google Map"),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 8),
                     ],
