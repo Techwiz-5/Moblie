@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
+import '../../widgets/MapSearchAndPick.dart';
 import '../../widgets/location_input.dart';
 
 class HospitalFormScreen extends StatefulWidget {
@@ -22,6 +25,8 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   final _formKeyCV = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
+  bool _showError = false;
+
   File? _pickedImage;
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('hospital');
@@ -76,6 +81,18 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   }
 
   _createHospital() async {
+    if (_selectedLocation == null || _address == null || _address!.isEmpty) {
+      setState(() {
+        _showError = true;
+      });
+      return;
+    } else {
+      setState(() {
+        _showError = false;
+      });
+      // print('Creating hospital with address: $_address');
+      // print('Location: ${_selectedLocation?.latitude}, ${_selectedLocation?.longitude}');
+    }
     final isValid = _formKeyCV.currentState!.validate();
     if (!isValid) {
       return;
@@ -108,7 +125,6 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          // title: const Text('Create CV', style: TextStyle(fontWeight: FontWeight.bold),),
           centerTitle: true,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
@@ -151,19 +167,69 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                       _name = value!;
                     },
                   ),
+                  // const SizedBox(height: 16),
+                  // TextFormField(
+                  //   decoration: cvFormField('Address'),
+                  //   autocorrect: true,
+                  //   validator: (value) {
+                  //     if (value == null || value.trim().isEmpty) {
+                  //       return 'Please fill in address';
+                  //     }
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     _address = value!;
+                  //   },
+                  // ),
+
+                  // const SizedBox(height: 16),
+                  // LocationInput(onSelectLocation: (location) {
+                  //   _selectedLocation = location;
+                  // }),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 330, // Specify a height
+                    child: MapSearchAndPickWidget(
+                      onPicked: (pickedData) {
+                        print('===================================');
+                        print(pickedData.latLong.latitude);
+                        print(pickedData.latLong.longitude);
+                        print(pickedData.address);
+                        print(pickedData.addressName);
+                        print('===================================');
+                        setState(() {
+                          _selectedLocation = LatLng(
+                            pickedData.latLong.latitude,
+                            pickedData.latLong.longitude,
+                          );
+                          _address = pickedData.addressName;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (_showError)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Please select a valid location and address before creating.',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    decoration: cvFormField('Address'),
-                    autocorrect: true,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please fill in address';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _address = value!;
-                    },
+                    keyboardType: TextInputType.multiline,
+                    minLines: 3,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      labelText: 'Address',
+                      border: OutlineInputBorder(),
+                    ),
+                    controller: TextEditingController(text: _address),
+                    enabled: false,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -253,10 +319,6 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                       child: Icon(Icons.camera_alt),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  LocationInput(onSelectLocation: (location) {
-                    _selectedLocation = location;
-                  })
                 ],
               ),
             ),
