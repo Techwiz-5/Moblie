@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   padding: const EdgeInsets.all(12),
-                  child: Icon(Icons.call)),
+                  child: const Icon(Icons.call, color: Colors.white,)),
             ),
             icon: Align(
               alignment: Alignment.bottomCenter,
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 padding: const EdgeInsets.all(12),
-                child: Icon(Icons.call),
+                child: const Icon(Icons.call),
               ),
             ),
             label: '',

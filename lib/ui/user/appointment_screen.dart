@@ -326,7 +326,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             borderRadius: BorderRadius.circular(10)
                           ),
                           message: 'Basic: Basic life saver \nAdvance: More life saver facilities',
-                          child: Icon(Icons.info),
+                          child: const Icon(Icons.info, color: Colors.blue,),
                         ),
                         const Spacer(),
                         const Text('Basic'),
