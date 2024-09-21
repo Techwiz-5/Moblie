@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:techwiz_5/data/authentication.dart';
-import 'package:techwiz_5/ui/login_screen.dart';
 import 'package:techwiz_5/ui/widgets/booking_card.dart';
 
 class BookingHistoryScreen extends StatefulWidget {
@@ -21,17 +18,16 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text(
-          'Booking History',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+          backgroundColor: Colors.blue,
+          title: const Text(
+            'Booking History',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white)
-      ),
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: Colors.white)),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('booking')

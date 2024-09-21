@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/widgets/ambulance_card.dart';
@@ -9,9 +10,8 @@ class AmabulanceOfHospitalScreen extends StatefulWidget {
   const AmabulanceOfHospitalScreen({
     super.key,
     required this.hospital_id,
-    // required this.roleCurrent,
   });
-  // final String roleCurrent;
+
   final String hospital_id;
 
   @override
@@ -21,8 +21,36 @@ class AmabulanceOfHospitalScreen extends StatefulWidget {
 
 class _AmabulanceOfHospitalScreenState
     extends State<AmabulanceOfHospitalScreen> {
+  initState() {
+    super.initState();
+    getUserData();
+  }
+
+  String _role = '';
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('ambulance');
+  var isLoading = true;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  void getUserData() async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      DocumentSnapshot docSnapshot;
+
+      docSnapshot = await _firestore.collection('account').doc(uid).get();
+      if (!docSnapshot.exists) {
+        docSnapshot = await _firestore.collection('driver').doc(uid).get();
+      }
+      var userData = docSnapshot.data() as Map<String, dynamic>;
+      setState(() {
+        _role = userData['role'];
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +81,6 @@ class _AmabulanceOfHospitalScreenState
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final DocumentSnapshot documentSnapshot = items[index];
-                    // print('test');
-                    // print(index);
-                    // print(documentSnapshot['id']);
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -78,13 +103,15 @@ class _AmabulanceOfHospitalScreenState
               );
             },
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AmbulanceFormScreen())),
-            child: const Icon(Icons.add),
-          ),
+          floatingActionButton: (_role == 'admin')
+              ? FloatingActionButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AmbulanceFormScreen())),
+                  child: const Icon(Icons.add),
+                )
+              : null,
         ));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/authentication.dart';
 import 'package:techwiz_5/ui/admin/hospital/create_hospital_screen.dart';
@@ -8,7 +9,6 @@ import 'package:techwiz_5/ui/widgets/hospital_card.dart';
 
 class HospitalScreen extends StatefulWidget {
   const HospitalScreen({super.key});
-
   @override
   State<HospitalScreen> createState() => _HospitalScreenState();
 }
@@ -16,7 +16,7 @@ class HospitalScreen extends StatefulWidget {
 class _HospitalScreenState extends State<HospitalScreen> {
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('hospital');
-
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
