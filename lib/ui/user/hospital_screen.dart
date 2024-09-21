@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/user/search_screen.dart';
 import 'package:techwiz_5/ui/widgets/hospital_card.dart';
@@ -43,15 +41,9 @@ class _HospitalScreenState extends State<HospitalScreen> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final DocumentSnapshot documentSnapshot = items[index];
-                      return Padding(
+                      return Container(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          // borderRadius: BorderRadius.circular(20),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: HospitalCard(hospital: documentSnapshot,)
-                          ),
-                        ),
+                        child: HospitalCard(hospital: documentSnapshot,),
                       );
                     },
                   );
