@@ -1,19 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
-import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
-import 'package:techwiz_5/ui/widgets/hospital_card.dart';
 import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 
@@ -54,18 +45,30 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     setupPushNotification();
   }
 
+  getBookedSlot() async {
+    DateTime bkgDate = selectedDate;
+    var fromDate = DateTime(bkgDate.year, bkgDate.month, bkgDate.day);
+    var toDate = DateTime(bkgDate.year, bkgDate.month, bkgDate.day + 1);
+    print(fromDate);
+    List dt = [];
+    QuerySnapshot querySnapshot = await myItems
+        .where('hospital_id', isEqualTo: selectHospital['id'])
+        .where('booking_time', isGreaterThanOrEqualTo: fromDate)
+        .where('booking_time', isLessThan: toDate)
+        .where('time_range', isEqualTo: _timeRange)
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    print(allData);
+    // setState(() {
+    //
+    // });
+  }
+
   void setupPushNotification() async {
     final fcm = FirebaseMessaging.instance;
 
-    final notificationSettings = await fcm.requestPermission(
-      alert: true,
-      announcement: true,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    final notificationSettings = await fcm.requestPermission();
 
     final token = await fcm.getToken();
 
@@ -107,50 +110,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
   }
 
-  Future<void> sendPushMessage() async {
-    // if (_token == null) {
-    //   print('Unable to send FCM message, no token exists.');
-    //   return;
-    // }
-
-
-    final fcm = FirebaseMessaging.instance;
-
-    final token = await fcm.getToken();
-
-
-
-    try {
-      await http.post(
-        Uri.parse('https://api.rnfirebase.io/messaging/send'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: constructFCMPayload(token),
-      );
-      print('FCM request for device sent!');
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  int _messageCount = 0;
-
-  String constructFCMPayload(String? token) {
-    _messageCount++;
-    return jsonEncode({
-      'token': token,
-      'data': {
-        'via': 'FlutterFire Cloud Messaging!!!',
-        'count': _messageCount.toString(),
-      },
-      'notification': {
-        'title': 'Hello FlutterFire!',
-        'body': 'This notification (#$_messageCount) was created via FCM!',
-      },
-    });
-  }
-
   Future<void> sendNotificationToDrivers(String bookingId) async {
     await FirebaseMessaging.instance.subscribeToTopic('allDrivers');
 
@@ -179,6 +138,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   onGoBack() {
+    getBookedSlot();
     setState(() {});
   }
 
@@ -202,18 +162,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: Builder(
-        builder: (context) => FloatingActionButton(
-          onPressed: sendPushMessage,
-          backgroundColor: Colors.white,
-          child: const Icon(Icons.send),
-        ),
-      ),
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text(
-          "Booking",
-          style: TextStyle(
+        title: Text(
+          isEmergency ? 'Emergency Book' : 'Normal Book',
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -378,14 +331,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    isEmergency ? const SizedBox.shrink() : const SizedBox(height: 16),
                     const Text('Select location'),
                     LocationInput(onSelectLocation: (location) {
                       setState(() {
                         _selectedLocation = location;
                       });
                     }),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
