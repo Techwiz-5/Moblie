@@ -151,7 +151,7 @@ class _AccountCardState extends State<AccountCard> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 12, left: 12, top: 4),
+                padding: const EdgeInsets.only(right: 12, left: 12, top: 4, bottom: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
