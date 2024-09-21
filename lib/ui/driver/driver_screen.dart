@@ -26,7 +26,7 @@ class _DriverScreenState extends State<DriverScreen> {
           backgroundColor: Colors.blue[100],
           appBar: AppBar(
             backgroundColor: Colors.blue,
-            title: const Text('TabBar Sample'),
+            title: const Text('Driver Screen'),
             bottom: TabBar(
               indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
