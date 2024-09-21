@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/hospital_card.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -7,31 +10,50 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen>{
+class _SearchScreenState extends State<SearchScreen> {
   final _formSearchMain = GlobalKey<FormState>();
   String _keyword = '';
+  List<DocumentSnapshot> allHospitals = [];
+  List<DocumentSnapshot> searchResults = [];
 
-  search(String value) async {
-    final isValid = _formSearchMain.currentState!.validate();
-    if (!isValid) {
-      return;
-    }
-    _formSearchMain.currentState!.save();
+  @override
+  void initState() {
+    super.initState();
+    fetchHospitals();
   }
 
-  onGoBack(dynamic value) {
-    setState(() {});
+  fetchHospitals() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('hospital').get();
+    setState(() {
+      allHospitals = querySnapshot.docs;
+      searchResults = allHospitals;
+    });
+  }
+
+  search(String value) {
+    setState(() {
+      _keyword = value.toLowerCase();
+      if (_keyword.isEmpty) {
+        searchResults = allHospitals;
+      } else {
+        searchResults = allHospitals.where((doc) {
+          String hospitalName = doc['name'].toString().toLowerCase();
+          return hospitalName.contains(_keyword);
+        }).toList();
+      }
+    });
   }
 
   Container noResult() {
     return Container(
-      alignment: Alignment.topCenter,
+        alignment: Alignment.topCenter,
         margin: const EdgeInsets.symmetric(vertical: 30),
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: const Text('Sorry we did not found any result,\n please try other keyword', style: TextStyle(
-          color: Colors.black45
-        ), textAlign: TextAlign.center,)
-    );
+        child: const Text(
+          'Sorry, we did not find any result,\n please try another keyword',
+          style: TextStyle(color: Colors.black45),
+          textAlign: TextAlign.center,
+        ));
   }
 
   @override
@@ -57,22 +79,41 @@ class _SearchScreenState extends State<SearchScreen>{
                   ),
                   filled: true,
                   hintStyle: TextStyle(color: Colors.grey[800]),
-                  hintText: _keyword,
+                  hintText: 'Search by name',
                   fillColor: Colors.white,
                   isDense: true,
                   contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 ),
                 autofocus: true,
-                onFieldSubmitted: (value) async {
-                  _keyword = value;
-                  await search(value);
+                onChanged: (value) {
+                  search(value);
                 },
                 textInputAction: TextInputAction.search,
               ),
             ),
           ),
-          body: Text("hospital")),
+          body: Column(
+            children: [
+              Flexible(
+                child: searchResults.isEmpty
+                    ? noResult()
+                    : ListView.builder(
+                  itemCount: searchResults.length,
+                  itemBuilder: (context, index) {
+                    final DocumentSnapshot documentSnapshot =
+                    searchResults[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: HospitalCard(
+                        hospital: documentSnapshot,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          )),
     );
   }
 }
