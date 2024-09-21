@@ -20,7 +20,7 @@ class _AdminScreenState extends State<AdminScreen> {
   int _pageIndex = 0;
 
   final List<Widget> pages = [
-    const HospitalAmbulanceManagerScreen(),
+    const HospitalScreen(),
     const BookingScreen(),
     const RevenueScreen(),
     const AccountManagerScreen(),
