@@ -89,18 +89,18 @@ class _BookingScreenState extends State<BookingScreen> {
                   List outputData = [];
                   for(var i =0; i <items.length; i++) {
                     var object = items[i].data() as Map;
-                    object?.putIfAbsent('distance', () => FlutterMapMath().distanceBetween(
+                    object.putIfAbsent('distance', () => FlutterMapMath().distanceBetween(
                         latitude,
                         longitude,
                         double.parse(items[i]['latitude']),
                         double.parse(items[i]['longitude']),
                         'kilometers'));
-                    object?['distance'] = FlutterMapMath().distanceBetween(
+                    object['distance'] = FlutterMapMath().distanceBetween(
                         latitude,
                         longitude,
                         double.parse(items[i]['latitude']),
                         double.parse(items[i]['longitude']),
-                        'kilometers') ?? '';
+                        'kilometers');
                     outputData.add(object);
                   }
                   outputData.sort((a,b)=>a['distance'].compareTo(b['distance']));

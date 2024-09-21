@@ -157,8 +157,8 @@ class _BookingCardScreenState extends State<BookingCardScreen> {
         'create_at': DateTime.now(),
         'booking_time': DateTime.now(),
         'driver_id': '',
-        'latitude': _selectedLocation!.latitude, // Safe now
-        'longitude': _selectedLocation!.longitude, // Safe now
+        'latitude': _selectedLocation!.latitude.toString(),
+        'longitude': _selectedLocation!.longitude.toString(),
       });
       await docRef.update({
         'id': docRef.id,

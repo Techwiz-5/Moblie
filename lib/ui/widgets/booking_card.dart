@@ -227,7 +227,7 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                         Expanded(
                           child: Text(
-                            'Address : ${widget.booking['address']} ' ?? '',
+                            'Address: ${widget.booking['address'] ?? ''}',
                             // maxLines: ,
                             // overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -253,8 +253,7 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                         Expanded(
                           child: Text(
-                            'Name Patient : ${widget.booking['name_patient']}' ??
-                                '',
+                            'Name Patient: ${widget.booking['name_patient'] ?? ''}',
                             style: const TextStyle(
                               fontSize: 14,
                               height: 1.5,
@@ -278,7 +277,7 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                         Expanded(
                           child: Text(
-                            'Phone : ${widget.booking['phone_number']}' ?? '',
+                            'Phone: ${widget.booking['phone_number'] ?? ''}',
                             style: const TextStyle(
                               fontSize: 14,
                               height: 1.5,

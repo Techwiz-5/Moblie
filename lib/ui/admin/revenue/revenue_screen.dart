@@ -121,7 +121,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
                   }
                   final revenueData = chatSnapshot.data!.docs;
                   double money = 0;
-                  chatSnapshot.data!.docs.forEach((f) => money += f['latitude']);
+                  chatSnapshot.data!.docs.forEach((f) => money += double.parse(f['latitude']));
                   return Column(
                     children: [
                       Container(
