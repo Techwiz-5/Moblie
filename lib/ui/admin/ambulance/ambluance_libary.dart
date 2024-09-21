@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/widgets/ambulance_card.dart';
+import 'package:techwiz_5/ui/widgets/ambulance_libary_card.dart';
 
 class AmbulanceLibraryScreen extends StatefulWidget {
   const AmbulanceLibraryScreen({super.key});
+  // final dynamic ambulance;
 
   @override
   State<AmbulanceLibraryScreen> createState() => _AmbulanceLibraryScreenState();
@@ -30,8 +32,8 @@ class _AmbulanceLibraryScreenState extends State<AmbulanceLibraryScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: AmbulanceCard(
+                      padding: const EdgeInsets.all(0),
+                      child: AmbulanceLibraryCard(
                         ambulance: documentSnapshot,
                       ),
                     ),
@@ -46,13 +48,6 @@ class _AmbulanceLibraryScreenState extends State<AmbulanceLibraryScreen> {
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const AmbulanceFormScreen())),
-        child: const Icon(Icons.add),
       ),
     );
   }

@@ -18,24 +18,28 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
   File? _pickedImage;
+
   final CollectionReference _hospitalCollection =
       FirebaseFirestore.instance.collection('hospital');
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('ambulance');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String _type = '';
   String _latitude = '';
   String _longitude = '';
   String _plate_number = '';
   int _enable = 0;
+  late int _availableSlot;
+  late String _idHospital;
   String? _selectedHospital;
   List<Map<String, dynamic>> _hospitals = [];
-  // PlaceLocation? _selectedLocation;
 
   @override
   void initState() {
     super.initState();
     _fetchHospital();
+    getDataHospital();
   }
 
   void _fetchHospital() async {
@@ -43,11 +47,31 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
       QuerySnapshot querySnapshot = await _hospitalCollection.get();
       setState(() {
         _hospitals = querySnapshot.docs.map((doc) {
-          return {'id': doc.id, 'name': doc['name']};
+          return {
+            'id': doc.id,
+            'name': doc['name'],
+          };
         }).toList();
       });
     } catch (e) {
       print('Error fetching hospitals: $e');
+    }
+  }
+
+  void getDataHospital() async {
+    try {
+      DocumentSnapshot docSnapshot =
+          await _firestore.collection('hospital').doc(_selectedHospital).get();
+      if (docSnapshot.exists) {
+        var hospitalData = docSnapshot.data() as Map<String, dynamic>;
+        setState(() {
+          _availableSlot = hospitalData['availableSlot'];
+        });
+      } else {
+        print('No data found for this hospital');
+      }
+    } catch (e) {
+      print('Error fetching hospital data: $e');
     }
   }
 
@@ -87,6 +111,16 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
     }
   }
 
+  _editHospital() async {
+    try {
+      await _firestore.collection('hospital').doc(_selectedHospital).update({
+        'availableSlot': _availableSlot + 1,
+      });
+    } on FirebaseException catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
   _createAmbulance() async {
     final isValid = _formKeyAmbulance.currentState!.validate();
     if (!isValid) {
@@ -95,7 +129,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
     _formKeyAmbulance.currentState!.save();
     try {
       await _uploadImageToFirebase();
-
+      await _editHospital();
       DocumentReference docRef = await myItems.add({
         'type': _type,
         'latitude': _latitude,
@@ -253,6 +287,7 @@ class _AmbulanceFromScreenState extends State<AmbulanceFormScreen> {
                       setState(
                         () {
                           _selectedHospital = val;
+                          getDataHospital();
                         },
                       );
                     },

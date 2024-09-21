@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/admin/ambulance/amabulance.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_gallery_screen.dart';
@@ -264,38 +265,45 @@ class _HospitalCardState extends State<HospitalCard> {
                 ),
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                HospitalDetailScreen(hospital: widget.hospital),
+                    IconButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AmabulanceOfHospitalScreen(
+                            hospital_id: widget.hospital['id'],
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[100]),
-                        child: const Text("View detail"),
                       ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100]),
+                      icon: Icon(Icons.remove_red_eye_outlined),
                     ),
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                HospitalGalleryScreen(hospital: widget.hospital),
-                          ),
+                    IconButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HospitalGalleryScreen(hospital: widget.hospital),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[100]),
-                        child: const Text("Gallery"),
                       ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100]),
+                      icon: Icon(Icons.photo),
                     ),
+                    IconButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HospitalDetailScreen(hospital: widget.hospital),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100]),
+                      icon: Icon(Icons.map),
+                    )
                   ],
                 ),
               ],

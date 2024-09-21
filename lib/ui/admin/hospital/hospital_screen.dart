@@ -21,31 +21,31 @@ class _HospitalScreenState extends State<HospitalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.withOpacity(0.15),
-      // appBar: AppBar(
-      //   backgroundColor: Colors.blue,
-      //   title: const Text(
-      //     'Hospital',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontWeight: FontWeight.bold,
-      //     ),
-      //   ),
-      //   centerTitle: true,
-      //   actions: [
-      //     IconButton(
-      //       onPressed: () async {
-      //         await AuthServices().logout();
-      //         Navigator.of(context).pushReplacement(
-      //           MaterialPageRoute(builder: (context) => const LoginScreen()),
-      //         );
-      //       },
-      //       icon: const Icon(
-      //         Icons.exit_to_app_rounded,
-      //         color: Colors.white,
-      //       ),
-      //     ),
-      //   ],
-      // ),
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: const Text(
+          'Hospital',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await AuthServices().logout();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            icon: const Icon(
+              Icons.exit_to_app_rounded,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
       body: StreamBuilder(
         stream: myItems.snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
