@@ -40,6 +40,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   String _zipCode = '';
   String _phoneNumber = '';
   int _ambulanceType = 0;
+  String _timeRange = 'am';
   List<Map<String, dynamic>> _hospitals = [];
   DateTime selectedDate = DateTime.now();
   LatLng? _selectedLocation;
@@ -92,6 +93,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'urgent': 0,
         'create_at': DateTime.now(),
         'booking_time': selectedDate,
+        'time_range': _timeRange,
         'driver_id': '',
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
@@ -243,8 +245,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             children: [
               Row(
                 children: [
-                  const Text('You are booking: '),
-                  ElevatedButton(onPressed: setEmergencyBooking, child: Text(isEmergency ? 'Emergency Booking' : 'Normal Booking')),
+                  const Text('Change to: '),
+                  ElevatedButton(onPressed: setEmergencyBooking, child: Text(isEmergency ? 'Normal Booking' : 'Emergency Booking')),
                 ],
               ),
               Form(
@@ -329,25 +331,52 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    GestureDetector(
-                      onTap: () => _selectDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            border: Border.all(color: Colors.black)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              selectedDate == null
-                                  ? 'Select date'
-                                  : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
+                    isEmergency ? const SizedBox.shrink() : Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(color: Colors.black)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    selectedDate == null
+                                        ? 'Select date'
+                                        : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
+                                  ),
+                                  const Icon(Icons.calendar_month_outlined)
+                                ],
+                              ),
                             ),
-                            const Icon(Icons.calendar_month_outlined)
-                          ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 30),
+                        const Text('am'),
+                        Radio(
+                          value: 'am',
+                          groupValue: _timeRange,
+                          onChanged: (value) {
+                            setState(() {
+                              _timeRange = value!;
+                            });
+                          },
+                        ),
+                        const Text('pm'),
+                        Radio(
+                          value: 'pm',
+                          groupValue: _timeRange,
+                          onChanged: (value) {
+                            setState(() {
+                              _timeRange = value!;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     const Text('Select location'),
@@ -409,6 +438,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                                       'kilometers');
                                                   outputData.add(object);
                                                 }
+
                                                 outputData.sort((a,b)=>a['distance'].compareTo(b['distance']));
                                                 outputData.reversed;
 
@@ -420,8 +450,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                                         });
                                                       }
 
-                                                      print(_selectedLocation!.latitude);
-                                                      return isLoading2 ? CircularProgressIndicator() : SingleChildScrollView(
+                                                      return isLoading2 ? const CircularProgressIndicator() : SingleChildScrollView(
                                                         child: ListView.builder(
                                                           physics: const ClampingScrollPhysics(),
                                                           shrinkWrap: true,
@@ -433,7 +462,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                                               selectedTileColor: Colors.blue,
                                                               title: HospitalSelectCard(
                                                                 hospital: data,
-                                                                color: selectHospital != null && data['id'] == selectHospital['id'] ? Colors.blue.shade50: Colors.white,),
+                                                                color: selectHospital != null && data['id'] == selectHospital['id'] ? Colors.blue.shade50: Colors.white,
+                                                                bkgDate: selectedDate,
+                                                                timeRange: _timeRange,
+                                                                ),
                                                               value: data,
                                                               groupValue: selectHospital,
                                                               onChanged: (value) {
