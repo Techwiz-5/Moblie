@@ -137,7 +137,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Address and inf user '),
+        title: const Text('Map to booker'),
       ),
       body: currentLocation == null
           ? const Center(child: CircularProgressIndicator())

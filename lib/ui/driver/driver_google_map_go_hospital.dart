@@ -224,7 +224,7 @@ void receiveBooking() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('go hospital '),
+        title: const Text('Map to Hospital'),
       ),
       body: currentLocation == null
           ? const Center(child: CircularProgressIndicator())
