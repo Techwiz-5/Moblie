@@ -130,6 +130,28 @@ class _HospitalSelectCardState extends State<HospitalSelectCard> {
               ),
             ],
           ),
+          Row(
+            children: [
+              const Icon(
+                Icons.attach_money,
+                color: Colors.red,
+                size: 18,
+              ),
+              const SizedBox(
+                width: 6,
+              ),
+              Expanded(
+                child: Text(
+                  '\$${widget.hospital['price'] ?? ''}/km',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: Colors.red
+                  ),
+                ),
+              ),
+            ],
+          ),
           Text(
             '${widget.hospital['description'] ?? ''} ',
             maxLines: 2,

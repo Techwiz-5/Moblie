@@ -127,10 +127,12 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    _savePlace(pickedLocation.latitude, pickedLocation.longitude);
+    // _savePlace(pickedLocation.latitude, pickedLocation.longitude);
     setState(() {
       _pickedLocation = LatLng(pickedLocation.latitude, pickedLocation.longitude);
     });
+
+    widget.onSelectLocation(_pickedLocation!);
   }
 
   @override
