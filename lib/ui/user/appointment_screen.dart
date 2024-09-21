@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
@@ -44,6 +45,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   dynamic selectHospital;
   double money = 0;
   var isEmergency = false;
+  List bookedAmbulance = [];
+  List lstAmbulance = [];
+  String plate_number = '';
 
   @override
   void initState() {
@@ -77,12 +81,20 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
   }
 
+  getAllAmbulance() async {
+    QuerySnapshot querySnapshot = await myItems
+        .where('hospital_id', isEqualTo: selectHospital['id'])
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    setState(() {
+      lstAmbulance = allData;
+    });
+  }
+
   getBookedSlot() async {
     DateTime bkgDate = selectedDate;
     var fromDate = DateTime(bkgDate.year, bkgDate.month, bkgDate.day);
     var toDate = DateTime(bkgDate.year, bkgDate.month, bkgDate.day + 1);
-    print(fromDate);
-    List dt = [];
     QuerySnapshot querySnapshot = await myItems
         .where('hospital_id', isEqualTo: selectHospital['id'])
         .where('booking_time', isGreaterThanOrEqualTo: fromDate)
@@ -90,11 +102,32 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         .where('time_range', isEqualTo: _timeRange)
         .get();
     final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    setState(() {
+      bookedAmbulance = allData;
+    });
+  }
 
-    print(allData);
-    // setState(() {
-    //
-    // });
+  void getAmbulancePlate(){
+    String rs = '';
+    List bkgedAmbulance = [];
+    List avaiAmbulance = [];
+    for(var dt in bookedAmbulance){
+      bkgedAmbulance.add(dt['plate_number']);
+    }
+    for(var dt in lstAmbulance){
+      avaiAmbulance.add(dt['plate_number']);
+    }
+
+    for(var dt in avaiAmbulance){
+      if(!bkgedAmbulance.contains(dt)){
+        rs = dt;
+        break;
+      }
+    }
+    setState(() {
+      plate_number = rs;
+    });
+    print(plate_number);
   }
 
   void setupPushNotification() async {
@@ -126,7 +159,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
     _formKeyAmbulance.currentState!.save();
     try {
-      myItems.add({
+      DocumentReference docRef = await myItems.add({
         'name_patient': _namePatient,
         'address': _address,
         'zip_code': _zipCode,
@@ -141,29 +174,43 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'booking_time': selectedDate,
         'time_range': _timeRange,
         'driver_id': '',
+        'plate_number': plate_number,
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
       });
-      // await docRef.update({
-      //   'id': docRef.id,
-      // });
-      // await sendNotificationToDrivers(docRef.id);
+      await docRef.update({
+        'id': docRef.id,
+      });
+      await sendNotificationToDrivers(docRef.id);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }
   }
 
-  Future<void> sendNotificationToDrivers(String bookingId) async {
-    await FirebaseMessaging.instance.subscribeToTopic('allDrivers');
+  Future<List<String>> _fetchInactiveDriversTokens() async {
+    List<String> driverTokens = [];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('driver')
+          .where('enable', isEqualTo: 0)
+          .get();
 
-    await FirebaseMessaging.instance.sendMessage(
-      to: '/topics/allDrivers',
-      data: {
-        'title': 'New Ride Request',
-        'body': 'A user has requested a ride.',
-        'bookingId': bookingId,
-      },
-    );
+      for (var doc in querySnapshot.docs) {
+        driverTokens.add(doc['fcm_token']);
+      }
+    } catch (e) {
+      print('Error fetching drivers: $e');
+    }
+    return driverTokens;
+  }
+
+
+  Future<void> sendNotificationToDrivers(String bookingId) async {
+    List<String> driverTokens = await _fetchInactiveDriversTokens();
+
+    for (String token in driverTokens) {
+      await NotiService().pushNotifications(title: 'Test ', body: "Test body", token: token);
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -180,8 +227,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
   }
 
-  onGoBack() {
-    getBookedSlot();
+  onGoBack() async {
+    await getAllAmbulance();
+    await getBookedSlot();
+    getAmbulancePlate();
     setState(() {});
   }
 
@@ -553,6 +602,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         child: Text(selectHospital != null ? selectHospital['name'] : 'Select Hospital'),
                       ),
                     ),
+                    selectHospital != null ? Text('Plate number: $plate_number') : const SizedBox.shrink()
                   ],
                 ),
               ),

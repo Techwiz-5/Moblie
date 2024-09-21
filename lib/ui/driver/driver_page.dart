@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
@@ -22,7 +24,16 @@ class _DriverPageState extends State<DriverPage> {
   initState() {
     super.initState();
     getUserData();
+    notificationHander();
   }
+
+  void notificationHander(){
+    FirebaseMessaging.onMessage.listen((event) async {
+      print(event.notification!.title);
+      NotiService().showNotification(event);
+    });
+  }
+
 
   void getUserData() async {
     try {
@@ -41,12 +52,10 @@ class _DriverPageState extends State<DriverPage> {
     } catch (e) {
       print('Error fetching user data: $e');
     }
-    // print(_role);
   }
 
   @override
   Widget build(BuildContext context) {
-    print(_role);
     final List<Widget> pages = [
       DriverScreen(
         driverId: widget.driverId,
