@@ -15,11 +15,15 @@ class DriverGoogleMapGoHospital extends StatefulWidget {
       required this.hospitalId,
       required this.bookerLocaitonLat,
       required this.bookerLocaitonLong,
-      required this.bookingId});
+      required this.bookingId,
+      required this.driverLocationLat,
+      required this.driverLocationLong});
   final String hospitalId;
   final double bookerLocaitonLat;
   final double bookerLocaitonLong;
   final String bookingId;
+  final double driverLocationLat;
+  final double driverLocationLong;
 
   @override
   State<DriverGoogleMapGoHospital> createState() => _GoogleMapScreen();
@@ -59,6 +63,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   }
 
   LatLng hospitalLocation = LatLng(0, 0);
+  LatLng driverLocation = LatLng(0, 0);
 
   @override
   void initState() {
@@ -68,61 +73,50 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       markers = [];
 
       _addMarker();
+      driverLocation =
+          LatLng(widget.driverLocationLat, widget.driverLocationLong);
       _getCurrentLocation();
     });
   }
 
-  updateLocation() async {
-    try {
-      if (currentLocation != null) {
-        await FirebaseFirestore.instance
-            .collection('booking')
-            .doc(widget.bookingId)
-            .update({
-          'uptLat': currentLocation!.latitude,
-          'uptLng': currentLocation!.longitude,
-        });
-      }
-      // Navigator.pop(context, () {});
-    } on FirebaseException catch (e) {
-      // showSnackBar(context, e.toString());
-    }
-  }
+  // updateLocation() async {
+  //   try {
+  //     if (currentLocation != null) {
+  //       await FirebaseFirestore.instance
+  //           .collection('booking')
+  //           .doc(widget.bookingId)
+  //           .update({
+  //         'uptLat': currentLocation!.latitude,
+  //         'uptLng': currentLocation!.longitude,
+  //       });
+  //     }
+  //     // Navigator.pop(context, () {});
+  //   } on FirebaseException catch (e) {
+  //     // showSnackBar(context, e.toString());
+  //   }
+  // }
 
   Future<void> _getCurrentLocation() async {
-    var location = Location();
-
     try {
-      var userLocation = await location.getLocation();
       setState(() {
-        currentLocation = userLocation;
         markers.add(
           Marker(
             width: 80.0,
             height: 80.0,
-            point: LatLng(userLocation.latitude!, userLocation.longitude!),
+            point: LatLng(driverLocation.latitude, driverLocation.longitude),
             child: const Icon(Icons.location_history,
                 color: Color.fromARGB(255, 11, 11, 11), size: 40.0),
           ),
         );
       });
-      updateLocation();
+      // updateLocation();
     } on Exception {
       currentLocation = null;
     }
-
-    location.onLocationChanged.listen((LocationData newLocation) {
-      setState(() {
-        currentLocation = newLocation;
-      });
-    });
   }
 
   Future<void> _getRouteNotPassed(LatLng destination) async {
-    if (currentLocation == null) return;
-
-    final start =
-        LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
+    final start = LatLng(driverLocation.latitude, driverLocation.longitude);
     final response = await http.get(
       Uri.parse(
           'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${start.longitude},${start.latitude}&end=${destination.longitude},${destination.latitude}'),
@@ -140,10 +134,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   }
 
   Future<void> _getRoutePassed(LatLng startPoint) async {
-    if (currentLocation == null) return;
-
-    final start =
-        LatLng(currentLocation!.latitude!, currentLocation!.longitude!);
+    final start = LatLng(driverLocation.latitude, driverLocation.longitude);
     final response = await http.get(
       Uri.parse(
           'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$orsApiKey&start=${startPoint.longitude},${startPoint.latitude}&end=${start.longitude},${start.latitude}'),
