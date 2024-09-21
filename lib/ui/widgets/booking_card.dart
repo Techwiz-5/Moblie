@@ -114,7 +114,7 @@ class _BookingCardState extends State<BookingCard> {
 
   String statusText (int status){
     if(status == 0) return 'Pending';
-    else if(status == 1) return 'Running';
+    else if(status == 1) return 'Received';
     return 'Finish';
   }
 

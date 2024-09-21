@@ -14,10 +14,12 @@ class DriverGoogleMapGoHospital extends StatefulWidget {
       {super.key,
       required this.hospitalId,
       required this.bookerLocaitonLat,
-      required this.bookerLocaitonLong});
+      required this.bookerLocaitonLong,
+      required this.bookingId});
   final String hospitalId;
   final double bookerLocaitonLat;
   final double bookerLocaitonLong;
+  final String bookingId;
 
   @override
   State<DriverGoogleMapGoHospital> createState() => _GoogleMapScreen();
@@ -30,8 +32,8 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   List<LatLng> routePointPassed = [];
   List<Marker> markers = [];
   //location for driver and hospital
-  LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
-  LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
+  // LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
+  // LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
   final String orsApiKey =
       '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
   void getData() async {
@@ -45,7 +47,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
 
         setState(() {
           hospitalLocation =
-              LatLng(hospitalData['latitude'], hospitalData["longitude"]);
+              LatLng(double.parse(hospitalData['latitude']), double.parse(hospitalData["longitude"]));
           // hospitalId = hospitalData["hospital_id"].to;
         });
       } else {
@@ -148,6 +150,49 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       });
     } else {}
   }
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure you want to take this booking??'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('This is a demo alert dialog.'),
+                Text('Would you like to approve of this message?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                // receiveBooking();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Receive'),
+              onPressed: () {
+                receiveBooking();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+void receiveBooking() async {
+    await FirebaseFirestore.instance
+        .collection('booking')
+        .doc(widget.bookingId)
+        .update({
+      'status': "2",
+    });
+  }
 
   void _addMarker() {
     setState(() {
@@ -239,32 +284,27 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
-        child: Row(children: <Widget>[
-          IconButton(
-            tooltip: '-',
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {},
-          ),
-          // But(
-          //   tooltip: 'Open navigation menu',
-          //   icon: const Icon(Icons.menu),
-          //   onPressed: () {},
-          // ),
-          IconButton(
-            tooltip: 'Back',
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: 'Call',
-            icon: const Icon(Icons.call),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: '+',
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {},
-          ),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[
+        TextButton(
+            style:  ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
+            onPressed: () {
+              _showMyDialog();
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => DriverGoogleMapGoHospital(
+              //             hospitalId: hospitalId,
+              //             bookerLocaitonLat: bookerLocation.latitude,
+              //             bookerLocaitonLong: bookerLocation.longitude,
+              //           )),
+              // );
+            },
+            child: const Text('finished!'),
+          )
+         
         ]),
       ),
       // floatingActionButton: const FloatingActionButton(onPressed: null),

@@ -34,7 +34,8 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
         var bookingData = docSnapshot.data() as Map<String, dynamic>;
 
         setState(() {
-          bookerLocation =  LatLng(bookingData['latitude'], bookingData["longitude"]);
+          bookerLocation =
+              LatLng(double.parse(bookingData['latitude']), double.parse(bookingData["longitude"]));
 
           hospitalId = bookingData["hospital_id"];
         });
@@ -181,20 +182,13 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
-        child: Row(children: <Widget>[
-          // But(
-          //   tooltip: 'Open navigation menu',
-          //   icon: const Icon(Icons.menu),
-          //   onPressed: () {},
-          // ),
-          IconButton(
-            tooltip: 'Back',
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: 'Call',
-            icon: const Icon(Icons.call),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          TextButton(
+            style:  ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -203,10 +197,12 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
                           hospitalId: hospitalId,
                           bookerLocaitonLat: bookerLocation.latitude,
                           bookerLocaitonLong: bookerLocation.longitude,
+                          bookingId:widget.bookingId
                         )),
               );
             },
-          ),
+            child: const Text('The patient has been picked up'),
+          )
         ]),
       ),
       // floatingActionButton: const FloatingActionButton(onPressed: null),

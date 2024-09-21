@@ -27,7 +27,7 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
   String statusText(int status) {
     if (status == 0)
       return 'Pending';
-    else if (status == 1) return 'Running';
+    else if (status == 1) return 'Received';
     return 'Finish';
   }
 
@@ -37,6 +37,7 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
         .doc(widget.booking["id"])
         .update({
       'driver_id': widget.driverId,
+      'status': "1",
     });
   }
 
