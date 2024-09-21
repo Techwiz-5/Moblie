@@ -136,8 +136,8 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
         'address': _address,
         'phone': _phone,
         'price': _price,
-        'latitude': _latitude,
-        'longitude': _longitude,
+        'latitude': _selectedLocation!.latitude,
+        'longitude': _selectedLocation!.longitude,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
       Navigator.pop(context, () {});

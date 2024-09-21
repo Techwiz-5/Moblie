@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
           case 'admin':
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => AdminScreen(userData: userData),
+                builder: (context) => const AdminScreen(),
               ),
             );
             break;

@@ -84,7 +84,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       await docRef.update({
         'id': docRef.id,
       });
-      // await sendNotificationToDrivers(docRef.id);
+      await sendNotificationToDrivers(docRef.id);
     } on FirebaseException catch (e) {
       showSnackBar(context, e.toString());
     }

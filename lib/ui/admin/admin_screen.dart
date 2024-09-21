@@ -9,8 +9,7 @@ import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/widgets/booking_card.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({super.key, required this.userData});
-  final dynamic userData;
+  const AdminScreen({super.key});
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
