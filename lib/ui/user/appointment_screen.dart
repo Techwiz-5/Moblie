@@ -78,8 +78,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'create_at': DateTime.now(),
         'booking_time': selectedDate,
         'driver_id': '',
-        'latitude': _selectedLocation!.latitude,
-        'longitude': _selectedLocation!.longitude,
+        'latitude': _selectedLocation!.latitude.toString(),
+        'longitude': _selectedLocation!.longitude.toString(),
       });
       await docRef.update({
         'id': docRef.id,
