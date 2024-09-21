@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
@@ -20,6 +23,7 @@ class AppointmentScreen extends StatefulWidget {
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
+  DateFormat dateFormat = DateFormat("dd-MM-yyyy");
   double latitude = 0.0;
   double longitude = 0.0;
   bool isLoading = true;
@@ -107,19 +111,19 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     });
   }
 
-  void getAmbulancePlate(){
+  void getAmbulancePlate() {
     String rs = '';
     List bkgedAmbulance = [];
     List avaiAmbulance = [];
-    for(var dt in bookedAmbulance){
+    for (var dt in bookedAmbulance) {
       bkgedAmbulance.add(dt['plate_number']);
     }
-    for(var dt in lstAmbulance){
+    for (var dt in lstAmbulance) {
       avaiAmbulance.add(dt['plate_number']);
     }
 
-    for(var dt in avaiAmbulance){
-      if(!bkgedAmbulance.contains(dt)){
+    for (var dt in avaiAmbulance) {
+      if (!bkgedAmbulance.contains(dt)) {
         rs = dt;
         break;
       }
@@ -139,7 +143,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
     fcm.subscribeToTopic('booking');
   }
-
 
   _createBooking() async {
     if (_selectedLocation == null || _address == null || _address!.isEmpty) {
@@ -177,7 +180,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'plate_number': plate_number,
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
-        'money': money
+        'money': money,
+        'uptLat': 0.0,
+        'uptLng': 0.0
       });
       await docRef.update({
         'id': docRef.id,
@@ -205,12 +210,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return driverTokens;
   }
 
-
   Future<void> sendNotificationToDrivers(String bookingId) async {
     List<String> driverTokens = await _fetchInactiveDriversTokens();
 
     for (String token in driverTokens) {
-      await NotiService().pushNotifications(title: 'Test ', body: "Test body", token: token);
+      await NotiService()
+          .pushNotifications(title: 'Test ', body: "Test body", token: token);
     }
   }
 
@@ -235,23 +240,244 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     setState(() {});
   }
 
-  String totalMoney(var hospital){
-    String rs = '\$0';
+  double totalMoney(var hospital) {
     double stress1 = isEmergency ? 0.2 : 0;
-    double stress2 = _ambulanceType == 1 ? 0.2 : 0;
     if (selectHospital != null) {
       double mn = (selectHospital['distance'] * selectHospital['price']);
-      mn = mn + mn*stress1 + mn*stress2;
-      rs = '\$${mn.toStringAsFixed(2)}';
+      mn = mn + mn * stress1;
+      return mn;
     }
-    return rs;
+    return 0;
   }
 
-  void setEmergencyBooking(){
+  void setEmergencyBooking() {
     setState(() {
       _address = '';
       isEmergency = !isEmergency;
     });
+  }
+
+  Future<void> _showDialogConfirm() async {
+    return showModalBottomSheet(
+      context: context,
+      // barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Confirm information"),
+            centerTitle: true,
+          ),
+          body: Container(
+            margin: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Color.fromARGB(255, 92, 91, 91),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Text(
+                        _address,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.local_hospital,
+                      color: Color.fromARGB(255, 92, 91, 91),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Text(
+                        selectHospital['name'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.date_range,
+                      color: Color.fromARGB(255, 92, 91, 91),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Text(
+                        dateFormat.format(selectedDate),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+                InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]),
+                    margin: EdgeInsets.all(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            'images/pngwing.png',
+                            width: 60,
+                          ),
+                          const SizedBox(width: 6),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Basic Life Saver',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  'This ambulance is only for those paients who do not need any medical help like oxygen any other.',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: TextStyle(fontSize: 13),
+                                )
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '\$${totalMoney(selectHospital).toStringAsFixed(2)}',
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]),
+                    margin: const EdgeInsets.all(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'images/pngwing.png',
+                            width: 60,
+                          ),
+                          const SizedBox(width: 6),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Advanced Life Saver',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  'This ambulance is for paients who need oxygen Facility.',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: TextStyle(fontSize: 13),
+                                )
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '\$${(totalMoney(selectHospital)*1.2).toStringAsFixed(2)}',
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Plate number:', style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                      ),),
+                      Text('$plate_number', style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                      ))
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          bottomNavigationBar: Container(
+            margin: EdgeInsets.all(20),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.lightBlueAccent,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text("Confirm and Book", style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20
+              ),),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -268,20 +494,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           ),
         ),
         actions: [
-          Text(totalMoney(selectHospital),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold
-          ),),
-          const SizedBox(width: 6.0),
           ElevatedButton(
             onPressed: () async {
-              await _createBooking();
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HomeScreen()));
+              await _showDialogConfirm();
+              // Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const HomeScreen()));
             },
             child: const Text('Create Booking'),
           ),
@@ -295,7 +514,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               Row(
                 children: [
                   const Text('Change to: '),
-                  ElevatedButton(onPressed: setEmergencyBooking, child: Text(isEmergency ? 'Normal Booking' : 'Emergency Booking')),
+                  ElevatedButton(
+                      onPressed: setEmergencyBooking,
+                      child: Text(isEmergency
+                          ? 'Normal Booking'
+                          : 'Emergency Booking')),
                 ],
               ),
               Form(
@@ -303,55 +526,24 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    isEmergency ? const SizedBox.shrink() : TextFormField(
-                      decoration: ambulanceFormField('Patient name'),
-                      autocorrect: true,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please fill type';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _namePatient = value!;
-                      },
-                    ),
-                    isEmergency ? const SizedBox.shrink() : const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Text('Ambulance type : '),
-                        Tooltip(
-                          decoration: BoxDecoration(
-                            color: Colors.black87,
-                            borderRadius: BorderRadius.circular(10)
+                    isEmergency
+                        ? const SizedBox.shrink()
+                        : TextFormField(
+                            decoration: ambulanceFormField('Patient name'),
+                            autocorrect: true,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please fill type';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _namePatient = value!;
+                            },
                           ),
-                          message: 'Basic: Basic life saver \nAdvance: More life saver facilities',
-                          child: const Icon(Icons.info, color: Colors.blue,),
-                        ),
-                        const Spacer(),
-                        const Text('Basic'),
-                        Radio(
-                          value: 0,
-                          groupValue: _ambulanceType,
-                          onChanged: (int? value) {
-                            setState(() {
-                              _ambulanceType = value!;
-                            });
-                          },
-                        ),
-                        const Text('Advanced'),
-                        Radio(
-                          value: 1,
-                          groupValue: _ambulanceType,
-                          onChanged: (int? value) {
-                            setState(() {
-                              _ambulanceType = value!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
+                    isEmergency
+                        ? const SizedBox.shrink()
+                        : const SizedBox(height: 10),
                     TextFormField(
                       controller: _phoneController, // Link controller here
                       decoration: ambulanceFormField('Phone Number'),
@@ -414,75 +606,87 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         ),
                       ),
                     // const SizedBox(height: 16),
-                    if(_address != '' && _address != null)
-                    TextFormField(
-                      keyboardType: TextInputType.multiline,
-                      minLines: 2,
-                      maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Address',
-                        border: OutlineInputBorder(),
+                    if (_address != '' && _address != null)
+                      TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        minLines: 2,
+                        maxLines: 2,
+                        decoration: const InputDecoration(
+                          labelText: 'Address',
+                          border: OutlineInputBorder(),
+                        ),
+                        controller: TextEditingController(text: _address),
+                        enabled: false,
                       ),
-                      controller: TextEditingController(text: _address),
-                      enabled: false,
-                    ),
-                    isEmergency ? const SizedBox.shrink() : const SizedBox(height: 16),
-                    isEmergency ? const SizedBox.shrink() : TextFormField(
-                      decoration: ambulanceFormField('Zip code'),
-                      autocorrect: true,
-                      onSaved: (value) {
-                        _zipCode = value!;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    isEmergency ? const SizedBox.shrink() : Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectDate(context),
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(color: Colors.black)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    selectedDate == null
-                                        ? 'Select date'
-                                        : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
-                                  ),
-                                  const Icon(Icons.calendar_month_outlined)
-                                ],
-                              ),
-                            ),
+                    isEmergency
+                        ? const SizedBox.shrink()
+                        : const SizedBox(height: 16),
+                    isEmergency
+                        ? const SizedBox.shrink()
+                        : TextFormField(
+                            decoration: ambulanceFormField('Zip code'),
+                            autocorrect: true,
+                            onSaved: (value) {
+                              _zipCode = value!;
+                            },
                           ),
-                        ),
-                        const SizedBox(width: 30),
-                        const Text('am'),
-                        Radio(
-                          value: 'am',
-                          groupValue: _timeRange,
-                          onChanged: (value) {
-                            setState(() {
-                              _timeRange = value!;
-                            });
-                          },
-                        ),
-                        const Text('pm'),
-                        Radio(
-                          value: 'pm',
-                          groupValue: _timeRange,
-                          onChanged: (value) {
-                            setState(() {
-                              _timeRange = value!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    isEmergency ? const SizedBox.shrink() : const SizedBox(height: 16),
+                    const SizedBox(height: 16),
+                    isEmergency
+                        ? const SizedBox.shrink()
+                        : Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => _selectDate(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        border:
+                                            Border.all(color: Colors.black)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          selectedDate == null
+                                              ? 'Select date'
+                                              : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
+                                        ),
+                                        const Icon(
+                                            Icons.calendar_month_outlined)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 30),
+                              const Text('am'),
+                              Radio(
+                                value: 'am',
+                                groupValue: _timeRange,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _timeRange = value!;
+                                  });
+                                },
+                              ),
+                              const Text('pm'),
+                              Radio(
+                                value: 'pm',
+                                groupValue: _timeRange,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _timeRange = value!;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                    isEmergency
+                        ? const SizedBox.shrink()
+                        : const SizedBox(height: 16),
                     // const Text('Select location'),
                     // LocationInput(onSelectLocation: (location) {
                     //   setState(() {
@@ -494,8 +698,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          if(_selectedLocation == null) {
-                            showSnackBar(context, 'Please select location first');
+                          if (_selectedLocation == null) {
+                            showSnackBar(
+                                context, 'Please select location first');
                             return;
                           }
                           showModalBottomSheet(
@@ -510,7 +715,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                               builder: (BuildContext context) {
                                 return Container(
                                   width: double.infinity,
-                                  height: MediaQuery.of(context).size.height * 0.9,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.9,
                                   child: Scaffold(
                                     appBar: AppBar(
                                       title: const Text('Select Hospital'),
@@ -520,72 +726,125 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                       children: [
                                         Flexible(
                                           child: StreamBuilder(
-                                            stream: _hospitalsCollection.snapshots(),
-                                            builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                                            stream: _hospitalsCollection
+                                                .snapshots(),
+                                            builder: (context,
+                                                AsyncSnapshot<QuerySnapshot>
+                                                    streamSnapshot) {
                                               var isLoading2 = true;
                                               if (streamSnapshot.hasData) {
-                                                final dataList = streamSnapshot.data!.docs;
+                                                final dataList =
+                                                    streamSnapshot.data!.docs;
                                                 List outputData = [];
-                                                for(var i =0; i <dataList.length; i++) {
-                                                  var object = dataList[i].data() as Map;
-                                                  object.putIfAbsent('distance', () => FlutterMapMath().distanceBetween(
-                                                      _selectedLocation!.latitude,
-                                                      _selectedLocation!.longitude,
-                                                      double.parse(dataList[i]['latitude']),
-                                                      double.parse(dataList[i]['longitude']),
-                                                      'kilometers'));
-                                                  object['distance'] = FlutterMapMath().distanceBetween(
-                                                      _selectedLocation!.latitude,
-                                                      _selectedLocation!.longitude,
-                                                      double.parse(dataList[i]['latitude']),
-                                                      double.parse(dataList[i]['longitude']),
-                                                      'kilometers');
+                                                for (var i = 0;
+                                                    i < dataList.length;
+                                                    i++) {
+                                                  var object =
+                                                      dataList[i].data() as Map;
+                                                  object.putIfAbsent(
+                                                      'distance',
+                                                      () => FlutterMapMath()
+                                                          .distanceBetween(
+                                                              _selectedLocation!
+                                                                  .latitude,
+                                                              _selectedLocation!
+                                                                  .longitude,
+                                                              double.parse(
+                                                                  dataList[i][
+                                                                      'latitude']),
+                                                              double.parse(
+                                                                  dataList[i][
+                                                                      'longitude']),
+                                                              'kilometers'));
+                                                  object['distance'] = FlutterMapMath()
+                                                      .distanceBetween(
+                                                          _selectedLocation!
+                                                              .latitude,
+                                                          _selectedLocation!
+                                                              .longitude,
+                                                          double.parse(
+                                                              dataList[i]
+                                                                  ['latitude']),
+                                                          double.parse(dataList[
+                                                              i]['longitude']),
+                                                          'kilometers');
                                                   outputData.add(object);
                                                 }
 
-                                                outputData.sort((a,b)=>a['distance'].compareTo(b['distance']));
+                                                outputData.sort((a, b) =>
+                                                    a['distance'].compareTo(
+                                                        b['distance']));
                                                 outputData.reversed;
 
-                                                return StatefulBuilder(
-                                                    builder: (BuildContext context, setState) {
-                                                      if(outputData.isNotEmpty){
-                                                        setState((){
-                                                          isLoading2 = false;
-                                                        });
-                                                      }
+                                                return StatefulBuilder(builder:
+                                                    (BuildContext context,
+                                                        setState) {
+                                                  if (outputData.isNotEmpty) {
+                                                    setState(() {
+                                                      isLoading2 = false;
+                                                    });
+                                                  }
 
-                                                      return isLoading2 ? const CircularProgressIndicator() : SingleChildScrollView(
-                                                        child: ListView.builder(
-                                                          physics: const ClampingScrollPhysics(),
-                                                          shrinkWrap: true,
-                                                          scrollDirection: Axis.vertical,
-                                                          itemCount: outputData.length,
-                                                          itemBuilder: (context, index) {
-                                                            final data = outputData[index];
-                                                            return RadioListTile(
-                                                              selectedTileColor: Colors.blue,
-                                                              title: HospitalSelectCard(
-                                                                hospital: data,
-                                                                color: selectHospital != null && data['id'] == selectHospital['id'] ? Colors.blue.shade50: Colors.white,
-                                                                bkgDate: selectedDate,
-                                                                timeRange: _timeRange,
+                                                  return isLoading2
+                                                      ? const CircularProgressIndicator()
+                                                      : SingleChildScrollView(
+                                                          child:
+                                                              ListView.builder(
+                                                            physics:
+                                                                const ClampingScrollPhysics(),
+                                                            shrinkWrap: true,
+                                                            scrollDirection:
+                                                                Axis.vertical,
+                                                            itemCount:
+                                                                outputData
+                                                                    .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              final data =
+                                                                  outputData[
+                                                                      index];
+                                                              return RadioListTile(
+                                                                selectedTileColor:
+                                                                    Colors.blue,
+                                                                title:
+                                                                    HospitalSelectCard(
+                                                                  hospital:
+                                                                      data,
+                                                                  color: selectHospital !=
+                                                                              null &&
+                                                                          data['id'] ==
+                                                                              selectHospital[
+                                                                                  'id']
+                                                                      ? Colors
+                                                                          .blue
+                                                                          .shade50
+                                                                      : Colors
+                                                                          .white,
+                                                                  bkgDate:
+                                                                      selectedDate,
+                                                                  timeRange:
+                                                                      _timeRange,
                                                                 ),
-                                                              value: data,
-                                                              groupValue: selectHospital,
-                                                              onChanged: (value) {
-                                                                setState(() {
-                                                                  selectHospital = value!;
-                                                                });
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                    }
-                                                );
+                                                                value: data,
+                                                                groupValue:
+                                                                    selectHospital,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  setState(() {
+                                                                    selectHospital =
+                                                                        value!;
+                                                                  });
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                });
                                               }
                                               return const Center(
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                                   color: Colors.blue,
                                                 ),
                                               );
@@ -602,8 +861,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                         },
                                         style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.blue,
-                                            foregroundColor: Colors.white
-                                        ),
+                                            foregroundColor: Colors.white),
                                         child: const Text('Select'),
                                       ),
                                     ),
@@ -611,10 +869,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                 );
                               }).whenComplete(onGoBack);
                         },
-                        child: Text(selectHospital != null ? selectHospital['name'] : 'Select Hospital'),
+                        child: Text(selectHospital != null
+                            ? selectHospital['name']
+                            : 'Select Hospital'),
                       ),
                     ),
-                    selectHospital != null ? Text('Plate number: $plate_number') : const SizedBox.shrink()
                   ],
                 ),
               ),
