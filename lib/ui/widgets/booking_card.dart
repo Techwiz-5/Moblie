@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
 import 'package:techwiz_5/ui/admin/booking/booking_detail.dart';
@@ -111,6 +112,12 @@ class _BookingCardState extends State<BookingCard> {
     );
   }
 
+  String statusText (int status){
+    if(status == 0) return 'Pending';
+    else if(status == 1) return 'Running';
+    return 'Finish';
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -185,13 +192,13 @@ class _BookingCardState extends State<BookingCard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(4.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Information Booking',
+                            DateFormat('dd-MM-yyyy hh:mm').format(widget.booking['booking_time'].toDate()),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.red,
@@ -200,10 +207,9 @@ class _BookingCardState extends State<BookingCard> {
                           SizedBox(
                             width: 10,
                           ),
-                          Icon(
-                            Icons.info_outline,
-                            color: Colors.red,
-                          )
+                          Badge(
+                            label: Text(statusText(widget.booking['status'])),
+                          ),
                         ],
                       ),
                     ),
@@ -303,12 +309,10 @@ class _BookingCardState extends State<BookingCard> {
                     ),
                   ],
                 ),
-                // trailing: GestureDetector(
-                //   onTapDown: (TapDownDetails details) async {
-                //     await _showPopupMenu(details.globalPosition);
-                //   },
-                //   child: const Icon(Icons.more_vert_rounded),
-                // ),
+                trailing: (widget.booking['status'] == 0) ? GestureDetector(
+                  onTap: _showDialogConfirm,
+                  child: const Icon(Icons.delete, color: Colors.red,),
+                ) : null
               ),
             ),
           )

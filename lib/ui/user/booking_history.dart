@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/data/authentication.dart';
 import 'package:techwiz_5/ui/login_screen.dart';
+import 'package:techwiz_5/ui/widgets/booking_card.dart';
 
 class BookingHistoryScreen extends StatefulWidget {
   const BookingHistoryScreen({super.key});
@@ -14,16 +15,6 @@ class BookingHistoryScreen extends StatefulWidget {
 
 class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
   String id = FirebaseAuth.instance.currentUser!.uid;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String _namePatient = '';
-  String _address = '';
-  String _phoneNumber = '';
-  int _ambulanceType = 0;
-  DateTime? selectedDate;
-  LatLng? _selectedLocation;
-  String selectHospitalId = '';
-  int? status;
-  List<Map<String, dynamic>> bookings = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,30 +23,19 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
-          'Booking hospital',
+          'Booking History',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await AuthServices().logout();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
-            },
-            icon: const Icon(
-              Icons.exit_to_app_rounded,
-              color: Colors.white,
-            ),
-          ),
-        ],
+        iconTheme: const IconThemeData(color: Colors.white)
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('booking').where("user_id", isEqualTo: id)
+        stream: FirebaseFirestore.instance
+            .collection('booking')
+            .where("user_id", isEqualTo: id)
             .snapshots(),
         builder: (ctx, chatSnapshot) {
           if (chatSnapshot.connectionState == ConnectionState.waiting) {
@@ -73,84 +53,13 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
               child: Text('Something went wrong'),
             );
           }
-          final loadedMessages = chatSnapshot.data!.docs;
+          final bookingData = chatSnapshot.data!.docs;
           return ListView.builder(
-            padding: const EdgeInsets.only(
-              bottom: 40,
-              left: 13,
-              right: 13,
-            ),
-            reverse: true,
-            itemCount: loadedMessages.length,
+            itemCount: bookingData.length,
             itemBuilder: (ctx, index) {
-              return Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'INFORMATION',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        // Card(
-                        //   elevation: 0,
-                        //   color: Colors.white,
-                        //   margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.all(8.0),
-                        //     child: Column(
-                        //       children: [
-                        //         SizedBox(
-                        //           width: double.infinity,
-                        //           child: Card(
-                        //             child: ListTile(
-                        //               leading: const Icon(Icons.person),
-                        //               title: Text(_name),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         SizedBox(
-                        //           width: double.infinity,
-                        //           child: Card(
-                        //             child: ListTile(
-                        //               leading: const Icon(Icons.home),
-                        //               title: Text(_address),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         SizedBox(
-                        //           width: double.infinity,
-                        //           child: Card(
-                        //             child: ListTile(
-                        //               leading: const Icon(Icons.call),
-                        //               title: Text(_phone),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         SizedBox(
-                        //           width: double.infinity,
-                        //           child: ElevatedButton(
-                        //             onPressed: () => Navigator.push(
-                        //               context,
-                        //               MaterialPageRoute(
-                        //                 builder: (context) =>
-                        //                 const BookingHistoryScreen(),
-                        //               ),
-                        //             ),
-                        //             child: Text("Booking History"),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ),
-                ],
+              return Container(
+                margin: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+                child: BookingCard(booking: bookingData[index]),
               );
             },
           );

@@ -42,8 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_added),
-            activeIcon: Icon(Icons.bookmark_added, color: Colors.blue,),
+            icon: Icon(Icons.calendar_today),
+            activeIcon: Icon(Icons.calendar_today, color: Colors.blue,),
             label: 'Booking',
           ),
           const BottomNavigationBarItem(

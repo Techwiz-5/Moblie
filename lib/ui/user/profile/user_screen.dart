@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String _email = '';
   late String _phone;
   late String _address;
+  late String _role;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _email = userData['email'];
           _phone = userData['phone'];
           _address = userData['address'];
+          _role = userData['role'];
           imageUrl = userData['image'];
         });
       } else {
@@ -222,19 +224,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const BookingHistoryScreen(),
+                      if (_role == 'user')
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const BookingHistoryScreen(),
+                              ),
                             ),
+                            child: Text("Booking History"),
                           ),
-                          child: Text("Booking History"),
                         ),
-                      ),
                     ],
                   ),
                 ),
