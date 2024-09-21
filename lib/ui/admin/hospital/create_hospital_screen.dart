@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:techwiz_5/models/place.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -31,6 +30,8 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   String _description = '';
   String _address = '';
   String _phone = '';
+  String _price = '';
+
   LatLng? _selectedLocation;
 
   @override
@@ -58,9 +59,8 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   Future<void> _uploadImageToFirebase() async {
     if (_pickedImage != null) {
       try {
-        Reference reference = FirebaseStorage.instance
-            .ref()
-            .child("image/hospital/${DateTime.now().microsecondsSinceEpoch}.png");
+        Reference reference = FirebaseStorage.instance.ref().child(
+            "image/hospital/${DateTime.now().microsecondsSinceEpoch}.png");
         await reference.putFile(_pickedImage!).whenComplete(() {
           print('Upload image success');
         });
@@ -88,6 +88,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
         'description': _description,
         'address': _address,
         'phone': _phone,
+        'price': _price,
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
@@ -195,30 +196,44 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: cvFormField('Price'),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please fill in Price';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.number,
+                    onSaved: (value) {
+                      _price = value!;
+                    },
+                  ),
+                  const SizedBox(height: 16),
                   Container(
                     width: double.infinity,
                     height: 200,
                     decoration: BoxDecoration(
                       image: _pickedImage != null
                           ? DecorationImage(
-                        image: FileImage(_pickedImage!),
-                        fit: BoxFit.cover,
-                      )
+                              image: FileImage(_pickedImage!),
+                              fit: BoxFit.cover,
+                            )
                           : (imageUrl != null && imageUrl!.isNotEmpty
-                          ? DecorationImage(
-                        image: NetworkImage(imageUrl!),
-                        fit: BoxFit.cover,
-                      )
-                          : null),
+                              ? DecorationImage(
+                                  image: NetworkImage(imageUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null),
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.grey[200],
                     ),
                     child: imageUrl == null && _pickedImage == null
                         ? const Icon(
-                      Icons.image,
-                      size: 200,
-                      color: Colors.grey,
-                    )
+                            Icons.image,
+                            size: 200,
+                            color: Colors.grey,
+                          )
                         : null,
                   ),
                   const SizedBox(height: 16),

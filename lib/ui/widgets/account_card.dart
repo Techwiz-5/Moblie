@@ -1,10 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
-import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
-import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 
 class AccountCard extends StatefulWidget {
   const AccountCard({super.key, required this.account});
@@ -179,6 +174,28 @@ class _AccountCardState extends State<AccountCard> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              if (widget.account['role'] == 'driver')
+                Center(
+                  child: SizedBox(
+                    // width: ,
+                    // () => Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => DriverBookingDetailScreen(
+                    //           driverId: widget.account['uid']),
+                    //     ),
+                    //   ),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text("Work diary"),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100]),
+                    ),
+                  ),
+                ),
             ],
           ),
         ));

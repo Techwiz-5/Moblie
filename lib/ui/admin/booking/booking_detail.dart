@@ -19,36 +19,36 @@ class AdminBookingDetailScreen extends StatefulWidget {
 
 class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
   Future<void> _showPopupMenu(Offset offset) async {
-    double left = offset.dx;
-    double top = offset.dy;
-    final result = await showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(left, top, left + 1, top + 1),
-      items: [
-        const PopupMenuItem(
-          value: 'edit',
-          child: const Text('Edit'),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: const Text('Delete'),
-        ),
-      ],
-      elevation: 8.0,
-    );
+    // double left = offset.dx;
+    // double top = offset.dy;
+    // final result = await showMenu<String>(
+    //   context: context,
+    //   position: RelativeRect.fromLTRB(left, top, left + 1, top + 1),
+    //   items: [
+    //     const PopupMenuItem(
+    //       value: 'edit',
+    //       child: const Text('Edit'),
+    //     ),
+    //     const PopupMenuItem(
+    //       value: 'delete',
+    //       child: const Text('Delete'),
+    //     ),
+    //   ],
+    //   elevation: 8.0,
+    // );
 
-    if (result == 'edit') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              //test
-              EditAmbulanceScreen(ambulanceId: widget.booking['id']),
-        ),
-      );
-    } else if (result == 'delete') {
-      _showDialogConfirm();
-    }
+    // if (result == 'edit') {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) =>
+    //           //test
+    //           EditAmbulanceScreen(ambulanceId: widget.booking['id']),
+    //     ),
+    //   );
+    // } else if (result == 'delete') {
+    //   _showDialogConfirm();
+    // }
   }
 
   _onDelete() async {
@@ -74,42 +74,42 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
     }
   }
 
-  Future<void> _showDialogConfirm() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Are you sure you want to delete?',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _onDelete();
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Delete',
-                style: TextStyle(color: Colors.white),
-              ),
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            )
-          ],
-        );
-      },
-    );
-  }
+  // Future<void> _showDialogConfirm() async {
+  //   return showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text(
+  //           'Are you sure you want to delete?',
+  //           style: TextStyle(
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Cancel'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () {
+  //               _onDelete();
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text(
+  //               'Delete',
+  //               style: TextStyle(color: Colors.white),
+  //             ),
+  //             style:
+  //                 ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+  //           )
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   void initState() {
@@ -117,22 +117,6 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
     super.initState();
     // _fetchHospital();
   }
-
-  // void _fetchHospital() async {
-  //   DocumentSnapshot querySnapshot = await FirebaseFirestore.instance
-  //       .collection('hospital')
-  //       .doc(widget.ambulance['hospital_id'])
-  //       .get();
-  //   print(querySnapshot.toString());
-  //   var ambulanceData = querySnapshot.data() as Map<String, dynamic>;
-  //   setState(() {
-  //     hospitalName = ambulanceData['name'];
-  //     hospitalPhone = ambulanceData['phone'];
-  //     hospitalAddress = ambulanceData['address'];
-  //   });
-  //   print(hospitalPhone);
-  //   print(hospitalName);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -150,50 +134,33 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
-        // actions: [
-        //   Container(
-        //     margin: const EdgeInsets.only(right: 16),
-        //     child: ElevatedButton(
-        //       onPressed: () async {
-        //         _createAmbulance();
-        //       },
-        //       style: ElevatedButton.styleFrom(
-        //         backgroundColor: Colors.blue,
-        //         foregroundColor: Colors.white,
-        //         shape: RoundedRectangleBorder(
-        //           borderRadius: BorderRadius.circular(6),
-        //         ),
-        //       ),
-        //       child: const Text('Edit Ambulance'),
-        //     ),
-        //   ),
-        //],
       ),
-      // margin: const EdgeInsets.symmetric(horizontal: 2),
       body: const Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        // mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: EdgeInsets.all(10.0),
-            child: Row(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Information Booking',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Hospital Name : ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.red,
+                    )
+                  ],
                 ),
-                SizedBox(
-                  width: 10,
-                ),
-                Icon(
-                  Icons.info_outline,
-                  color: Colors.red,
-                )
               ],
             ),
           ),

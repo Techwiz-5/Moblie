@@ -35,6 +35,8 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   late String _phone;
   late String _latitude;
   late String _longitude;
+  late String _price;
+
   LatLng? _selectedLocation;
 
   @override
@@ -56,6 +58,7 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
           _description = hospitalData['description'];
           _address = hospitalData['address'];
           _phone = hospitalData['phone'];
+          _price = hospitalData['price'];
           imageUrl = hospitalData['image'];
         });
       } else {
@@ -132,6 +135,7 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
         'description': _description,
         'address': _address,
         'phone': _phone,
+        'price': _price,
         'latitude': _latitude,
         'longitude': _longitude,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
@@ -172,132 +176,147 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
       ),
       body: (_name.isEmpty)
           ? const Center(
-        child: CircularProgressIndicator(),
-      )
+              child: CircularProgressIndicator(),
+            )
           : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKeyCV,
-            child: Column(
-              children: [
-                TextFormField(
-                  initialValue: _name,
-                  decoration: cvFormField('Name'),
-                  autocorrect: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill name';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _name = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  initialValue: _address,
-                  decoration: cvFormField('Address'),
-                  autocorrect: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in address';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _address = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  initialValue: _description,
-                  decoration: cvFormField('Description'),
-                  keyboardType: TextInputType.multiline,
-                  minLines: 5,
-                  maxLines: 5,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in description';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _description = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  initialValue: _phone,
-                  decoration: cvFormField('Phone number'),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please fill in phone number';
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.phone,
-                  onSaved: (value) {
-                    _phone = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: _pickedImage != null
-                        ? DecorationImage(
-                            image: FileImage(_pickedImage!),
-                            fit: BoxFit.cover,
-                          )
-                        : (imageUrl != null && imageUrl!.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(imageUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey[200],
-                  ),
-                  child: imageUrl == null && _pickedImage == null
-                      ? const Icon(
-                          Icons.image,
-                          size: 200,
-                          color: Colors.grey,
-                        )
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      pickImage();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKeyCV,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        initialValue: _name,
+                        decoration: cvFormField('Name'),
+                        autocorrect: true,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please fill name';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _name = value!;
+                        },
                       ),
-                    ),
-                    child: IconButton(
-                      onPressed: () => pickImage(),
-                      icon: Icon(Icons.camera_alt),
-                    ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: _address,
+                        decoration: cvFormField('Address'),
+                        autocorrect: true,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please fill in address';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _address = value!;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: _description,
+                        decoration: cvFormField('Description'),
+                        keyboardType: TextInputType.multiline,
+                        minLines: 5,
+                        maxLines: 5,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please fill in description';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _description = value!;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: _phone,
+                        decoration: cvFormField('Phone number'),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please fill in phone number';
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.phone,
+                        onSaved: (value) {
+                          _phone = value!;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: _price,
+                        decoration: cvFormField('Price'),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please fill in price';
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.number,
+                        onSaved: (value) {
+                          _price = value!;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          image: _pickedImage != null
+                              ? DecorationImage(
+                                  image: FileImage(_pickedImage!),
+                                  fit: BoxFit.cover,
+                                )
+                              : (imageUrl != null && imageUrl!.isNotEmpty
+                                  ? DecorationImage(
+                                      image: NetworkImage(imageUrl!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey[200],
+                        ),
+                        child: imageUrl == null && _pickedImage == null
+                            ? const Icon(
+                                Icons.image,
+                                size: 200,
+                                color: Colors.grey,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            pickImage();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          child: IconButton(
+                            onPressed: () => pickImage(),
+                            icon: Icon(Icons.camera_alt),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      LocationInput(onSelectLocation: (location) {
+                        _selectedLocation = location;
+                      })
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                LocationInput(onSelectLocation: (location) {
-                  _selectedLocation = location;
-                })
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

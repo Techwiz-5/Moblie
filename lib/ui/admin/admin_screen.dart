@@ -24,7 +24,7 @@ class _AdminScreenState extends State<AdminScreen> {
     const AmbulanceScreen(),
     const BookingScreen(),
     const RevenueScreen(),
-    // const AccountManagerScreen(),
+    const AccountManagerScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -55,10 +55,10 @@ class _AdminScreenState extends State<AdminScreen> {
             icon: Icon(Icons.monetization_on),
             label: 'Revenue',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.account_circle_outlined),
-          //   label: 'Account',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_outlined),
+            label: 'Account',
+          ),
         ],
       ),
     );

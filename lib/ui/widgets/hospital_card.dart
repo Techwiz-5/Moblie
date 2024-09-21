@@ -224,14 +224,44 @@ class _HospitalCardState extends State<HospitalCard> {
                   softWrap: true,
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  widget.hospital['address'] ?? '',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Color.fromARGB(255, 92, 91, 91),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      widget.hospital['address'] ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.attach_money_outlined,
+                      color: Color.fromARGB(255, 92, 91, 91),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      widget.hospital['price'] ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
