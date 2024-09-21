@@ -19,6 +19,8 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
   String? hospitalName;
   String? hospitalPhone;
   String? hospitalAddress;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late int _availableSlot;
 
   Future<void> _showPopupMenu(Offset offset) async {
     double left = offset.dx;
@@ -48,16 +50,50 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
         ),
       );
     } else if (result == 'delete') {
+      getDataHospital();
       _showDialogConfirm();
     }
   }
 
   _onDelete() async {
+    await _editHospital();
     await FirebaseFirestore.instance
         .collection('ambulance')
         .doc(widget.ambulance['id'])
         .delete();
     await _deleteOldImageFromFirebase(widget.ambulance['image']);
+  }
+
+  void getDataHospital() async {
+    try {
+      DocumentSnapshot docSnapshot = await _firestore
+          .collection('hospital')
+          .doc(widget.ambulance['hospital_id'])
+          .get();
+      if (docSnapshot.exists) {
+        var hospitalData = docSnapshot.data() as Map<String, dynamic>;
+        setState(() {
+          _availableSlot = hospitalData['availableSlot'];
+        });
+      } else {
+        print('No data found for this hospital');
+      }
+    } catch (e) {
+      print('Error fetching hospital data: $e');
+    }
+  }
+
+  _editHospital() async {
+    try {
+      await _firestore
+          .collection('hospital')
+          .doc(widget.ambulance['hospital_id'])
+          .update({
+        'availableSlot': _availableSlot - 1,
+      });
+    } on FirebaseException catch (e) {
+      showSnackBar(context, e.toString());
+    }
   }
 
   Future<void> _deleteOldImageFromFirebase(String oldImageUrl) async {
@@ -131,8 +167,6 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
       hospitalPhone = ambulanceData['phone'];
       hospitalAddress = ambulanceData['address'];
     });
-    print(hospitalPhone);
-    print(hospitalName);
   }
 
   @override
@@ -235,6 +269,14 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                     ),
                     Text(
                       'Plate Number : ${widget.ambulance['plate_number']} ',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Text(
+                      'Test : ${widget.ambulance['hospital_id']} ',
                       style: const TextStyle(
                         fontSize: 14,
                         height: 1.5,

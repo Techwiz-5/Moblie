@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/admin/ambulance/ambluance_libary.dart';
 import 'package:techwiz_5/ui/user/appointment_screen.dart';
-import 'package:techwiz_5/ui/user/booking_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_screen.dart';
 
@@ -20,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const HospitalScreen(),
     const AppointmentScreen(),
     const ProfileScreen(),
+    const AmbulanceLibraryScreen()
   ];
 
   @override
@@ -37,7 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           const BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            activeIcon: Icon(Icons.home, color: Colors.blue,),
+            activeIcon: Icon(
+              Icons.home,
+              color: Colors.blue,
+            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
@@ -53,14 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.grey.withOpacity(0.2),
                         spreadRadius: 5,
                         blurRadius: 7,
-                        offset: const Offset(0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
                   padding: const EdgeInsets.all(12),
-                  child: Icon(Icons.call)
-
-              ),
+                  child: Icon(Icons.call)),
             ),
             icon: Align(
               alignment: Alignment.bottomCenter,
@@ -74,8 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.grey.withOpacity(0.2),
                       spreadRadius: 5,
                       blurRadius: 7,
-                      offset:
-                      const Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
                   ],
                 ),
@@ -87,7 +88,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            activeIcon: Icon(Icons.person, color: Colors.blue,),
+            activeIcon: Icon(
+              Icons.person,
+              color: Colors.blue,
+            ),
+            label: 'User',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.fire_truck),
+            activeIcon: Icon(
+              Icons.fire_truck,
+              color: Colors.blue,
+            ),
             label: 'User',
           ),
         ],
