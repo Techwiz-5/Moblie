@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
 
 class Schedule_card_not_receive extends StatefulWidget {
@@ -23,6 +24,13 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
     super.initState();
   }
 
+  String statusText(int status) {
+    if (status == 0)
+      return 'Pending';
+    else if (status == 1) return 'Running';
+    return 'Finish';
+  }
+
   void receiveBooking() async {
     await FirebaseFirestore.instance
         .collection('booking')
@@ -31,41 +39,42 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
       'driver_id': widget.driverId,
     });
   }
+
   Future<void> _showMyDialog() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Are you sure you want to take this booking??'),
-        content: const SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('This is a demo alert dialog.'),
-              Text('Would you like to approve of this message?'),
-            ],
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure you want to take this booking??'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('This is a demo alert dialog.'),
+                Text('Would you like to approve of this message?'),
+              ],
+            ),
           ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              // receiveBooking();
-              Navigator.of(context).pop();
-            },
-          ),
+          actions: <Widget>[
             TextButton(
-            child: const Text('Receive'),
-            onPressed: () {
-              receiveBooking();
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+              child: const Text('Cancel'),
+              onPressed: () {
+                // receiveBooking();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Receive'),
+              onPressed: () {
+                receiveBooking();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,71 +115,126 @@ class _ScheduleCardNotReceiveState extends State<Schedule_card_not_receive> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-            child: Center(
-                child: Stack(
-              alignment: Alignment.bottomLeft,
-              children: <Widget>[
-                // Image.network(
-                //   widget.hospital['image'],
-                //   width: double.infinity,
-                //   height: 205,
-                //   fit: BoxFit.cover,
-                // ),
-              ],
-            )),
-          ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                        height: 40,
-                        child:
-                            // Text(
-                            //   widget.booking['driver_id'].toString(),
-                            //   maxLines: 2,
-                            //   overflow: TextOverflow.ellipsis,
-                            //   softWrap: true,
-                            //   style: const TextStyle(
-                            //     color: Colors.red,
-                            //     fontWeight: FontWeight.bold,
-                            //     fontSize: 18,
-                            //   ),
-                            // ),
-                            Switch(
-                          // This bool value toggles the switch.
-                          value: widget.booking['urgent'] == 1 ? true : false,
-                          activeColor: Colors.red,
-                          onChanged: (bool value) {},
-                        )),
-                  ],
-                ),
-                Text(
-                  widget.booking['urgent'].toString(),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => _showMyDialog(),
-                    child: const Text("Receive!"),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[100]),
+            padding: const EdgeInsets.only(right: 0.5, left: 0.5),
+            child: Card(
+              color: Colors.white,
+              borderOnForeground: false,
+              shadowColor: Colors.white,
+              child: ListTile(
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              DateFormat('dd-MM-yyyy hh:mm').format(
+                                  widget.booking['booking_time'].toDate()),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Badge(
+                              label: Text(statusText(widget.booking['status'])),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            color: Color.fromARGB(255, 147, 148, 148),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Address : ${widget.booking['address']} ' ?? '',
+                              // maxLines: ,
+                              // overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                height: 1.5,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.accessible_rounded,
+                            color: Color.fromARGB(255, 147, 148, 148),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Name Patient : ${widget.booking['name_patient']}' ??
+                                  '',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                height: 1.5,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.phone,
+                            color: Color.fromARGB(255, 147, 148, 148),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Phone : ${widget.booking['phone_number']}' ?? '',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                height: 1.5,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => _showMyDialog(),
+                            child: const Text("Receive!"),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                 ),
             ),
           )
         ],
