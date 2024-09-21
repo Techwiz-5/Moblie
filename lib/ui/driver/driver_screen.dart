@@ -1,103 +1,191 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:techwiz_5/ui/widgets/schedule_card.dart';
+import 'package:techwiz_5/ui/widgets/schedule_card_not_receive.dart';
 
 class DriverScreen extends StatefulWidget {
-  const DriverScreen({super.key});
+  const DriverScreen({super.key, required this.driverId});
+  final String driverId;
+
   @override
-  _DriverScreenState createState() => _DriverScreenState();
+  State<DriverScreen> createState() => _DriverScreenState();
 }
 
 class _DriverScreenState extends State<DriverScreen> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String driverId = FirebaseAuth.instance.currentUser!.uid;
-
-  @override
-  void initState() {
-    super.initState();
-    _setupFCM();
-  }
-
-  void _setupFCM() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.data['type'] == 'new_booking') {
-        // Refresh the screen to show new booking
-        setState(() {});
-      }
-    });
-  }
-
-  Future<void> _respondToBooking(String bookingId, bool accept) async {
-    try {
-      await _firestore.collection('booking').doc(bookingId).update({
-        'status': accept ? 'accepted' : 'rejected',
-        'driver_id': accept ? driverId : FieldValue.delete(),
-      });
-      // Refresh the screen
-      setState(() {});
-    } catch (e) {
-      print('Error responding to booking: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error responding to booking: $e')),
-      );
-    }
-  }
+  final CollectionReference myItems =
+      FirebaseFirestore.instance.collection('booking');
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        title: const Text(
-          "Booking",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+    // print("hhhh");
+    // print(widget.driverId);
+    return DefaultTabController(
+        initialIndex: 0,
+        length: 2,
+        child: Scaffold(
+          backgroundColor: Colors.blue[100],
+          appBar: AppBar(
+            backgroundColor: Colors.blue,
+            title: const Text('TabBar Sample'),
+            bottom: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                gradient: const LinearGradient(colors: [
+                  Color.fromARGB(255, 35, 158, 225),
+                  Color.fromARGB(255, 250, 250, 250)
+                ]),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              tabs: const <Widget>[
+                Tab(
+                  icon: Icon(Icons.event_available_rounded),
+                ),
+                Tab(
+                  icon: Icon(Icons.event_note_rounded),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore
-            .collection('booking')
-            .where('status', isEqualTo: 'pending')
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No available bookings'));
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var booking = snapshot.data!.docs[index];
-              return Card(
-                child: ListTile(
-                  title: Text('Patient: ${booking['name_patient']}'),
-                  subtitle: Text('Address: ${booking['address']}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.check, color: Colors.green),
-                        onPressed: () => _respondToBooking(booking.id, true),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: Colors.red),
-                        onPressed: () => _respondToBooking(booking.id, false),
-                      ),
-                    ],
+          body: TabBarView(
+            children: <Widget>[
+              Column(children: [
+                // searchInput(),
+                Flexible(
+                  child: StreamBuilder(
+                    stream: myItems
+                        .where('driver_id', isEqualTo: widget.driverId)
+                        .snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                      if (streamSnapshot.hasData) {
+                        final items = streamSnapshot.data!.docs;
+                        return ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final DocumentSnapshot documentSnapshot =
+                                items[index];
+
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                // borderRadius: BorderRadius.circular(20),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Schedule_card(
+                                      booking: documentSnapshot,
+                                    )),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      );
+                    },
                   ),
                 ),
-              );
-            },
-          );
-        },
-      ),
-    );
+              ]),
+              Column(children: [
+                // searchInput(),
+                Flexible(
+                  child: StreamBuilder(
+                    stream: myItems
+                        .where('driver_id', isEqualTo: "")
+                        .snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                      if (streamSnapshot.hasData) {
+                        final items = streamSnapshot.data!.docs;
+                        return ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final DocumentSnapshot documentSnapshot =
+                                items[index];
+
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                // borderRadius: BorderRadius.circular(20),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Schedule_card_not_receive(
+                                      booking: documentSnapshot,driverId: widget.driverId
+                                    )),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ]),
+            ],
+          ),
+        ));
+
+    // Scaffold(
+    //   backgroundColor: Colors.blue[100],
+    //   appBar: AppBar(
+    //     backgroundColor: Colors.blue,
+    //     title: const Text(
+    //       'Driver Screen',
+    //       style: TextStyle(
+    //         color: Colors.white,
+    //         fontWeight: FontWeight.bold,
+    //       ),
+    //     ),
+    //     centerTitle: true,
+    //   ),
+    //   body: Column(
+    //     children: [
+    //       // searchInput(),
+    //       Flexible(
+    //         child: StreamBuilder(
+    //           stream: myItems
+    //               .where('driver_id', isEqualTo: widget.driverId)
+    //               .snapshots(),
+    //           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+    //             if (streamSnapshot.hasData) {
+    //               final items = streamSnapshot.data!.docs;
+    //               return ListView.builder(
+    //                 itemCount: items.length,
+    //                 itemBuilder: (context, index) {
+    //                   final DocumentSnapshot documentSnapshot = items[index];
+
+    //                   return Padding(
+    //                     padding: const EdgeInsets.all(8.0),
+    //                     child: Container(
+    //                       // borderRadius: BorderRadius.circular(20),
+    //                       child: Padding(
+    //                           padding: const EdgeInsets.all(8.0),
+    //                           child: Schedule_card(
+    //                             booking: documentSnapshot,
+    //                           )),
+    //                     ),
+    //                   );
+    //                 },
+    //               );
+    //             }
+    //             return const Center(
+    //               child: CircularProgressIndicator(
+    //                 color: Colors.blue,
+    //               ),
+    //             );
+    //           },
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }
+

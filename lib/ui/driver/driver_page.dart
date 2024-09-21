@@ -7,7 +7,8 @@ import 'package:techwiz_5/ui/user/booking_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 
 class DriverPage extends StatefulWidget {
-  const DriverPage({super.key});
+  const DriverPage({super.key, required this.driverId});
+  final String driverId;
 
   @override
   State<DriverPage> createState() => _DriverPageState();
@@ -16,13 +17,20 @@ class DriverPage extends StatefulWidget {
 class _DriverPageState extends State<DriverPage> {
   int _pageIndex = 0;
 
-  final List<Widget> pages = [
-    const DriverScreen(),
-    const ProfileScreen(),
-  ];
+  @override
+  initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      DriverScreen(
+        driverId: widget.driverId,
+      ),
+      const ProfileScreen(),
+    ];
+
     return Scaffold(
       body: pages[_pageIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -33,18 +41,27 @@ class _DriverPageState extends State<DriverPage> {
             _pageIndex = value;
           });
         },
-        items: [
-          const BottomNavigationBarItem(
+        items: const [
+          BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            activeIcon: Icon(Icons.home, color: Colors.blue,),
+            activeIcon: Icon(
+              Icons.home,
+              
+              color: Colors.blue,
+            ),
             label: 'Home',
           ),
-          const BottomNavigationBarItem(
+          
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            activeIcon: Icon(Icons.person, color: Colors.blue,),
+            activeIcon: Icon(
+              Icons.person,
+              color: Colors.blue,
+            ),
             label: 'User',
           ),
-          ],
+
+        ],
       ),
     );
   }
