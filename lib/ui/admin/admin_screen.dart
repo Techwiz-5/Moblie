@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/account_manager.dart';
 import 'package:techwiz_5/ui/admin/ambulance/ambulance_screen.dart';
 import 'package:techwiz_5/ui/admin/booking/booking_screen.dart';
-import 'package:techwiz_5/ui/admin/manager/hospitial_ambulance_manager.dart';
 import 'package:techwiz_5/ui/admin/revenue/revenue_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
@@ -22,8 +21,8 @@ class _AdminScreenState extends State<AdminScreen> {
   final List<Widget> pages = [
     const HospitalScreen(),
     const BookingScreen(),
-    const RevenueScreen(),
     const AccountManagerScreen(),
+    const RevenueScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -47,12 +46,12 @@ class _AdminScreenState extends State<AdminScreen> {
             label: 'Booking',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on),
-            label: 'Revenue',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_outlined),
             label: 'Account',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.monetization_on),
+            label: 'Revenue',
           ),
         ],
       ),

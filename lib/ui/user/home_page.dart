@@ -19,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
     const HospitalScreen(),
     const AppointmentScreen(),
     const ProfileScreen(),
-    const AmbulanceLibraryScreen()
   ];
 
   @override
@@ -94,14 +93,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             label: 'User',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.fire_truck),
-            activeIcon: Icon(
-              Icons.fire_truck,
-              color: Colors.blue,
-            ),
-            label: 'User',
-          ),
+          // const BottomNavigationBarItem(
+          //   icon: Icon(Icons.fire_truck),
+          //   activeIcon: Icon(
+          //     Icons.fire_truck,
+          //     color: Colors.blue,
+          //   ),
+          //   label: 'User',
+          // ),
         ],
       ),
     );

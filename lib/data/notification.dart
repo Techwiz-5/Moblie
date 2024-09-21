@@ -15,9 +15,10 @@ class Constants {
   static Future<String> getServerKey() async {
     return await GetServerKey().getServerKeyToken();
   }
-  static const String BASE_URL = 'https://fcm.googleapis.com/v1/projects/techwiz-e0599/messages:send';
-}
 
+  static const String BASE_URL =
+      'https://fcm.googleapis.com/v1/projects/techwiz-e0599/messages:send';
+}
 
 class NotiService {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -31,27 +32,27 @@ class NotiService {
 
   Future<void> requestPermission() async {
     PermissionStatus status = await Permission.notification.request();
-    if(status != PermissionStatus.granted){
+    if (status != PermissionStatus.granted) {
       throw Exception('Permission nor granted');
     }
   }
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
     const AndroidInitializationSettings androidInitializationSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const InitializationSettings initializationSettings =
-    InitializationSettings(android: androidInitializationSettings);
+        InitializationSettings(android: androidInitializationSettings);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   showNotification(RemoteMessage message) async {
     const AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'channelId',
       'channelName',
       channelDescription: 'Channel Description',
@@ -61,7 +62,7 @@ class NotiService {
     );
     int notificationId = 1;
     const NotificationDetails notificationDetails =
-    NotificationDetails(android: androidNotificationDetails);
+        NotificationDetails(android: androidNotificationDetails);
     await flutterLocalNotificationsPlugin.show(
       notificationId,
       message.notification!.title,
@@ -71,21 +72,18 @@ class NotiService {
     );
   }
 
-  Future<bool> pushNotifications({required String title, body, token}) async{
+  Future<bool> pushNotifications({required String title, body, token}) async {
     String serverKey = await Constants.getServerKey();
     print("serverkey: $serverKey");
 
-    var headers = <String, String> {
+    var headers = <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $serverKey',
     };
     Map<String, dynamic> message = {
       "message": {
         "token": token,
-        "notification": {
-          "body": body,
-          "title": title
-        },
+        "notification": {"body": body, "title": title},
         "data": {}
       }
     };
@@ -95,7 +93,7 @@ class NotiService {
       body: jsonEncode(message),
     );
 
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       print("Notification send successfully");
     } else {
       print("Notification not send");
