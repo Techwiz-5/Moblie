@@ -217,8 +217,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
     for (String token in driverTokens) {
       await NotiService().pushNotifications(
-          title: 'Test ',
-          body: "Test body",
+          title: 'Notification from Hospital ',
+          body: bookingId,
           token: token,
           bookingId: bookingId);
     }
