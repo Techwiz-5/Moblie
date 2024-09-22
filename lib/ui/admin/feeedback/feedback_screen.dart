@@ -21,9 +21,9 @@ class _FeedbackScreen extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue.withOpacity(0.15),
+      backgroundColor: const Color(0xff475e75),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff223548),
         title: const Text(
           'Feedback',
           style: TextStyle(

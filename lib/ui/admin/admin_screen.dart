@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/account_manager.dart';
 import 'package:techwiz_5/ui/admin/ambulance/ambulance_screen.dart';
 import 'package:techwiz_5/ui/admin/booking/booking_screen.dart';
+import 'package:techwiz_5/ui/admin/feeedback/feedback_screen.dart';
 import 'package:techwiz_5/ui/admin/revenue/revenue_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_page.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/widgets/booking_card.dart';
+import 'package:techwiz_5/ui/widgets/feedback_card.dart';
 
 import '../../utils/UserStatusService.dart';
 
@@ -43,6 +45,7 @@ class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver {
     const HospitalScreen(),
     const BookingScreen(),
     const AccountManagerScreen(),
+    const FeedbackScreen(),
     const RevenueScreen(),
   ];
 
@@ -76,6 +79,11 @@ class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver {
             icon: Icon(EneftyIcons.profile_2user_outline),
             activeIcon: Icon(EneftyIcons.profile_2user_bold),
             label: 'Account',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(EneftyIcons.message_2_outline),
+            activeIcon: Icon(EneftyIcons.message_2_outline),
+            label: 'Feedback',
           ),
           BottomNavigationBarItem(
             icon: Icon(EneftyIcons.dollar_circle_outline),

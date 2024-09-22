@@ -135,7 +135,27 @@ class _FeedBackCardState extends State<FeedBackCard> {
                             ),
                           ),
                         ],
+                        
                       ),
+                      const SizedBox(height: 10,),
+                      Center(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: (){},
+                    // onPressed: () => Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     // builder: (context){retur}
+                    //   ),
+                    // ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[100],
+                    ),
+                    child: const Text("FeedBack Detail"),
+                  ),
+                ),
+              ),
                       const SizedBox(
                         height: 10,
                       ),
