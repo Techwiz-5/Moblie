@@ -147,187 +147,208 @@ class _BookingCardState extends State<BookingCard> {
   Widget build(BuildContext context) {
     // print(widget.ambulance['hospital_id']);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: const Border(
-            left: BorderSide(
-              //                   <--- left side
-              color: Colors.blue,
-              width: 6.0,
-            ),
-            top: BorderSide(
-              //                    <--- top side
-              color: Colors.blue,
-              width: 1.0,
-            ),
-            right: BorderSide(
-              //                    <--- top side
-              color: Colors.blue,
-              width: 1.0,
-            ),
-            bottom: BorderSide(
-              //                    <--- top side
-              color: Colors.blue,
-              width: 1.0,
-            ),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
-              spreadRadius: 0,
-              blurRadius: 10,
-            ),
-          ]),
+    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // Thêm khoảng cách đều
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(15),
+      border: Border.all(color: Colors.blue, width: 1.5),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 2,
+          blurRadius: 8,
+          offset: const Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 0.5, left: 0.5),
-            child: Card(
-              color: Colors.white,
-              borderOnForeground: false,
-              shadowColor: Colors.white,
-              child: ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              DateFormat('dd-MM-yyyy hh:mm').format(
-                                  widget.booking['booking_time'].toDate()),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Badge(
-                              label: Text(statusText(widget.booking['status'])),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: Color.fromARGB(255, 147, 148, 148),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Address: ${widget.booking['address'] ?? ''}',
-                              // maxLines: ,
-                              // overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.accessible_rounded,
-                            color: Color.fromARGB(255, 147, 148, 148),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Name Patient: ${widget.booking['name_patient'] ?? ''}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.phone,
-                            color: Color.fromARGB(255, 147, 148, 148),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Phone: ${widget.booking['phone_number'] ?? ''}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      ),
-                      Center(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserGoogleMapPickupPoint(
-                                  bookingId: widget.booking['id'],
-                                  driverLocationLat: double.parse(widget.booking["uptLat"]),
-                                  driverLocationLong: double.parse(widget.booking["uptLng"]),
-                                ),
-                              ),
-                            ),
-                            child: const Text("View Google Map"),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue[100]),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Hiển thị thời gian
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: Colors.redAccent,
+                    size: 18,
                   ),
-                  trailing: (widget.booking['status'] == 0)
-                      ? GestureDetector(
-                          onTap: _showDialogConfirm,
-                          child: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          ),
-                        )
-                      : null),
+                  const SizedBox(width: 5),
+                  Text(
+                    DateFormat('dd-MM-yyyy hh:mm').format(widget.booking['booking_time'].toDate()),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  statusText(widget.booking['status']),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                color: Colors.grey,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Address: ${widget.booking['address'] ?? ''}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Icon(
+                Icons.person,
+                color: Colors.grey,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Name Patient: ${widget.booking['name_patient'] ?? ''}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Icon(
+                Icons.phone,
+                color: Colors.grey,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Phone: ${widget.booking['phone_number'] ?? ''}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          // Center(
+          //   child: ElevatedButton(
+          //     onPressed: () => Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => UserGoogleMapPickupPoint(
+          //           bookingId: widget.booking['id'],
+          //           driverLocationLat: double.parse(widget.booking["uptLat"]),
+          //           driverLocationLong: double.parse(widget.booking["uptLng"]),
+          //         ),
+          //       ),
+          //     ),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.blue[300],
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(20),
+          //       ),
+          //       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          //       elevation: 3,
+          //     ),
+          //     child: const Text(
+          //       "View Google Map",
+          //       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          //     ),
+          //   ),
+          // ),
+          // const SizedBox(height: 10),
+          // widget.booking['status'] == 0
+          //     ? GestureDetector(
+          //   onTap: _showDialogConfirm,
+          //   child: const Icon(
+          //     Icons.delete,
+          //     color: Colors.redAccent,
+          //   ),
+          // )
+          //     : const SizedBox.shrink(),
+          ///here
+          Center(
+            child: Row(
+              children: [
+                Expanded(
+                  flex: widget.booking['status'] == 0 ? 3 : 4,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserGoogleMapPickupPoint(
+                          bookingId: widget.booking['id'],
+                          driverLocationLat: double.parse(widget.booking["uptLat"]),
+                          driverLocationLong: double.parse(widget.booking["uptLng"]),
+                        ),
+                      ),
+                    ),
+                    child: const Text("View Google Map"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[100],
+                    ),
+                  ),
+                ),
+                if (widget.booking['status'] == 0) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: _showDialogConfirm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                      ),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
-          )
+          ),
+          const SizedBox(height: 8),
         ],
       ),
+    ),
     );
-    ;
   }
 }
