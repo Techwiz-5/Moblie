@@ -72,7 +72,8 @@ class NotiService {
     );
   }
 
-  Future<bool> pushNotifications({required String title, body, token}) async {
+  Future<bool> pushNotifications(
+      {required String title, body, token, bookingId}) async {
     String serverKey = await Constants.getServerKey();
     print("serverkey: $serverKey");
 
@@ -83,7 +84,10 @@ class NotiService {
     Map<String, dynamic> message = {
       "message": {
         "token": token,
-        "notification": {"body": body, "title": title},
+        "notification": {
+          "body": bookingId,
+          "title": "Notification from Hospital"
+        },
         "data": {}
       }
     };

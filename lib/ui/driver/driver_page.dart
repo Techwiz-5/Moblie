@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
+import 'package:techwiz_5/ui/driver/accessBooking.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 
@@ -18,14 +19,14 @@ class DriverPage extends StatefulWidget {
   State<DriverPage> createState() => _DriverPageState();
 }
 
-class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver{
+class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
   late UserStatusService _userStatusService;
 
   @override
   void initState() {
     super.initState();
     getUserData();
-    notificationHander();
+    notificationHander(widget.driverId);
     _userStatusService = UserStatusService();
     _userStatusService.monitorUserConnection();
   }
@@ -41,10 +42,19 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver{
   String _role = '';
   var isLoading = true;
 
-  void notificationHander() {
+  void notificationHander(driverId) {
+    print("check noti");
     FirebaseMessaging.onMessage.listen((event) async {
+    print("check noti");
       print(event.notification!.title);
       NotiService().showNotification(event);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => AccessBooking(
+              driverId: driverId,
+              bookingId: event.notification!.title.toString()),
+        ),
+      );
     });
   }
 

@@ -216,8 +216,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     List<String> driverTokens = await _fetchInactiveDriversTokens();
 
     for (String token in driverTokens) {
-      await NotiService()
-          .pushNotifications(title: 'Test ', body: "Test body", token: token);
+      await NotiService().pushNotifications(
+          title: 'Test ',
+          body: "Test body",
+          token: token,
+          bookingId: bookingId);
     }
   }
 
@@ -278,8 +281,15 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, size: 40, color: Colors.green,),
-                Text("Your has booked ambulance successfully \nOur driver will contact you soon.\nThankyou.", textAlign: TextAlign.center,),
+                Icon(
+                  Icons.check_circle,
+                  size: 40,
+                  color: Colors.green,
+                ),
+                Text(
+                  "Your has booked ambulance successfully \nOur driver will contact you soon.\nThankyou.",
+                  textAlign: TextAlign.center,
+                ),
               ],
             ),
           ),
@@ -291,17 +301,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                       (route) => false);
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                          (route) => false);
                     },
                     child: const Text(
                       'Back to Home',
                       style: TextStyle(color: Colors.white),
                     ),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                   ),
                 ),
                 SizedBox(
@@ -319,12 +330,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       'Booking history',
                       style: TextStyle(color: Colors.white),
                     ),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                   ),
                 )
               ],
             ),
-
           ],
         );
       },
@@ -593,7 +604,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         actions: [
           ElevatedButton(
             onPressed: () async {
-              if(_formKeyAmbulance.currentState!.validate()){
+              if (_formKeyAmbulance.currentState!.validate()) {
                 await _showDialogConfirm();
               }
               // Navigator.pushReplacement(
