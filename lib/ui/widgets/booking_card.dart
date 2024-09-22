@@ -100,12 +100,12 @@ class _BookingCardState extends State<BookingCard> {
                 _onDelete();
                 Navigator.of(context).pop();
               },
-              child: Text(
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              child: const Text(
                 'Delete',
                 style: TextStyle(color: Colors.white),
               ),
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             )
           ],
         );
@@ -320,25 +320,22 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                       ),
                     ),
-                    child: const Text("View Google Map"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[100],
                     ),
+                    child: const Text("View Google Map"),
                   ),
                 ),
                 if (widget.booking['status'] == 0) ...[
                   const SizedBox(width: 10),
-                  Expanded(
-                    flex: 1,
-                    child: ElevatedButton(
-                      onPressed: _showDialogConfirm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                      ),
-                      child: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
+                  IconButton(
+                    onPressed: _showDialogConfirm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                    ),
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
                   ),
                 ],

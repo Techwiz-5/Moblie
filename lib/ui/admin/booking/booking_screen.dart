@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/widgets/ambulance_card.dart';
 import 'package:techwiz_5/ui/widgets/booking_card.dart';
+
+import '../../../data/authentication.dart';
+import '../../login_screen.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -28,6 +32,20 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await AuthServices().logout();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            icon: const Icon(
+              EneftyIcons.logout_2_outline,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: myItems.snapshots(),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/user/search_screen.dart';
 import 'package:techwiz_5/ui/widgets/hospital_card.dart';
@@ -84,7 +85,7 @@ class _HospitalScreenState extends State<HospitalScreen> {
                 const Text("Type keyword to search"),
                 const Spacer(),
                 Icon(
-                  Icons.search,
+                  EneftyIcons.search_normal_2_outline,
                   size: 18,
                   color: Colors.grey[800],
                 )

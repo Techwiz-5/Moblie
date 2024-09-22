@@ -1,8 +1,12 @@
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/account/account_screen.dart';
 import 'package:techwiz_5/ui/admin/account/create_account.dart';
 import 'package:techwiz_5/ui/driver/dirvier_manager/driver_admin_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
+
+import '../../data/authentication.dart';
+import '../login_screen.dart';
 
 class AccountManagerScreen extends StatefulWidget {
   const AccountManagerScreen({super.key});
@@ -40,6 +44,20 @@ class _AccountManagerScreenState extends State<AccountManagerScreen>
         backgroundColor: const Color(0xff223548),
         centerTitle: true,
         title: const Text('Account Manager', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await AuthServices().logout();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            icon: const Icon(
+              EneftyIcons.logout_2_outline,
+              color: Colors.white,
+            ),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white54,
@@ -58,7 +76,7 @@ class _AccountManagerScreenState extends State<AccountManagerScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
+        children: const [
           AccountScreen(),
           DriverScreenAdmin(),
         ],

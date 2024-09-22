@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -57,25 +58,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         },
         items: [
           const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(EneftyIcons.home_2_outline),
             activeIcon: Icon(
-              Icons.home,
+              EneftyIcons.home_2_bold,
               color: Colors.blue,
             ),
             label: 'Home',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
+            icon: Icon(EneftyIcons.calendar_outline),
             activeIcon: Icon(
-              Icons.calendar_today,
+              EneftyIcons.calendar_bold,
               color: Colors.blue,
             ),
             label: 'Booking',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(EneftyIcons.user_outline),
             activeIcon: Icon(
-              Icons.person,
+              EneftyIcons.user_bold,
               color: Colors.blue,
             ),
             label: 'User',
@@ -100,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   padding: const EdgeInsets.all(12),
                   child: const Icon(
-                    Icons.call,
+                    EneftyIcons.call_calling_bold,
                     color: Colors.white,
                   )),
             ),
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ],
                 ),
                 padding: const EdgeInsets.all(12),
-                child: const Icon(Icons.call),
+                child: const Icon(EneftyIcons.call_calling_outline),
               ),
             ),
             label: '',

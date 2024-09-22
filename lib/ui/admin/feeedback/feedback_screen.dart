@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:enefty_icons/enefty_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:techwiz_5/data/authentication.dart';
-import 'package:techwiz_5/ui/admin/hospital/create_hospital_screen.dart';
-import 'package:techwiz_5/ui/login_screen.dart';
-import 'package:techwiz_5/ui/widgets/button.dart';
-import 'package:techwiz_5/ui/widgets/hospital_card.dart';
+import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
+import 'package:techwiz_5/ui/widgets/ambulance_card.dart';
+import 'package:techwiz_5/ui/widgets/feedback_card.dart';
 
-class HospitalScreen extends StatefulWidget {
-  const HospitalScreen({super.key});
+class FeedbackScreen extends StatefulWidget {
+  const FeedbackScreen({
+    super.key,
+  });
+
   @override
-  State<HospitalScreen> createState() => _HospitalScreenState();
+  State<FeedbackScreen> createState() => _FeedbackScreen();
 }
 
-class _HospitalScreenState extends State<HospitalScreen> {
+class _FeedbackScreen extends State<FeedbackScreen> {
   final CollectionReference myItems =
-      FirebaseFirestore.instance.collection('hospital');
-  @override
+      FirebaseFirestore.instance.collection('feedback');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,27 +25,13 @@ class _HospitalScreenState extends State<HospitalScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xff223548),
         title: const Text(
-          'Hospital',
+          'Feedback',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await AuthServices().logout();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
-            },
-            icon: const Icon(
-              EneftyIcons.logout_2_outline,
-              color: Colors.white,
-            ),
-          ),
-        ],
       ),
       body: StreamBuilder(
         stream: myItems.snapshots(),
@@ -62,8 +48,8 @@ class _HospitalScreenState extends State<HospitalScreen> {
                     // borderRadius: BorderRadius.circular(20),
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: HospitalCard(
-                          hospital: documentSnapshot,
+                        child: FeedBackCard(
+                          feedback: documentSnapshot,
                         )),
                   ),
                 );
@@ -76,11 +62,6 @@ class _HospitalScreenState extends State<HospitalScreen> {
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const HospitalFormScreen())),
-        child: const Icon(Icons.add),
       ),
     );
   }

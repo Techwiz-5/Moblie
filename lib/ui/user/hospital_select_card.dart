@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
@@ -134,9 +136,9 @@ class _HospitalSelectCardState extends State<HospitalSelectCard> {
                     Row(
                       children: [
                         const Icon(
-                          Icons.location_on,
+                          EneftyIcons.location_outline,
                           color: Colors.black38,
-                          size: 18,
+                          size: 16,
                         ),
                         const SizedBox(
                           width: 6,
@@ -157,7 +159,7 @@ class _HospitalSelectCardState extends State<HospitalSelectCard> {
                     Row(
                       children: [
                         const Icon(
-                          Icons.call,
+                          EneftyIcons.call_outline,
                           color: Colors.black38,
                           size: 18,
                         ),
@@ -178,7 +180,7 @@ class _HospitalSelectCardState extends State<HospitalSelectCard> {
                     Row(
                       children: [
                         const Icon(
-                          Icons.attach_money,
+                          EneftyIcons.dollar_circle_outline,
                           color: Colors.red,
                           size: 18,
                         ),
@@ -201,11 +203,14 @@ class _HospitalSelectCardState extends State<HospitalSelectCard> {
                       style: const TextStyle(
                         fontSize: 14,
                         height: 1.5,
+                        color: Colors.black54
                       ),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
+                        const Icon(FluentIcons.arrow_wrap_20_filled),
+                        const SizedBox(width: 4),
                         Text(
                           '${widget.hospital['distance'].toStringAsFixed(2)} km',
                           overflow: TextOverflow.ellipsis,
