@@ -38,7 +38,7 @@ class _DriverScreenState extends State<DriverScreen> {
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 241, 242, 243),
           appBar: AppBar(
-            backgroundColor: Colors.blue,
+            backgroundColor: const Color.fromARGB(255, 223, 113, 17),
             centerTitle: true,
             title: widget.roleCurrent == 'admin'
                 ? const Text(

@@ -39,7 +39,7 @@ class _AccessBookingState extends State<AccessBooking> {
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 241, 242, 243),
           appBar:
-          AppBar(backgroundColor: Colors.blue, title: Text("Booking new")),
+          AppBar(backgroundColor: const Color.fromARGB(255, 223, 113, 17), title: Text("Booking new")),
           body: StreamBuilder(
             stream: myItems
                 .where('id', isEqualTo: widget.bookingId)
