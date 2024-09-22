@@ -56,7 +56,7 @@ class _HospitalGalleryScreenState extends State<HospitalGalleryScreen> {
           color: Colors.white,
             fontWeight: FontWeight.bold
         ),),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff223548),
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -74,14 +74,16 @@ class _HospitalGalleryScreenState extends State<HospitalGalleryScreen> {
           );
         },
         scrollPhysics: const BouncingScrollPhysics(),
-        backgroundDecoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,
+        backgroundDecoration: const BoxDecoration(
+          color: Color(0xff475e75),
         ),
         loadingBuilder: (context, event) => const Center(
           child: CircularProgressIndicator(),
         ),
       ),
-      bottomSheet: Text('Image ${idx+1}/${imageList.length}'),
+      bottomSheet: Container(
+        color: Color(0xff475e75),
+          child: Text('Image ${idx+1}/${imageList.length}',style: TextStyle(color: Colors.white70),)),
     );
   }
 }

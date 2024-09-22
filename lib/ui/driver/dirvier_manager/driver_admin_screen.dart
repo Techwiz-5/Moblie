@@ -17,39 +17,41 @@ class _DriverScreenAdminState extends State<DriverScreenAdmin> {
       FirebaseFirestore.instance.collection('driver');
   @override
   Widget build(BuildContext context) {
-    print(myItems);
     return Scaffold(
-      body: StreamBuilder(
-        stream: myItems.snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-          if (streamSnapshot.hasData) {
-            final items = streamSnapshot.data!.docs;
-            return ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                print(index);
-                final DocumentSnapshot documentSnapshot = items[index];
-                return Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Container(
-                    // borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: DriverCard(
-                        account: documentSnapshot,
+      backgroundColor: const Color(0xff223548),
+      body: Container(
+        margin: const EdgeInsets.all(8.0),
+        child: StreamBuilder(
+          stream: myItems.snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+            if (streamSnapshot.hasData) {
+              final items = streamSnapshot.data!.docs;
+              return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final DocumentSnapshot documentSnapshot = items[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Container(
+                      // borderRadius: BorderRadius.circular(20),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: DriverCard(
+                          account: documentSnapshot,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              );
+            }
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.blue,
+              ),
             );
-          }
-          return const Center(
-            child: CircularProgressIndicator(
-              color: Colors.blue,
-            ),
-          );
-        },
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(context,

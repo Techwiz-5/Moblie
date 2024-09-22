@@ -35,16 +35,17 @@ class _AccountManagerScreenState extends State<AccountManagerScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 241, 242, 243),
+      backgroundColor: const Color(0xff475e75),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff223548),
         centerTitle: true,
         title: const Text('Account Manager', style: TextStyle(color: Colors.white)),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
+          indicatorColor: Colors.white54,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.black,
+          unselectedLabelColor: Colors.white54,
+          dividerColor: Colors.transparent,
           tabs: const [
             Expanded(
               child: Tab(text: 'User Manager'),

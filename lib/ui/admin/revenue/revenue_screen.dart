@@ -51,9 +51,9 @@ class _RevenueScreenState extends State<RevenueScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xff475e75),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff223548),
         title: const Text(
           'Revenue',
           style: TextStyle(
@@ -86,8 +86,9 @@ class _RevenueScreenState extends State<RevenueScreen> {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20.0),
-                    border: Border.all(color: Colors.black)),
+                    border: Border.all(color: Colors.white70)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -126,11 +127,11 @@ class _RevenueScreenState extends State<RevenueScreen> {
                     children: [
                       Container(
                         width: double.infinity,
-                        color: Colors.white,
+                        color: const Color(0xff475e75),
                         padding: const EdgeInsets.all(8),
                         child: Text('Total revenue amount: \$${money.toStringAsFixed(2)}',
                           style: const TextStyle(
-                            color: Colors.blue,
+                            color: Colors.white70,
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ), textAlign: TextAlign.center,),

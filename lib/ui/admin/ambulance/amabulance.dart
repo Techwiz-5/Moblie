@@ -56,9 +56,9 @@ class _AmabulanceOfHospitalScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xff475e75),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff223548),
         title: Text(
           '${widget.hospital_name} Ambulances',
           style: const TextStyle(

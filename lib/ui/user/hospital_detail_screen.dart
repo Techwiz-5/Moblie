@@ -22,10 +22,11 @@ class HospitalDetailScreen extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.bold
           ),),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff223548),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+      backgroundColor: const Color(0xff475e75),
       body: Stack(
         children: [
           // GoogleMap(
