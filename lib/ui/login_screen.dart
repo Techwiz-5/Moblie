@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/google_auth.dart';
 import 'package:techwiz_5/ui/admin/admin_screen.dart';
@@ -155,131 +156,150 @@ class _LoginScreenState extends State<LoginScreen> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Form(
-        key: _formKeyLogin,
+      body: Center(
         child: SingleChildScrollView(
-          child: SizedBox(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: height / 2.7,
-                  child: Image.asset('images/login.jpg'),
-                ),
-                TextFieldInput(
-                  textEditingController: emailController,
-                  hintText: 'Enter your email',
-                  icon: Icons.email,
-                  textInputType: TextInputType.text,
-                  errorMessage: (value) {
-                    if (value.trim().isEmpty ||
-                        !value.contains('@') ||
-                        value.startsWith(" ")) {
-                      return 'Email is not valid';
-                    }
-                    return null;
-                  },
-                ),
-                TextFieldInput(
-                  textEditingController: passwordController,
-                  hintText: 'Enter your password',
-                  icon: Icons.lock,
-                  textInputType: TextInputType.text,
-                  isPass: true,
-                  errorMessage: (value) {
-                    if (value.isEmpty) {
-                      return 'Password is required';
-                    }
-                    return null;
-                  },
-                ),
-                const ForgotPassword(),
-                MyButtons(onTap: loginUser, text: 'Log In'),
-                Row(
+          child: Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: height / 3.7,
+                child: Image.asset('images/login.jpg'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                        child: Container(height: 1, color: Colors.black26)),
-                    const Text(' or '),
-                    Expanded(
-                        child: Container(height: 1, color: Colors.black26)),
+                    Icon(FluentIcons.vehicle_bus_20_filled, size: 26, color: Colors.blue[900],),
+                    const SizedBox(width: 8),
+                    Text('T1 AMBULANCE',style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.blue[900]
+                    ),)
                   ],
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey),
-                    onPressed: () async {
-                      await FirebaseServices().signInWithGoogle();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
-                      );
-                    },
-                    child: Row(
+              ),
+              Form(
+                key: _formKeyLogin,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFieldInput(
+                      textEditingController: emailController,
+                      hintText: 'Enter your email',
+                      icon: Icons.email,
+                      textInputType: TextInputType.text,
+                      errorMessage: (value) {
+                        if (value.trim().isEmpty ||
+                            !value.contains('@') ||
+                            value.startsWith(" ")) {
+                          return 'Email is not valid';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFieldInput(
+                      textEditingController: passwordController,
+                      hintText: 'Enter your password',
+                      icon: Icons.lock,
+                      textInputType: TextInputType.text,
+                      isPass: true,
+                      errorMessage: (value) {
+                        if (value.isEmpty) {
+                          return 'Password is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const ForgotPassword(),
+                    MyButtons(onTap: loginUser, text: 'Log In'),
+                    Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child:
-                              Image.asset('images/logo_google.png', height: 35),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "Continue with Google",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 20),
-                        ),
+                        Expanded(
+                            child: Container(height: 1, color: Colors.black26)),
+                        const Text(' or '),
+                        Expanded(
+                            child: Container(height: 1, color: Colors.black26)),
                       ],
                     ),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account?",
-                        style: TextStyle(fontSize: 16)),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
-                        ),
-                      ),
-                      child: const Text(" SignUp",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Sign up to become a driver ",
-                        style: TextStyle(fontSize: 16)),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey),
+                        onPressed: () async {
+                          await FirebaseServices().signInWithGoogle();
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const SignUpDriverScreen()));
-                      },
-                      child: const Text("here",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.blue)),
+                                builder: (context) => const HomeScreen()),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child:
+                                  Image.asset('images/logo_google.png', height: 35),
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              "Continue with Google",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 20),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Don't have an account?",
+                            style: TextStyle(fontSize: 16)),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
+                          ),
+                          child: const Text(" SignUp",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Sign up to become a driver ",
+                            style: TextStyle(fontSize: 16)),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignUpDriverScreen()));
+                          },
+                          child: const Text("here",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.blue)),
+                        )
+                      ],
                     )
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
