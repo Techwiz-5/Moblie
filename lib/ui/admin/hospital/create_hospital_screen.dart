@@ -31,7 +31,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
   String _description = '';
   String _address = '';
   String _phone = '';
-  String _price = '';
+  double _price = 0;
 
   LatLng? _selectedLocation;
 
@@ -121,9 +121,9 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
+          title: const Text('Create Hospital', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+          backgroundColor: const Color(0xff223548),
+          iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             Container(
               margin: const EdgeInsets.only(right: 16),
@@ -131,14 +131,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                 onPressed: () async {
                   _createHospital();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-                child: const Text('Create Hospital'),
+                child: const Text('Create'),
               ),
             ),
           ],
@@ -268,7 +261,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
                     },
                     keyboardType: TextInputType.number,
                     onSaved: (value) {
-                      _price = value!;
+                      _price = double.parse(value!);
                     },
                   ),
                   const SizedBox(height: 16),

@@ -131,9 +131,9 @@ class _DriverFromScreenState extends State<DriverFormScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
+          title: const Text('Create Driver', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+          backgroundColor: const Color(0xff223548),
+          iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             Container(
               margin: const EdgeInsets.only(right: 16),
@@ -141,14 +141,7 @@ class _DriverFromScreenState extends State<DriverFormScreen> {
                 onPressed: () async {
                   _createAmbulance();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-                child: const Text('Create Driver'),
+                child: const Text('Create'),
               ),
             ),
           ],

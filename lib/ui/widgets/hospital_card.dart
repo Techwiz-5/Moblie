@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_gallery_screen.dart';
@@ -135,10 +137,10 @@ class _HospitalCardState extends State<HospitalCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      height: 250,
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           border: const Border(
             left: BorderSide(
               //                   <--- left side
@@ -168,13 +170,13 @@ class _HospitalCardState extends State<HospitalCard> {
               blurRadius: 10,
             ),
           ]),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
+              topLeft: Radius.circular(8),
+              bottomLeft: Radius.circular(8),
             ),
             child: Center(
                 child: Stack(
@@ -182,135 +184,148 @@ class _HospitalCardState extends State<HospitalCard> {
               children: <Widget>[
                 Image.network(
                   widget.hospital['image'] ?? '',
-                  width: double.infinity,
-                  height: 150,
+                  width: 150,
+                  height: 250,
                   fit: BoxFit.cover,
                 ),
               ],
             )),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      child: Text(
-                        widget.hospital['name'] ?? '',
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          widget.hospital['name'] ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                      if (isAdmin)
+                        GestureDetector(
+                          onTapDown: (TapDownDetails details) async {
+                            await _showPopupMenu(details.globalPosition);
+                          },
+                          child: const Icon(Icons.more_vert_rounded),
+                        ),
+                    ],
+                  ),
+                  Text(
+                    widget.hospital['description'] ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        color: Color.fromARGB(255, 92, 91, 91),
+                        size: 20,
+                      ),
+                      const SizedBox(
+                        width: 6,
+                      ),
+                      Flexible(
+                        child: Text(
+                          widget.hospital['address'] ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.attach_money_outlined,
+                        color: Color.fromARGB(255, 92, 91, 91),
+                        size: 20,
+                      ),
+                      const SizedBox(
+                        width: 6,
+                      ),
+                      Text(
+                        '${widget.hospital['price'].toString()}/km',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    decoration: const BoxDecoration(
+                      border: Border(top: BorderSide(
+                        color: Colors.blue,
+                        width: 1.0,
+                      ),)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: () =>  {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AmabulanceOfHospitalScreen(
+                                  hospital_id: widget.hospital['id'],
+                                  hospital_name: widget.hospital['name'],
+                                ),
+                              ),
+                            ),
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[100]),
+                          icon: const Icon(Icons.directions_bus),
                         ),
-                      ),
-                    ),
-                    if (isAdmin)
-                      GestureDetector(
-                        onTapDown: (TapDownDetails details) async {
-                          await _showPopupMenu(details.globalPosition);
-                        },
-                        child: const Icon(Icons.more_vert_rounded),
-                      ),
-                  ],
-                ),
-                Text(
-                  widget.hospital['description'] ?? '',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: Color.fromARGB(255, 92, 91, 91),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      widget.hospital['address'] ?? '',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.attach_money_outlined,
-                      color: Color.fromARGB(255, 92, 91, 91),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      '${widget.hospital['price'].toString()}/km',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      onPressed: () =>  {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AmabulanceOfHospitalScreen(
-                              hospital_id: widget.hospital['id'],
-                              hospital_name: widget.hospital['name'],
+                        IconButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HospitalGalleryScreen(hospital: widget.hospital),
                             ),
                           ),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[100]),
+                          icon: const Icon(Icons.photo),
                         ),
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[100]),
-                      icon: const Icon(Icons.directions_bus),
+                        IconButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HospitalDetailScreen(hospital: widget.hospital),
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[100]),
+                          icon: const Icon(Icons.map),
+                        )
+                      ],
                     ),
-                    IconButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              HospitalGalleryScreen(hospital: widget.hospital),
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[100]),
-                      icon: const Icon(Icons.photo),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              HospitalDetailScreen(hospital: widget.hospital),
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[100]),
-                      icon: Icon(Icons.map),
-                    )
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           )
         ],

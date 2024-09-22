@@ -41,10 +41,7 @@ class _HospitalScreenState extends State<HospitalScreen> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final DocumentSnapshot documentSnapshot = items[index];
-                      return Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: HospitalCard(hospital: documentSnapshot,),
-                      );
+                      return HospitalCard(hospital: documentSnapshot,);
                     },
                   );
                 }
