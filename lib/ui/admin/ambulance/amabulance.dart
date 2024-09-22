@@ -74,7 +74,7 @@ class _AmabulanceOfHospitalScreenState
             .where('hospital_id', isEqualTo: widget.hospital_id)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-          if (streamSnapshot.hasData) {
+          if (streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {
             final items = streamSnapshot.data!.docs;
             return ListView.builder(
               itemCount: items.length,
@@ -93,6 +93,16 @@ class _AmabulanceOfHospitalScreenState
                   ),
                 );
               },
+            );
+          }
+          if (!streamSnapshot.hasData || streamSnapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'No hospital found',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             );
           }
           return const Center(

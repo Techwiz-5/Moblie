@@ -299,7 +299,7 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
       plate_number = pltNum;
       money = mn;
     });
-    // await _createBooking();
+    await _createBooking();
     _showDialogSuccess();
   }
 

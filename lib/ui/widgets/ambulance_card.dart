@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/admin/ambulance/edit_ambulance_screen.dart';
 import 'package:techwiz_5/ui/widgets/ribbon.dart';
@@ -21,6 +24,26 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
   String? hospitalAddress;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late int _availableSlot;
+  String _role = '';
+
+  void getUserData() async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      DocumentSnapshot docSnapshot;
+
+      docSnapshot = await _firestore.collection('account').doc(uid).get();
+      if (!docSnapshot.exists) {
+        docSnapshot = await _firestore.collection('driver').doc(uid).get();
+      }
+      var userData = docSnapshot.data() as Map<String, dynamic>;
+      setState(() {
+        _role = userData['role'];
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
 
   Future<void> _showPopupMenu(Offset offset) async {
     double left = offset.dx;
@@ -153,6 +176,7 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
     // TODO: implement initState
     super.initState();
     _fetchHospital();
+    getUserData();
   }
 
   void _fetchHospital() async {
@@ -243,28 +267,39 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Hospital Name: ${hospitalName} ',
-                          style: const TextStyle(
-                            // height: 2,
-                            color: Colors.red,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          flex: 9,
+                          child: Text(
+                            'Hospital Name: ${hospitalName} ',
+                            style: const TextStyle(
+                              // height: 2,
+                              color: Colors.red,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        const Spacer(),
-                        GestureDetector(
-                          onTapDown: (TapDownDetails details) async {
-                            await _showPopupMenu(details.globalPosition);
-                          },
-                          child: const Icon(Icons.more_vert_rounded),
-                        )
+                        // const Spacer(),
+                        if (_role == 'admin')
+                          Flexible(
+                            child: GestureDetector(
+                              onTapDown: (TapDownDetails details) async {
+                                await _showPopupMenu(details.globalPosition);
+                              },
+                              child: const Icon(Icons.more_vert_rounded),
+                            ),
+                          )
                       ],
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.phone, size: 18, color: Colors.black54,),
+                        const Icon(
+                          Icons.phone,
+                          size: 18,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Phone: ${hospitalPhone} ',
@@ -278,7 +313,11 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.directions_bus, size: 18, color: Colors.black54,),
+                        const Icon(
+                          Icons.directions_bus,
+                          size: 18,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 6),
                         const Text(
                           'Type:',
@@ -297,7 +336,11 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.info, size: 18, color: Colors.black54,),
+                        const Icon(
+                          Icons.info,
+                          size: 18,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Plate Number: ${widget.ambulance['plate_number']} ',
@@ -311,7 +354,11 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.verified_user, size: 18, color: Colors.black54,),
+                        const Icon(
+                          Icons.verified_user,
+                          size: 18,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Status: ${widget.ambulance['enable'] == 0 ? 'Enable' : 'Disable'} ',

@@ -816,134 +816,136 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                       title: const Text('Select Hospital'),
                                       centerTitle: true,
                                     ),
-                                    body: Column(
-                                      children: [
-                                        StreamBuilder(
-                                          stream: _hospitalsCollection
-                                              .snapshots(),
-                                          builder: (context,
-                                              AsyncSnapshot<QuerySnapshot>
-                                                  streamSnapshot) {
-                                            var isLoading2 = true;
-                                            if (streamSnapshot.hasData) {
-                                              final dataList =
-                                                  streamSnapshot.data!.docs;
-                                              List outputData = [];
-                                              for (var i = 0;
-                                                  i < dataList.length;
-                                                  i++) {
-                                                var object =
-                                                    dataList[i].data() as Map;
-                                                object.putIfAbsent(
-                                                    'distance',
-                                                    () => FlutterMapMath()
-                                                        .distanceBetween(
-                                                            _selectedLocation!
-                                                                .latitude,
-                                                            _selectedLocation!
-                                                                .longitude,
-                                                            double.parse(
-                                                                dataList[i][
-                                                                    'latitude']),
-                                                            double.parse(
-                                                                dataList[i][
-                                                                    'longitude']),
-                                                            'kilometers'));
-                                                object['distance'] = FlutterMapMath()
-                                                    .distanceBetween(
-                                                        _selectedLocation!
-                                                            .latitude,
-                                                        _selectedLocation!
-                                                            .longitude,
-                                                        double.parse(
-                                                            dataList[i]
-                                                                ['latitude']),
-                                                        double.parse(dataList[
-                                                            i]['longitude']),
-                                                        'kilometers');
-                                                outputData.add(object);
-                                              }
-
-                                              outputData.sort((a, b) =>
-                                                  a['distance'].compareTo(
-                                                      b['distance']));
-                                              outputData.reversed;
-
-                                              return StatefulBuilder(builder:
-                                                  (BuildContext context,
-                                                      setState) {
-                                                if (outputData.isNotEmpty) {
-                                                  setState(() {
-                                                    isLoading2 = false;
-                                                  });
+                                    body: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          StreamBuilder(
+                                            stream: _hospitalsCollection
+                                                .snapshots(),
+                                            builder: (context,
+                                                AsyncSnapshot<QuerySnapshot>
+                                                    streamSnapshot) {
+                                              var isLoading2 = true;
+                                              if (streamSnapshot.hasData) {
+                                                final dataList =
+                                                    streamSnapshot.data!.docs;
+                                                List outputData = [];
+                                                for (var i = 0;
+                                                    i < dataList.length;
+                                                    i++) {
+                                                  var object =
+                                                      dataList[i].data() as Map;
+                                                  object.putIfAbsent(
+                                                      'distance',
+                                                      () => FlutterMapMath()
+                                                          .distanceBetween(
+                                                              _selectedLocation!
+                                                                  .latitude,
+                                                              _selectedLocation!
+                                                                  .longitude,
+                                                              double.parse(
+                                                                  dataList[i][
+                                                                      'latitude']),
+                                                              double.parse(
+                                                                  dataList[i][
+                                                                      'longitude']),
+                                                              'kilometers'));
+                                                  object['distance'] = FlutterMapMath()
+                                                      .distanceBetween(
+                                                          _selectedLocation!
+                                                              .latitude,
+                                                          _selectedLocation!
+                                                              .longitude,
+                                                          double.parse(
+                                                              dataList[i]
+                                                                  ['latitude']),
+                                                          double.parse(dataList[
+                                                              i]['longitude']),
+                                                          'kilometers');
+                                                  outputData.add(object);
                                                 }
-
-                                                return isLoading2
-                                                    ? const CircularProgressIndicator()
-                                                    : SingleChildScrollView(
-                                                        child:
-                                                            ListView.builder(
-                                                          physics:
-                                                              const ClampingScrollPhysics(),
-                                                          shrinkWrap: true,
-                                                          scrollDirection:
-                                                              Axis.vertical,
-                                                          itemCount:
-                                                              outputData
-                                                                  .length,
-                                                          itemBuilder:
-                                                              (context,
-                                                                  index) {
-                                                            final data =
-                                                                outputData[
-                                                                    index];
-                                                            return RadioListTile(
-                                                              selectedTileColor:
-                                                                  Colors.blue,
-                                                              title:
-                                                                  HospitalSelectCard(
-                                                                hospital:
-                                                                    data,
-                                                                color: selectHospital !=
-                                                                            null &&
-                                                                        data['id'] ==
-                                                                            selectHospital[
-                                                                                'id']
-                                                                    ? Colors
-                                                                        .blue
-                                                                        .shade50
-                                                                    : Colors
-                                                                        .white,
-                                                                bkgDate:
-                                                                    selectedDate,
-                                                                timeRange:
-                                                                    _timeRange,
-                                                              ),
-                                                              value: data,
-                                                              groupValue:
-                                                                  selectHospital,
-                                                              onChanged:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  selectHospital =
-                                                                      value!;
-                                                                });
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                              });
-                                            }
-                                            return const Center(
-                                              child:
-                                                  CircularProgressIndicator(
-                                                color: Colors.blue,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
+                                          
+                                                outputData.sort((a, b) =>
+                                                    a['distance'].compareTo(
+                                                        b['distance']));
+                                                outputData.reversed;
+                                          
+                                                return StatefulBuilder(builder:
+                                                    (BuildContext context,
+                                                        setState) {
+                                                  if (outputData.isNotEmpty) {
+                                                    setState(() {
+                                                      isLoading2 = false;
+                                                    });
+                                                  }
+                                          
+                                                  return isLoading2
+                                                      ? const CircularProgressIndicator()
+                                                      : SingleChildScrollView(
+                                                          child:
+                                                              ListView.builder(
+                                                            physics:
+                                                                const ClampingScrollPhysics(),
+                                                            shrinkWrap: true,
+                                                            scrollDirection:
+                                                                Axis.vertical,
+                                                            itemCount:
+                                                                outputData
+                                                                    .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              final data =
+                                                                  outputData[
+                                                                      index];
+                                                              return RadioListTile(
+                                                                selectedTileColor:
+                                                                    Colors.blue,
+                                                                title:
+                                                                    HospitalSelectCard(
+                                                                  hospital:
+                                                                      data,
+                                                                  color: selectHospital !=
+                                                                              null &&
+                                                                          data['id'] ==
+                                                                              selectHospital[
+                                                                                  'id']
+                                                                      ? Colors
+                                                                          .blue
+                                                                          .shade50
+                                                                      : Colors
+                                                                          .white,
+                                                                  bkgDate:
+                                                                      selectedDate,
+                                                                  timeRange:
+                                                                      _timeRange,
+                                                                ),
+                                                                value: data,
+                                                                groupValue:
+                                                                    selectHospital,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  setState(() {
+                                                                    selectHospital =
+                                                                        value!;
+                                                                  });
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                });
+                                              }
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.blue,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                     bottomNavigationBar: Padding(
                                       padding: const EdgeInsets.all(8.0),

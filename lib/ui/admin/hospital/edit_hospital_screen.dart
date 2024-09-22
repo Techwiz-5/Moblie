@@ -33,9 +33,9 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
   late String _description;
   late String _address;
   late String _phone;
-  late String _latitude;
-  late String _longitude;
-  late String _price;
+  late double _latitude;
+  late double _longitude;
+  late double _price;
 
   LatLng? _selectedLocation;
 
@@ -53,8 +53,8 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
         var hospitalData = docSnapshot.data() as Map<String, dynamic>;
         setState(() {
           _name = hospitalData['name'];
-          _latitude = hospitalData['latitude'];
-          _longitude = hospitalData['longitude'];
+          _latitude = double.parse(hospitalData['latitude']);
+          _longitude = double.parse(hospitalData['longitude']);
           _description = hospitalData['description'];
           _address = hospitalData['address'];
           _phone = hospitalData['phone'];
@@ -128,6 +128,11 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
       return;
     }
     _formKeyCV.currentState!.save();
+
+    if(_selectedLocation == null){
+      showSnackBar(context, 'Please select a location.');
+      return;
+    }
     try {
       await _uploadImageToFirebase();
       await _firestore.collection('hospital').doc(widget.hospitalId).update({
@@ -248,7 +253,10 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
-                        initialValue: _price,
+                        initialValue: _price.toString(),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         decoration: cvFormField('Price'),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -258,7 +266,7 @@ class _EditHospitalScreenState extends State<EditHospitalScreen> {
                         },
                         keyboardType: TextInputType.number,
                         onSaved: (value) {
-                          _price = value!;
+                          _price = double.parse(value!);
                         },
                       ),
                       const SizedBox(height: 16),

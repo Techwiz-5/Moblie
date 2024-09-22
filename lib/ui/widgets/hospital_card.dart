@@ -138,6 +138,7 @@ class _HospitalCardState extends State<HospitalCard> {
   Widget build(BuildContext context) {
     return Container(
       height: 250,
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),

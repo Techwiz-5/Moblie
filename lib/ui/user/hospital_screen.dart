@@ -35,6 +35,11 @@ class _HospitalScreenState extends State<HospitalScreen> {
             child: StreamBuilder(
               stream: myItems.snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                if (!streamSnapshot.hasData || streamSnapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text('No hospital found'),
+                  );
+                }
                 if (streamSnapshot.hasData) {
                   final items = streamSnapshot.data!.docs;
                   return ListView.builder(
@@ -45,6 +50,7 @@ class _HospitalScreenState extends State<HospitalScreen> {
                     },
                   );
                 }
+
                 return const Center(
                   child: CircularProgressIndicator(
                     color: Colors.blue,

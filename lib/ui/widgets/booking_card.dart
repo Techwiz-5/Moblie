@@ -315,8 +315,8 @@ class _BookingCardState extends State<BookingCard> {
                       MaterialPageRoute(
                         builder: (context) => UserGoogleMapPickupPoint(
                           bookingId: widget.booking['id'],
-                          driverLocationLat: double.parse(widget.booking["uptLat"]),
-                          driverLocationLong: double.parse(widget.booking["uptLng"]),
+                          driverLocationLat: double.parse(widget.booking["uptLat"].toString()),
+                          driverLocationLong: double.parse(widget.booking["uptLng"].toString()),
                         ),
                       ),
                     ),
