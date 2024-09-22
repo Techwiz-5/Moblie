@@ -51,7 +51,14 @@ class _HospitalGalleryScreenState extends State<HospitalGalleryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hospital Gallery'),
+        title: Text('${widget.hospital['name']}',
+          style: const TextStyle(
+          color: Colors.white,
+            fontWeight: FontWeight.bold
+        ),),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: isLoading ? const Center(child: CircularProgressIndicator()) : PhotoViewGallery.builder(
         itemCount: imageList.length,

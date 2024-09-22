@@ -6,6 +6,8 @@ import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_gallery_screen.dart';
 
+import '../admin/ambulance/amabulance.dart';
+
 class HospitalCard extends StatefulWidget {
   const HospitalCard({super.key, required this.hospital});
   final dynamic hospital;
@@ -267,18 +269,20 @@ class _HospitalCardState extends State<HospitalCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () =>  {},
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => AmabulanceOfHospitalScreen(
-                      //       hospital_id: widget.hospital['id'],
-                      //     ),
-                      //   ),
-                      // ),
+                      onPressed: () =>  {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AmabulanceOfHospitalScreen(
+                              hospital_id: widget.hospital['id'],
+                              hospital_name: widget.hospital['name'],
+                            ),
+                          ),
+                        ),
+                      },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue[100]),
-                      icon: Icon(Icons.remove_red_eye_outlined),
+                      icon: const Icon(Icons.directions_bus),
                     ),
                     IconButton(
                       onPressed: () => Navigator.push(
@@ -290,7 +294,7 @@ class _HospitalCardState extends State<HospitalCard> {
                       ),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue[100]),
-                      icon: Icon(Icons.photo),
+                      icon: const Icon(Icons.photo),
                     ),
                     IconButton(
                       onPressed: () => Navigator.push(

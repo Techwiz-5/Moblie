@@ -274,7 +274,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             ),
           ),
           content: Container(
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -286,7 +286,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           actions: <Widget>[
             Column(
               children: [
-                Expanded(
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
@@ -303,7 +304,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                   ),
                 ),
-                Expanded(
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -611,8 +613,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               Row(
                 children: [
                   const Text('Change to: '),
+                  const Spacer(),
                   ElevatedButton(
                       onPressed: setEmergencyBooking,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isEmergency ? null : Colors.red,
+                        foregroundColor: isEmergency ? null : Colors.white,
+                      ),
                       child: Text(isEmergency
                           ? 'Normal Booking'
                           : 'Emergency Booking')),
@@ -721,6 +728,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         : TextFormField(
                             decoration: ambulanceFormField('Zip code'),
                             autocorrect: true,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please fill in Zip code';

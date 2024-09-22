@@ -10,9 +10,10 @@ class AmabulanceOfHospitalScreen extends StatefulWidget {
   const AmabulanceOfHospitalScreen({
     super.key,
     required this.hospital_id,
+    required this.hospital_name,
   });
-
   final String hospital_id;
+  final String hospital_name;
 
   @override
   State<AmabulanceOfHospitalScreen> createState() =>
@@ -54,64 +55,62 @@ class _AmabulanceOfHospitalScreenState
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        initialIndex: 0,
-        length: 2,
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.blue,
-            title: const Text(
-              'Abulance Manager',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            centerTitle: true,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Text(
+          '${widget.hospital_name} Ambulances',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          body: StreamBuilder(
-            stream: myItems
-                .where('hospital_id', isEqualTo: widget.hospital_id)
-                .snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-              if (streamSnapshot.hasData) {
-                final items = streamSnapshot.data!.docs;
-                return ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final DocumentSnapshot documentSnapshot = items[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        // borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: AmbulanceCard(
-                              ambulance: documentSnapshot,
-                              // roleCurrent: widget.roleCurrent
-                            )),
-                      ),
-                    );
-                  },
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
+      ),
+      body: StreamBuilder(
+        stream: myItems
+            .where('hospital_id', isEqualTo: widget.hospital_id)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+          if (streamSnapshot.hasData) {
+            final items = streamSnapshot.data!.docs;
+            return ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot documentSnapshot = items[index];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    // borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: AmbulanceCard(
+                          ambulance: documentSnapshot,
+                          // roleCurrent: widget.roleCurrent
+                        )),
+                  ),
                 );
-              }
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.blue,
-                ),
-              );
-            },
-          ),
-          floatingActionButton: (_role == 'admin')
-              ? FloatingActionButton(
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AmbulanceFormScreen())),
-                  child: const Icon(Icons.add),
-                )
-              : null,
-        ));
+              },
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.blue,
+            ),
+          );
+        },
+      ),
+      floatingActionButton: (_role == 'admin')
+          ? FloatingActionButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AmbulanceFormScreen())),
+              child: const Icon(Icons.add),
+            )
+          : null,
+    );
   }
 }

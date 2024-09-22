@@ -156,34 +156,69 @@ class _EditProfileScreen extends State<EditProfileScreen> {
               children: [
                 Stack(
                   children: [
-                    Center(
-                      child: CircleAvatar(
-                        radius: 100,
-                        backgroundImage: _pickedImage != null
-                            ? FileImage(_pickedImage!)
-                            : (imageUrl != null && imageUrl!.isNotEmpty
-                            ? NetworkImage(imageUrl!)
-                            : null) as ImageProvider?,
-                        child: imageUrl == null && _pickedImage == null
-                            ? const Icon(
-                          Icons.person,
-                          size: 200,
-                          color: Colors.grey,
-                        )
-                            : null,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                        border: Border.all(width: 4.0, color: Colors.white),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset:
+                            const Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 100,
+                          backgroundImage: _pickedImage != null
+                              ? FileImage(_pickedImage!)
+                              : (imageUrl != null && imageUrl!.isNotEmpty
+                              ? NetworkImage(imageUrl!)
+                              : null) as ImageProvider?,
+                          child: imageUrl == null && _pickedImage == null
+                              ? const Icon(
+                            Icons.person,
+                            size: 200,
+                            color: Colors.grey,
+                          )
+                              : null,
+                        ),
                       ),
                     ),
                     Positioned(
-                      right: 130,
-                      top: 7,
+                      right: 110,
+                      bottom: 5,
                       child: GestureDetector(
                         onTap: () {
                           pickImage();
                         },
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.grey,
-                          size: 30,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                            border: Border.all(width: 4.0, color: Colors.white),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset:
+                                const Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey,
+                              size: 30,
+                            ),
+                          ),
                         ),
                       ),
                     ),

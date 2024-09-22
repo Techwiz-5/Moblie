@@ -17,9 +17,14 @@ class HospitalDetailScreen extends StatelessWidget {
     LatLng? _pickedLocation;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          hospital['name'],
-        ),
+        title: Text('${hospital['name']}',
+          style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+          ),),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -100,6 +105,11 @@ class HospitalDetailScreen extends StatelessWidget {
                   child: Text(
                     hospital['address'],
                     textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22
+                    ),
                   ),
                 ),
               ],

@@ -242,62 +242,88 @@ class _AmbulanceCardState extends State<AmbulanceCard> {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Hospital Name : ${hospitalName} ',
-                      style: const TextStyle(
-                        // height: 2,
-                        color: Colors.red,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          'Hospital Name: ${hospitalName} ',
+                          style: const TextStyle(
+                            // height: 2,
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTapDown: (TapDownDetails details) async {
+                            await _showPopupMenu(details.globalPosition);
+                          },
+                          child: const Icon(Icons.more_vert_rounded),
+                        )
+                      ],
                     ),
-                    Text(
-                      'Phone Hospital : ${hospitalPhone} ',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.5,
-                        fontWeight: FontWeight.normal,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(Icons.phone, size: 18, color: Colors.black54,),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Phone: ${hospitalPhone} ',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.5,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'Type : ${widget.ambulance['type']} ',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.5,
-                        fontWeight: FontWeight.normal,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(Icons.directions_bus, size: 18, color: Colors.black54,),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Type:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.5,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Badge(
+                          label: Text('${widget.ambulance['type']}'),
+                          backgroundColor: Colors.blue[500],
+                        )
+                      ],
                     ),
-                    Text(
-                      'Plate Number : ${widget.ambulance['plate_number']} ',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.5,
-                        fontWeight: FontWeight.normal,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(Icons.info, size: 18, color: Colors.black54,),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Plate Number: ${widget.ambulance['plate_number']} ',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.5,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'Test : ${widget.ambulance['hospital_id']} ',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.5,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    Text(
-                      'Enable : ${widget.ambulance['enable'] == 0 ? 'Yes' : 'No'} ',
-                      style: const TextStyle(
-                        height: 1.5,
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(Icons.verified_user, size: 18, color: Colors.black54,),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Status: ${widget.ambulance['enable'] == 0 ? 'Enable' : 'Disable'} ',
+                          style: const TextStyle(
+                            height: 1.5,
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-                trailing: GestureDetector(
-                  onTapDown: (TapDownDetails details) async {
-                    await _showPopupMenu(details.globalPosition);
-                  },
-                  child: const Icon(Icons.more_vert_rounded),
                 ),
               ),
             ),

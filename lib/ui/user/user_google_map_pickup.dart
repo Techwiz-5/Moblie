@@ -193,11 +193,9 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
                           bookerLocaitonLat: bookerLocation.latitude,
                           bookerLocaitonLong: bookerLocation.longitude,
                           bookingId: widget.bookingId,
-                          driverLocationLat:
-                              double.parse(widget.driverLocationLat.toString()),
-                          driverLocationLong: double.parse(
-                              widget.driverLocationLong.toString()),
-                        )),
+                          driverLocationLat: widget.driverLocationLat,
+                        driverLocationLong: widget.driverLocationLong)
+                        ),
               );
             },
             child: const Text('The patient has been picked up'),

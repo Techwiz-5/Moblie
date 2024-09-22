@@ -291,7 +291,7 @@ class _UserGoogleMapScreen extends State<UserGoogleMapGoHospital> {
         },
         child: const Icon(Icons.my_location),
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: const BottomAppBar(
         color: Colors.white,
         child:
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
