@@ -299,7 +299,7 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
       plate_number = pltNum;
       money = mn;
     });
-    await _createBooking();
+    // await _createBooking();
     _showDialogSuccess();
   }
 
@@ -318,12 +318,33 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
             ),
           ),
           content: Container(
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, size: 40, color: Colors.green,),
-                Text("Your has booked ambulance successfully \nOur driver will contact you soon.\nThankyou.", textAlign: TextAlign.center,),
+                Image.asset(
+                  'images/pngwing.png',
+                  width: 60,
+                ),
+                const Text("Your has booked ambulance successfully \nOur driver will contact you soon.\nThankyou.", textAlign: TextAlign.center,),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.directions_bus_filled, color: Colors.green,),
+                    SizedBox(width: 6,),
+                    Text("$plate_number", style: TextStyle(fontSize: 18, color: Colors.green),),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.monetization_on, color: Colors.green,),
+                    SizedBox(width: 6,),
+                    Text("\$${money.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green),)
+                  ],
+                ),
               ],
             ),
           ),
@@ -396,16 +417,27 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Text(
-                  'You are making Emergency Booking with detail as below. Please check information and click Confirm to continue',
+                  'You are making an Emergency Booking',
                   style: TextStyle(
                       color: Colors.red[400],
-                      fontSize: 16,
+                      fontSize: 17,
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 12),
+                child: Text(
+                  'Emergency booking allows you to book a ambulance from your current location to the nearest hospital with a single click.',
+                  style: TextStyle(
+                      color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 16),
               Form(
                 key: _formKeyAmbulance,
                 child: Column(
@@ -505,7 +537,7 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
                     SizedBox(
                       height: 420, // Specify a height
                       child: MapSearchAndPickWidget(
-                        buttonText: 'Confirm Book',
+                        buttonText: 'One Click To Book',
                           buttonHeight: 45,
                         onPicked: (pickedData) {
                           createEmergencyBooking(pickedData);
