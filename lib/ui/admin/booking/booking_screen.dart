@@ -21,7 +21,7 @@ class _BookingScreenState extends State<BookingScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
-          'Booking Manager',
+          'Booking Managers',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

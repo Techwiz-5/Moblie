@@ -71,17 +71,19 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      setState(() {
-        markers.add(
-          Marker(
-            width: 80.0,
-            height: 80.0,
-            point: LatLng(driverLocation.latitude, driverLocation.longitude),
-            child:
-                const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
-          ),
-        );
-      });
+      if (this.mounted) {
+        setState(() {
+          markers.add(
+            Marker(
+              width: 80.0,
+              height: 80.0,
+              point: LatLng(driverLocation.latitude, driverLocation.longitude),
+              child:
+                  const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
+            ),
+          );
+        });
+      }
     } on Exception {}
   }
 
@@ -140,7 +142,7 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
               mapController: mapController,
               options: MapOptions(
                 initialCenter:
-                    LatLng(driverLocation.latitude, driverLocation.longitude),
+                    LatLng(widget.driverLocationLat, widget.driverLocationLong),
                 initialZoom: 15.0,
                 // onTap: (tapPosition, point) => _addDestinationMarker(point),
               ),
@@ -166,12 +168,10 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (driverLocation != null) {
-            mapController.move(
-              LatLng(driverLocation.latitude, driverLocation.longitude),
-              15.0,
-            );
-          }
+          mapController.move(
+            LatLng(widget.driverLocationLat!, widget.driverLocationLong),
+            15.0,
+          );
         },
         child: const Icon(Icons.my_location),
       ),

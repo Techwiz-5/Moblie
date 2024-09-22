@@ -8,9 +8,9 @@ class AccessBooking extends StatefulWidget {
   const AccessBooking({
     super.key,
     required this.driverId,
-    required this.roleCurrent,
+    required this.bookingId,
   });
-  final String roleCurrent;
+  final String bookingId;
   final String driverId;
 
   @override
@@ -22,6 +22,9 @@ class _AccessBookingState extends State<AccessBooking> {
       FirebaseFirestore.instance.collection('booking');
   @override
   void setState(VoidCallback fn) {
+    print("testokroinha");
+    print(widget.bookingId);
+    print(widget.driverId);
     // TODO: implement setState
     super.setState(fn);
   }
@@ -36,40 +39,26 @@ class _AccessBookingState extends State<AccessBooking> {
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 241, 242, 243),
           appBar: AppBar(
-            backgroundColor: Colors.blue,
-            title: widget.roleCurrent == 'admin'
-                ? const Text(
-                    'Work Diary',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  )
-                : const Text(
-                    'Booking Manager',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-            bottom: (widget.roleCurrent == 'driver')
-                ? TabBar(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(40),
-                        color: Colors.white),
-                    tabs: [
-                      if (widget.roleCurrent == 'driver')
-                        const Tab(
-                          icon: Icon(Icons.event_available_rounded),
-                        ),
-                      if (widget.roleCurrent == 'driver')
-                        const Tab(
-                          icon: Icon(Icons.event_note_rounded),
-                        ),
-                    ],
-                  )
-                : null,
-          ),
+              backgroundColor: Colors.blue,
+              title: TabBar(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    color: Colors.white),
+                tabs: [
+                  if (widget.driverId == 'driver')
+                    const Tab(
+                      icon: Icon(Icons.event_available_rounded),
+                    ),
+                  if (widget.driverId == 'driver')
+                    const Tab(
+                      icon: Icon(Icons.event_note_rounded),
+                    ),
+                ],
+              )),
           body: TabBarView(
             children: <Widget>[
               Column(children: [
@@ -97,7 +86,7 @@ class _AccessBookingState extends State<AccessBooking> {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Schedule_card(
                                         booking: documentSnapshot,
-                                        roleCurrent: widget.roleCurrent)),
+                                        roleCurrent: widget.driverId)),
                               ),
                             );
                           },

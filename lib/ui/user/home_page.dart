@@ -7,6 +7,8 @@ import 'package:techwiz_5/ui/user/appointment_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_screen.dart';
 
+import '../../utils/UserStatusService.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -15,47 +17,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  late UserStatusService _userStatusService;
   int _pageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    _userStatusService = UserStatusService();
+    _userStatusService.monitorUserConnection();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  Future<void> updateUserStatus(String userId, bool isOnline) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      Map<String, dynamic> userRole = userDoc.data() as Map<String, dynamic>;
-
-      if (userRole['role'] == 'driver') {
-        await FirebaseFirestore.instance.collection('drivers').doc(userId).update({
-          'online': isOnline,
-        });
-      } else if (userRole['role'] == 'user') {
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
-          'online': isOnline,
-        });
-      }
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.detached) {
-        await updateUserStatus(user.uid, false);
-      } else if (state == AppLifecycleState.resumed) {
-        await updateUserStatus(user.uid, true);
-      }
-    }
   }
 
   final List<Widget> pages = [
@@ -104,7 +81,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ],
                   ),
                   padding: const EdgeInsets.all(12),
-                  child: const Icon(Icons.call, color: Colors.white,)),
+                  child: const Icon(
+                    Icons.call,
+                    color: Colors.white,
+                  )),
             ),
             icon: Align(
               alignment: Alignment.bottomCenter,

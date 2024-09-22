@@ -10,6 +10,8 @@ import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/widgets/booking_card.dart';
 
+import '../../utils/UserStatusService.dart';
+
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
 
@@ -17,12 +19,17 @@ class AdminScreen extends StatefulWidget {
   State<AdminScreen> createState() => _AdminScreenState();
 }
 
-class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver{
+class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver {
   int _pageIndex = 0;
+  late UserStatusService _userStatusService;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    _userStatusService = UserStatusService();
+    _userStatusService.monitorUserConnection();
   }
 
   @override
@@ -31,41 +38,13 @@ class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver{
     super.dispose();
   }
 
-  Future<void> updateUserStatus(String userId, bool isOnline) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      Map<String, dynamic> userRole = userDoc.data() as Map<String, dynamic>;
-
-      if (userRole['role'] == 'driver') {
-        await FirebaseFirestore.instance.collection('drivers').doc(userId).update({
-          'online': isOnline,
-        });
-      } else if (userRole['role'] == 'user') {
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
-          'online': isOnline,
-        });
-      }
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.detached) {
-        await updateUserStatus(user.uid, false);
-      } else if (state == AppLifecycleState.resumed) {
-        await updateUserStatus(user.uid, true);
-      }
-    }
-  }
-
   final List<Widget> pages = [
     const HospitalScreen(),
     const BookingScreen(),
     const AccountManagerScreen(),
     const RevenueScreen(),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
