@@ -35,7 +35,7 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
         if (event.notification!.body != null) {
           
           Navigator.push(
-            context, // Context của màn hình hiện tại
+            context,
             MaterialPageRoute(
               builder: (context) => AccessBooking(
                 driverId: widget.driverId,bookingId: event.notification!.body.toString(),
@@ -65,14 +65,6 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
       print(event.notification!.title);
       NotiService().showNotification(event);
       if (event.notification!.body != null) {
-        // Navigator.push(
-        //   context, // Context của màn hình hiện tại
-        //   MaterialPageRoute(
-        //     builder: (context) => AccessBooking(
-        //       driverId: driverId,bookingId: event.notification!.body.toString(),
-        //     ),
-        //   ),
-        // );
       }
     });
   }
@@ -105,8 +97,8 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
       ),
       const DriverProfileScreen(),
     ];
-
     return Scaffold(
+
         body: isLoading
             ? const Center(child: CircularProgressIndicator())
             : pages[_pageIndex],

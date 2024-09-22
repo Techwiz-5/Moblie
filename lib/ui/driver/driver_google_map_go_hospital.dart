@@ -10,6 +10,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
+import 'driver_page.dart';
+
 class DriverGoogleMapGoHospital extends StatefulWidget {
   const DriverGoogleMapGoHospital(
       {super.key,
@@ -34,9 +36,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   List<LatLng> routePointPassed = [];
   List<Marker> markers = [];
 
-  //location for driver and hospital
-  // LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
-  // LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
   final String orsApiKey =
       '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
   void getData() async {
@@ -67,12 +66,33 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   void initState() {
     getData();
     super.initState();
+    updateSttus();
+    updateBookingStatus();
     Timer.periodic(const Duration(seconds: 5), (timer) {
       markers = [];
 
       _addMarker();
       _getCurrentLocation();
     });
+  }
+
+  Future<void> updateBookingStatus() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    DocumentSnapshot bookingSnapshot =
+        await _firestore.collection('booking').doc(widget.bookingId).get();
+
+    if (bookingSnapshot.exists) {
+      String bookingId = bookingSnapshot['id'];
+
+      await _firestore.collection('booking').doc(widget.bookingId).update({
+        'status': 3,
+      });
+
+      print('Booking status updated for booking ID: $bookingId');
+    } else {
+      print('Booking document does not exist.');
+    }
   }
 
   updateLocation() async {
@@ -89,6 +109,19 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       // Navigator.pop(context, () {});
     } on FirebaseException catch (e) {
       // showSnackBar(context, e.toString());
+    }
+  }
+
+  updateSttus() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot docSnapshot =
+        await _firestore.collection('driver').doc(uid).get();
+
+    if (docSnapshot.exists) {
+      await _firestore.collection('driver').doc(uid).update({
+        'enable': 2,
+      });
     }
   }
 
@@ -213,8 +246,9 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         .collection('booking')
         .doc(widget.bookingId)
         .update({
-      'status': 2,
+      'status': 4,
     });
+
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -227,6 +261,11 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         'enable': 0,
       });
       print("Document updated successfully.");
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => DriverPage(driverId: uid),
+        ),
+      );
     } else {
       print("Document does not exist.");
     }
@@ -261,8 +300,22 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 241, 242, 243),
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 223, 113, 17),
         title: const Text('Map to Hospital'),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            String uid = FirebaseAuth.instance.currentUser!.uid;
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => DriverPage(driverId: uid),
+              ),
+            );
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
       body: currentLocation == null
           ? const Center(child: CircularProgressIndicator())
@@ -331,15 +384,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
             ),
             onPressed: () {
               _showMyDialog();
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => DriverGoogleMapGoHospital(
-              //             hospitalId: hospitalId,
-              //             bookerLocaitonLat: bookerLocation.latitude,
-              //             bookerLocaitonLong: bookerLocation.longitude,
-              //           )),
-              // );
             },
             child: const Text('finished!'),
           )

@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/ambulance/create_ambulance.dart';
 import 'package:techwiz_5/ui/widgets/ambulance_card.dart';
-import 'package:techwiz_5/ui/widgets/schedule_card.dart';
-import 'package:techwiz_5/ui/widgets/schedule_card_not_receive.dart';
 
 class AmabulanceOfHospitalScreen extends StatefulWidget {
   const AmabulanceOfHospitalScreen({

@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
 
 class ScheduleCardNotReceive extends StatefulWidget {
   const ScheduleCardNotReceive(
       {super.key, required this.booking, required this.driverId});
+
   final dynamic booking;
   final String driverId;
 
@@ -15,40 +15,51 @@ class ScheduleCardNotReceive extends StatefulWidget {
 }
 
 class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
-  final CollectionReference myItems =
-      FirebaseFirestore.instance.collection('booking');
-  late final Stream<QuerySnapshot<Map<String, dynamic>>> bookingOfDriver;
-  bool isLoading = true;
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late final CollectionReference hospital =
-      FirebaseFirestore.instance.collection('hospital');
+  FirebaseFirestore.instance.collection('hospital');
   late final QuerySnapshot querySnapshot;
+  bool isLoading = true;
+  bool check = false;
 
   @override
   void initState() {
     super.initState();
     gethospital();
+    checkStatusDriver();
   }
 
-  gethospital() async {
-    querySnapshot = await hospital
-        .where("id", isEqualTo: widget.booking['hospital_id'])
-        .get();
-    setState(() {
-      isLoading = false;
-    });
+  checkStatusDriver() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+
+    DocumentSnapshot docSnapshot =
+    await _firestore.collection('driver').doc(uid).get();
+
+    if (docSnapshot.exists && docSnapshot.data() != null) {
+      Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+
+      if (data != null && data.containsKey('status')) {
+        String status = data['status'];
+
+        setState(() {
+          check = status != "1";
+        });
+      }
+    }
   }
 
-  String statusText(int status) {
-    if (status == 0) return 'Pending';
-    if (status == 1) return 'Received';
-    return 'Finish';
-  }
-
-  Color setColor(int status) {
-    if (status == 0) return Colors.redAccent;
-    if (status == 1) return Colors.greenAccent;
-    return Colors.blueAccent;
+  Future<void> gethospital() async {
+    try {
+      querySnapshot = await hospital
+          .where("id", isEqualTo: widget.booking['hospital_id'])
+          .get();
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void receiveBooking() async {
@@ -62,6 +73,7 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
     Navigator.pop(context);
   }
 
+  // Hiển thị hộp thoại xác nhận
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -90,98 +102,134 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
     );
   }
 
+  Future<bool> isShowbottom() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+
+    DocumentSnapshot driverSnapshot =
+    await FirebaseFirestore.instance.collection('driver').doc(uid).get();
+
+    if (driverSnapshot.exists) {
+      QuerySnapshot bookingSnapshot = await FirebaseFirestore.instance
+          .collection('booking')
+          .where('driver_id', isEqualTo: uid)
+          .where('status', isEqualTo: 1)
+          .get();
+
+      bool driverAvailable = driverSnapshot['enable'] == 0;
+
+      if (driverAvailable && bookingSnapshot.docs.length < 5) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return Center(child: CircularProgressIndicator());
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blueAccent, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+    return FutureBuilder<bool>(
+      future: isShowbottom(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blueAccent, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.calendar_today, color: Colors.redAccent),
-                    const SizedBox(width: 8),
-                    Text(
-                      DateFormat('dd-MM-yyyy hh:mm')
-                          .format(widget.booking['booking_time'].toDate()),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
+                    Row(
+                      children: [
+                        const Icon(Icons.calendar_today,
+                            color: Colors.redAccent),
+                        const SizedBox(width: 8),
+                        Text(
+                          DateFormat('dd-MM-yyyy hh:mm')
+                              .format(widget.booking['booking_time'].toDate()),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.redAccent,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: setColor(widget.booking['status']),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        statusText(widget.booking['status']),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: setColor(widget.booking['status']),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    statusText(widget.booking['status']),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                const SizedBox(height: 15),
+                _buildInfoRow(Icons.location_on, 'Address: ',
+                    widget.booking['address'] ?? 'No address provided'),
+                const SizedBox(height: 10),
+                _buildInfoRow(
+                    Icons.location_on,
+                    'From: ',
+                    querySnapshot.docs.isNotEmpty
+                        ? querySnapshot.docs[0]['address']
+                        : 'No address provided'),
+                const SizedBox(height: 10),
+                _buildInfoRow(Icons.person, 'Patient Name: ',
+                    widget.booking['name_patient'] ?? 'No name provided'),
+                const SizedBox(height: 10),
+                _buildInfoRow(Icons.phone, 'Phone: ',
+                    widget.booking['phone_number'] ?? 'No phone number'),
+                const SizedBox(height: 8),
+                if (snapshot.hasData && snapshot.data == true)
+                  Center(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => _showMyDialog(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100],
+                        ),
+                        child: const Text("Receive Booking"),
+                      ),
                     ),
                   ),
-                ),
+                const SizedBox(height: 8),
               ],
             ),
-            const SizedBox(height: 15),
-            _buildInfoRow(Icons.location_on, 'Address: ',
-                widget.booking['address'] ?? 'No address provided'),
-            const SizedBox(height: 10),
-            _buildInfoRow(
-                Icons.location_on,
-                'From: ',
-                querySnapshot.docs.toList()[0]['address'] ??
-                    'No address provided'),
-            const SizedBox(height: 10),
-            _buildInfoRow(Icons.person, 'Patient Name: ',
-                widget.booking['name_patient'] ?? 'No name provided'),
-            const SizedBox(height: 10),
-            _buildInfoRow(Icons.phone, 'Phone: ',
-                widget.booking['phone_number'] ?? 'No phone number'),
-            const SizedBox(height: 8),
-            Center(
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => _showMyDialog(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[100],
-                  ),
-                  child: const Text("Receive Booking"),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -201,5 +249,17 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
         ),
       ],
     );
+  }
+
+  String statusText(int status) {
+    if (status == 0) return 'Pending';
+    if (status == 1) return 'Received';
+    return 'Finish';
+  }
+
+  Color setColor(int status) {
+    if (status == 0) return Colors.redAccent;
+    if (status == 1) return Colors.greenAccent;
+    return Colors.blueAccent;
   }
 }

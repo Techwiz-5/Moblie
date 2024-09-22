@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,20 +10,45 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:techwiz_5/ui/driver/driver_google_map_go_hospital.dart';
 
+import 'driver_page.dart';
+
 class DriverGoogleMapPickupPoint extends StatefulWidget {
   const DriverGoogleMapPickupPoint({super.key, required this.bookingId});
+
   final String bookingId;
+
   @override
   State<DriverGoogleMapPickupPoint> createState() => _GoogleMapScreen();
 }
 
 class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   final MapController mapController = MapController();
+
+  bool isLoading = true;
+
   LocationData? currentLocation;
   List<LatLng> routePoints = [];
   List<Marker> markers = [];
   final String orsApiKey =
-      '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
+      '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403';
+
+  checkBooking() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    DocumentSnapshot bookingSnapshot =
+        await _firestore.collection('booking').doc(widget.bookingId).get();
+    if (bookingSnapshot!['status'] == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DriverGoogleMapGoHospital(
+                hospitalId: hospitalId,
+                bookerLocaitonLat: bookerLocation.latitude,
+                bookerLocaitonLong: bookerLocation.longitude,
+                bookingId: widget.bookingId)),
+      );
+    }
+  }
 
   updateLocation() async {
     try {
@@ -38,6 +64,42 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
       // Navigator.pop(context, () {});
     } on FirebaseException catch (e) {
       // showSnackBar(context, e.toString());
+    }
+  }
+
+  updateSttus() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot docSnapshot =
+        await _firestore.collection('driver').doc(uid).get();
+
+    if (docSnapshot.exists) {
+      await _firestore.collection('driver').doc(uid).update({
+        'enable': 1,
+      });
+    }
+  }
+
+  Future<void> updateBookingStatus() async {
+    setState(() {
+      isLoading = false;
+    });
+
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    DocumentSnapshot bookingSnapshot =
+        await _firestore.collection('booking').doc(widget.bookingId).get();
+
+    if (bookingSnapshot.exists) {
+      String bookingId = bookingSnapshot['id'];
+
+      await _firestore.collection('booking').doc(widget.bookingId).update({
+        'status': 2,
+      });
+
+      print('Booking status updated for booking ID: $bookingId');
+    } else {
+      print('Booking document does not exist.');
     }
   }
 
@@ -66,9 +128,13 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
 
   String hospitalId = "";
   LatLng bookerLocation = LatLng(0, 0);
+
   @override
   void initState() {
+    checkBooking();
     getData();
+    updateSttus();
+    updateBookingStatus();
     super.initState();
     Timer.periodic(Duration(seconds: 10), (timer) {
       _getCurrentLocation();
@@ -153,9 +219,26 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 241, 242, 243),
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 223, 113, 17),
         title: const Text('Map to booker'),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            String uid = FirebaseAuth.instance.currentUser!.uid;
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => DriverPage(driverId: uid),
+              ),
+            );
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
       body: currentLocation == null
           ? const Center(child: CircularProgressIndicator())
