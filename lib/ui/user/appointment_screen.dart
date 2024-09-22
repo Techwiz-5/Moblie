@@ -434,25 +434,26 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         ),
                       ],
                     ),
-                    InkWell(
-                      onTap: () {
-                        chooseAmbulanceType(0, totalMoney(selectHospital));
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: (_ambulanceType == 0)
-                                ? Colors.blue[50]
-                                : Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ]),
-                        margin: EdgeInsets.all(12),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: (_ambulanceType == 0)
+                              ? Colors.blue[100]
+                              : Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]),
+                      child: InkWell(
+                        onTap: () {
+                          chooseAmbulanceType(0, totalMoney(selectHospital));
+                        },
+                        borderRadius: BorderRadius.circular(12),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Row(
@@ -493,25 +494,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         ),
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        chooseAmbulanceType(1, (totalMoney(selectHospital) * 1.2));
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: (_ambulanceType == 1)
-                                ? Colors.blue[50]
-                                : Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ]),
-                        margin: const EdgeInsets.all(12),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: (_ambulanceType == 1)
+                              ? Colors.blue[100]
+                              : Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]),
+                      // margin: const EdgeInsets.all(12),
+                      child: InkWell(
+                        onTap: () {
+                          chooseAmbulanceType(1, (totalMoney(selectHospital) * 1.2));
+                        },
+                        borderRadius: BorderRadius.circular(12),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Row(
@@ -556,13 +559,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Plate number:',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                          Text('$plate_number',
-                              style: TextStyle(
+                          Text(plate_number,
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold))
                         ],
                       ),
@@ -571,7 +574,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 ),
               ),
               bottomNavigationBar: Container(
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: ElevatedButton(
                   onPressed: () async {
                     await _createBooking();

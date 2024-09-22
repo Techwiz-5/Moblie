@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:techwiz_5/ui/admin/hospital/edit_hospital_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_gallery_screen.dart';
@@ -211,7 +211,7 @@ class _HospitalCardState extends State<HospitalCard> {
                           style: const TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            fontSize: 17,
                           ),
                         ),
                       ),
@@ -235,9 +235,9 @@ class _HospitalCardState extends State<HospitalCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(
-                        Icons.location_on,
+                        EneftyIcons.location_outline,
                         color: Color.fromARGB(255, 92, 91, 91),
-                        size: 20,
+                        size: 16,
                       ),
                       const SizedBox(
                         width: 6,
@@ -248,6 +248,10 @@ class _HospitalCardState extends State<HospitalCard> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
+                          style: const TextStyle(
+                              color: Colors.black54,
+                            fontSize: 13
+                          ),
                         ),
                       ),
                     ],
@@ -256,9 +260,9 @@ class _HospitalCardState extends State<HospitalCard> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.attach_money_outlined,
+                        EneftyIcons.dollar_circle_outline,
                         color: Color.fromARGB(255, 92, 91, 91),
-                        size: 20,
+                        size: 16,
                       ),
                       const SizedBox(
                         width: 6,
@@ -268,6 +272,10 @@ class _HospitalCardState extends State<HospitalCard> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
+                        style: const TextStyle(
+                          color: Colors.black54,
+                            fontSize: 13
+                        ),
                       ),
                     ],
                   ),
@@ -279,50 +287,53 @@ class _HospitalCardState extends State<HospitalCard> {
                         width: 1.0,
                       ),)
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: () =>  {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AmabulanceOfHospitalScreen(
-                                  hospital_id: widget.hospital['id'],
-                                  hospital_name: widget.hospital['name'],
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () =>  {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AmabulanceOfHospitalScreen(
+                                    hospital_id: widget.hospital['id'],
+                                    hospital_name: widget.hospital['name'],
+                                  ),
                                 ),
                               ),
-                            ),
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[100]),
-                          icon: const Icon(Icons.directions_bus),
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  HospitalGalleryScreen(hospital: widget.hospital),
-                            ),
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
+                            icon: const Icon(FluentIcons.vehicle_bus_20_filled),
                           ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[100]),
-                          icon: const Icon(Icons.photo),
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  HospitalDetailScreen(hospital: widget.hospital),
+                          IconButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HospitalGalleryScreen(hospital: widget.hospital),
+                              ),
                             ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
+                            icon: const Icon(EneftyIcons.gallery_bold),
                           ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[100]),
-                          icon: const Icon(Icons.map),
-                        )
-                      ],
+                          IconButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HospitalDetailScreen(hospital: widget.hospital),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[100]),
+                            icon: const Icon(EneftyIcons.map_2_outline),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ],

@@ -11,29 +11,27 @@ class MyButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const ShapeDecoration(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
-                ),
+    return Container(
+      margin: const EdgeInsets.all(20),
+      alignment: Alignment.center,
+      child: ElevatedButton(
+          onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+        ),
+          child: Container(
+            width:double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            alignment: Alignment.center,
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-              color: Colors.blue),
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
       ),
     );
   }

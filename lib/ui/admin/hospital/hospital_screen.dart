@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/authentication.dart';
@@ -40,7 +41,7 @@ class _HospitalScreenState extends State<HospitalScreen> {
               );
             },
             icon: const Icon(
-              Icons.exit_to_app_rounded,
+              EneftyIcons.logout_2_outline,
               color: Colors.white,
             ),
           ),

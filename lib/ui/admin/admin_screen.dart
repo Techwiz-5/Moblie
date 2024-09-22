@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:techwiz_5/ui/admin/account_manager.dart';
@@ -62,19 +63,23 @@ class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_hospital),
+            icon: Icon(EneftyIcons.hospital_outline),
+            activeIcon: Icon(EneftyIcons.hospital_bold),
             label: 'Hospital ',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book_online_rounded),
+            icon: Icon(EneftyIcons.ticket_outline),
+            activeIcon: Icon(EneftyIcons.ticket_bold),
             label: 'Booking',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(EneftyIcons.profile_2user_outline),
+            activeIcon: Icon(EneftyIcons.profile_2user_bold),
             label: 'Account',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on),
+            icon: Icon(EneftyIcons.dollar_circle_outline),
+            activeIcon: Icon(EneftyIcons.dollar_circle_bold),
             label: 'Revenue',
           ),
         ],

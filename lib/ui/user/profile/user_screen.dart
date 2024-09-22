@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -93,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             icon: const Icon(
-              Icons.exit_to_app_rounded,
+              EneftyIcons.logout_2_outline,
               color: Colors.white,
             ),
           ),
@@ -132,15 +134,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 ListTile(
-                                  leading: const Icon(Icons.email),
+                                  leading: const Icon(FluentIcons.mail_16_filled),
                                   title: Text(_email),
                                 ),
                                 ListTile(
-                                  leading: const Icon(Icons.home),
+                                  leading: const Icon(FluentIcons.home_16_filled),
                                   title: Text(_address),
                                 ),
                                 ListTile(
-                                  leading: const Icon(Icons.call),
+                                  leading: const Icon(EneftyIcons.call_bold),
                                   title: Text(_phone),
                                 ),
                               ],
@@ -324,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: double.infinity,
                               child: Card(
                                 child: ListTile(
-                                  leading: const Icon(Icons.history),
+                                  leading: const Icon(FluentIcons.history_16_filled),
                                   title: const Text('Booking History'),
                                   onTap: () {
                                     Navigator.push(
@@ -342,7 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: double.infinity,
                               child: Card(
                                 child: ListTile(
-                                  leading: const Icon(Icons.assignment_add),
+                                  leading: const Icon(FluentIcons.comment_16_filled),
                                   title: const Text('Feedback'),
                                   onTap: () {
                                     _showMyDialog();

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -71,7 +72,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
               );
             },
             icon: const Icon(
-              Icons.exit_to_app_rounded,
+              EneftyIcons.logout_2_outline,
               color: Colors.white,
             ),
           ),
@@ -144,8 +145,14 @@ class _RevenueScreenState extends State<RevenueScreen> {
                               margin: const EdgeInsets.only(top: 10),
                               width: double.infinity,
                               child: ListTile(
-                                title: Text('Booking created date: ${dateFormat.format(revenueData[index]['create_at'].toDate())}'),
-                                subtitle: Text('Amount \$${revenueData[index]['money'].toStringAsFixed(2)}'),
+                                title: Text('Booking created date: ${dateFormat.format(revenueData[index]['create_at'].toDate())}${revenueData[index]['time_range']}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Patient: ${revenueData[index]['name_patient']}'),
+                                    Text('Amount: \$${revenueData[index]['money'].toStringAsFixed(2)}'),
+                                  ],
+                                ),
                                 tileColor: Colors.blue[50],
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
