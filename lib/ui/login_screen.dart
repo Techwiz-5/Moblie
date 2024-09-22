@@ -28,7 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> updateUserStatus(String userId, bool isOnline, bool isDriver) async {
+  Future<void> updateUserStatus(
+      String userId, bool isOnline, bool isDriver) async {
     String collection = isDriver ? 'driver' : 'account';
     await FirebaseFirestore.instance.collection(collection).doc(userId).update({
       'online': isOnline,
@@ -48,7 +49,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        if (!userSnapshot.exists) {
+          userSnapshot = await FirebaseFirestore.instance
+              .collection('driver')
+              .doc(user.uid)
+              .get();
+        }
 
         bool isDriver = false;
         if (userSnapshot.exists && userSnapshot.data() != null) {
