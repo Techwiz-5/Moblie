@@ -71,17 +71,19 @@ class _UserGoogleMapScreen extends State<UserGoogleMapPickupPoint> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      setState(() {
-        markers.add(
-          Marker(
-            width: 80.0,
-            height: 80.0,
-            point: LatLng(driverLocation.latitude, driverLocation.longitude),
-            child:
-                const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
-          ),
-        );
-      });
+      if (this.mounted) {
+        setState(() {
+          markers.add(
+            Marker(
+              width: 80.0,
+              height: 80.0,
+              point: LatLng(driverLocation.latitude, driverLocation.longitude),
+              child:
+                  const Icon(Icons.my_location, color: Colors.blue, size: 40.0),
+            ),
+          );
+        });
+      }
     } on Exception {}
   }
 

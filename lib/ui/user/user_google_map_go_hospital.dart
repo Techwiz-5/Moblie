@@ -295,25 +295,7 @@ class _UserGoogleMapScreen extends State<UserGoogleMapGoHospital> {
         color: Colors.white,
         child:
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          TextButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-            ),
-            onPressed: () {
-              _showMyDialog();
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => DriverGoogleMapGoHospital(
-              //             hospitalId: hospitalId,
-              //             bookerLocaitonLat: bookerLocation.latitude,
-              //             bookerLocaitonLong: bookerLocation.longitude,
-              //           )),
-              // );
-            },
-            child: const Text('finished!'),
-          )
+         
         ]),
       ),
       // floatingActionButton: const FloatingActionButton(onPressed: null),
