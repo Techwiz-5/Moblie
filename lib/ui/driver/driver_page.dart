@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/admin/hospital/hospital_screen.dart';
 import 'package:techwiz_5/ui/driver/accessBooking.dart';
+import 'package:techwiz_5/ui/driver/driver_profile_screen.dart';
 import 'package:techwiz_5/ui/driver/driver_screen.dart';
 import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 
@@ -102,7 +103,7 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
         driverId: widget.driverId,
         roleCurrent: _role,
       ),
-      const ProfileScreen(),
+      const DriverProfileScreen(),
     ];
 
     return Scaffold(
