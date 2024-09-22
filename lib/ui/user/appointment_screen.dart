@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:techwiz_5/data/notification.dart';
 import 'package:techwiz_5/ui/user/booking_history.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
@@ -38,6 +39,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       FirebaseFirestore.instance.collection('hospital');
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('booking');
+  final CollectionReference _ambulanceCollection =
+      FirebaseFirestore.instance.collection('ambulance');
   final _formKeyAmbulance = GlobalKey<FormState>();
   String _namePatient = '';
   String _address = '';
@@ -88,7 +91,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   getAllAmbulance() async {
-    QuerySnapshot querySnapshot = await myItems
+    QuerySnapshot querySnapshot = await _ambulanceCollection
         .where('hospital_id', isEqualTo: selectHospital['id'])
         .get();
     final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
@@ -217,8 +220,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
     for (String token in driverTokens) {
       await NotiService().pushNotifications(
-          title: 'Test ',
-          body: "Test body",
+          title: 'Notification from Hospital ',
+          body: bookingId,
           token: token,
           bookingId: bookingId);
     }
@@ -348,11 +351,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       // barrierDismissible: false,
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
-          void chooseAmbulanceType(int value) {
+          void chooseAmbulanceType(int value, double mn) {
             setState(() {
               _ambulanceType = value;
+              money = mn;
             });
-            print(_ambulanceType);
           }
 
           return Scaffold(
@@ -430,7 +433,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      chooseAmbulanceType(0);
+                      chooseAmbulanceType(0, totalMoney(selectHospital));
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -489,7 +492,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      chooseAmbulanceType(1);
+                      chooseAmbulanceType(1, (totalMoney(selectHospital) * 1.2));
                     },
                     child: Container(
                       decoration: BoxDecoration(

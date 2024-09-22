@@ -8,6 +8,7 @@ import 'package:techwiz_5/ui/user/profile/user_screen.dart';
 import 'package:techwiz_5/ui/user/hospital_screen.dart';
 
 import '../../utils/UserStatusService.dart';
+import 'emergency_book_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     const HospitalScreen(),
     const AppointmentScreen(),
     const ProfileScreen(),
+    const EmergencyBookScreen(),
   ];
 
   @override
@@ -62,6 +64,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             label: 'Home',
           ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            activeIcon: Icon(
+              Icons.calendar_today,
+              color: Colors.blue,
+            ),
+            label: 'Booking',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            activeIcon: Icon(
+              Icons.person,
+              color: Colors.blue,
+            ),
+            label: 'User',
+          ),
           BottomNavigationBarItem(
             activeIcon: Align(
               alignment: Alignment.bottomCenter,
@@ -76,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         spreadRadius: 5,
                         blurRadius: 7,
                         offset:
-                            const Offset(0, 3), // changes position of shadow
+                        const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
@@ -108,22 +126,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             label: '',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            activeIcon: Icon(
-              Icons.person,
-              color: Colors.blue,
-            ),
-            label: 'User',
-          ),
-          // const BottomNavigationBarItem(
-          //   icon: Icon(Icons.fire_truck),
-          //   activeIcon: Icon(
-          //     Icons.fire_truck,
-          //     color: Colors.blue,
-          //   ),
-          //   label: 'User',
-          // ),
         ],
       ),
     );

@@ -26,8 +26,6 @@ class _AmbulanceScreenState extends State<AmbulanceScreen> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final DocumentSnapshot documentSnapshot = items[index];
-                print('Test : ');
-                print(documentSnapshot['hospital_id']);
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(

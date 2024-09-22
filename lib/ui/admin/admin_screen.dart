@@ -50,7 +50,10 @@ class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver {
     return Scaffold(
       body: pages[_pageIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xff223548),
         type: BottomNavigationBarType.fixed,
+        unselectedItemColor: Colors.white38,
+        selectedItemColor: Colors.white,
         currentIndex: _pageIndex,
         onTap: (value) {
           setState(() {
@@ -67,7 +70,7 @@ class _AdminScreenState extends State<AdminScreen> with WidgetsBindingObserver {
             label: 'Booking',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined),
+            icon: Icon(Icons.account_circle),
             label: 'Account',
           ),
           BottomNavigationBarItem(

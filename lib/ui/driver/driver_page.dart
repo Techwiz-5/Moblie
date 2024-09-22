@@ -26,7 +26,24 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     getUserData();
-    notificationHander(widget.driverId);
+    try {
+      FirebaseMessaging.onMessage.listen((event) async {
+        
+        NotiService().showNotification(event);
+        
+        if (event.notification!.body != null) {
+          
+          Navigator.push(
+            context, // Context của màn hình hiện tại
+            MaterialPageRoute(
+              builder: (context) => AccessBooking(
+                driverId: widget.driverId,bookingId: event.notification!.body.toString(),
+              ),
+            ),
+          );
+        }
+      });
+    } catch (e) {}
     _userStatusService = UserStatusService();
     _userStatusService.monitorUserConnection();
   }
@@ -43,18 +60,19 @@ class _DriverPageState extends State<DriverPage> with WidgetsBindingObserver {
   var isLoading = true;
 
   void notificationHander(driverId) {
-    print("check noti");
     FirebaseMessaging.onMessage.listen((event) async {
-    print("check noti");
       print(event.notification!.title);
       NotiService().showNotification(event);
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => AccessBooking(
-              driverId: driverId,
-              bookingId: event.notification!.title.toString()),
-        ),
-      );
+      if (event.notification!.body != null) {
+        // Navigator.push(
+        //   context, // Context của màn hình hiện tại
+        //   MaterialPageRoute(
+        //     builder: (context) => AccessBooking(
+        //       driverId: driverId,bookingId: event.notification!.body.toString(),
+        //     ),
+        //   ),
+        // );
+      }
     });
   }
 
