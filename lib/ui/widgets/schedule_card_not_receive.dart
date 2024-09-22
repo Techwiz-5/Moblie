@@ -107,12 +107,18 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
 
     DocumentSnapshot driverSnapshot =
     await FirebaseFirestore.instance.collection('driver').doc(uid).get();
+    DateTime now = DateTime.now();
+    DateTime startOfDay = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     if (driverSnapshot.exists) {
       QuerySnapshot bookingSnapshot = await FirebaseFirestore.instance
           .collection('booking')
           .where('driver_id', isEqualTo: uid)
           .where('status', isEqualTo: 1)
+          .where('booking_time', isEqualTo: 1)
+          .where('booking_time', isGreaterThanOrEqualTo: startOfDay)
+          .where('booking_time', isLessThanOrEqualTo: endOfDay)
           .get();
 
       bool driverAvailable = driverSnapshot['enable'] == 0;
