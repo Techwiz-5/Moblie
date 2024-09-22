@@ -16,12 +16,12 @@ class ScheduleCardNotReceive extends StatefulWidget {
 
 class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
   final CollectionReference myItems =
-  FirebaseFirestore.instance.collection('booking');
+      FirebaseFirestore.instance.collection('booking');
   late final Stream<QuerySnapshot<Map<String, dynamic>>> bookingOfDriver;
   bool isLoading = true;
 
   late final CollectionReference hospital =
-  FirebaseFirestore.instance.collection('hospital');
+      FirebaseFirestore.instance.collection('hospital');
   late final QuerySnapshot querySnapshot;
 
   @override
@@ -59,6 +59,7 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
       'driver_id': widget.driverId,
       'status': 1,
     });
+    Navigator.pop(context);
   }
 
   Future<void> _showMyDialog() async {
@@ -134,7 +135,7 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
                 ),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                   decoration: BoxDecoration(
                     color: setColor(widget.booking['status']),
                     borderRadius: BorderRadius.circular(8),
@@ -153,8 +154,11 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
             _buildInfoRow(Icons.location_on, 'Address: ',
                 widget.booking['address'] ?? 'No address provided'),
             const SizedBox(height: 10),
-            _buildInfoRow(Icons.location_on, 'From: ',
-                querySnapshot.docs.toList()[0]['address'] ?? 'No address provided'),
+            _buildInfoRow(
+                Icons.location_on,
+                'From: ',
+                querySnapshot.docs.toList()[0]['address'] ??
+                    'No address provided'),
             const SizedBox(height: 10),
             _buildInfoRow(Icons.person, 'Patient Name: ',
                 widget.booking['name_patient'] ?? 'No name provided'),
