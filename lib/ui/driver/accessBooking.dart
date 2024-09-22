@@ -152,7 +152,7 @@ class _AccessBookingState extends State<AccessBooking> {
 
                                         if (check) {
                                           print(documentSnapshot["user_id"]);
-                                          return Schedule_card_not_receive(
+                                          return ScheduleCardNotReceive(
                                               booking: documentSnapshot,
                                               driverId: widget.driverId);
                                         } else {

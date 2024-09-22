@@ -10,6 +10,7 @@ class DriverScreen extends StatefulWidget {
     required this.driverId,
     required this.roleCurrent,
   });
+
   final String roleCurrent;
   final String driverId;
 
@@ -20,6 +21,7 @@ class DriverScreen extends StatefulWidget {
 class _DriverScreenState extends State<DriverScreen> {
   final CollectionReference myItems =
       FirebaseFirestore.instance.collection('booking');
+
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
@@ -32,11 +34,12 @@ class _DriverScreenState extends State<DriverScreen> {
     // print(widget.driverId);
     return DefaultTabController(
         initialIndex: 0,
-        length: 2,
+        length: 3,
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 241, 242, 243),
           appBar: AppBar(
             backgroundColor: Colors.blue,
+            centerTitle: true,
             title: widget.roleCurrent == 'admin'
                 ? const Text(
                     'Work Diary',
@@ -44,7 +47,7 @@ class _DriverScreenState extends State<DriverScreen> {
                         color: Colors.white, fontWeight: FontWeight.bold),
                   )
                 : const Text(
-                    'Booking Manager',
+                    'Booking Managers',
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
@@ -66,6 +69,10 @@ class _DriverScreenState extends State<DriverScreen> {
                         const Tab(
                           icon: Icon(Icons.event_note_rounded),
                         ),
+                      if (widget.roleCurrent == 'driver')
+                        const Tab(
+                          icon: Icon(Icons.note_alt),
+                        ),
                     ],
                   )
                 : null,
@@ -78,6 +85,7 @@ class _DriverScreenState extends State<DriverScreen> {
                   child: StreamBuilder(
                     stream: myItems
                         .where('driver_id', isEqualTo: widget.driverId)
+                        .where('status', isEqualTo: 2)
                         .snapshots(),
                     builder:
                         (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
@@ -87,12 +95,49 @@ class _DriverScreenState extends State<DriverScreen> {
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             final DocumentSnapshot documentSnapshot =
-                                items[index];
-
+                            items[index];
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                // borderRadius: BorderRadius.circular(20),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Schedule_card(
+                                        booking: documentSnapshot,
+                                        roleCurrent: widget.roleCurrent)),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ]),
+              Column(children: [
+                // searchInput(),
+                Flexible(
+                  child: StreamBuilder(
+                    stream: myItems
+                        .where('driver_id', isEqualTo: widget.driverId)
+                        .where('status', isEqualTo: 1)
+                        .snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                      if (streamSnapshot.hasData) {
+                        final items = streamSnapshot.data!.docs;
+                        return ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final DocumentSnapshot documentSnapshot =
+                            items[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
                                 child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Schedule_card(
@@ -117,7 +162,10 @@ class _DriverScreenState extends State<DriverScreen> {
                 Flexible(
                   child: StreamBuilder(
                     stream:
-                        myItems.where('driver_id', isEqualTo: "").snapshots(),
+                    myItems
+                        .where('driver_id', isEqualTo: "")
+                        .where('status', isEqualTo: 0)
+                        .snapshots(),
                     builder:
                         (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                       if (streamSnapshot.hasData) {
@@ -126,7 +174,7 @@ class _DriverScreenState extends State<DriverScreen> {
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             final DocumentSnapshot documentSnapshot =
-                                items[index];
+                            items[index];
 
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -137,39 +185,42 @@ class _DriverScreenState extends State<DriverScreen> {
                                     child: StreamBuilder<QuerySnapshot>(
                                       stream: myItems
                                           .where("driver_id",
-                                              isEqualTo: widget.driverId)
+                                          isEqualTo: widget.driverId)
                                           .snapshots(),
                                       builder: (BuildContext context,
                                           AsyncSnapshot<QuerySnapshot>
-                                              snapshot) {
-                                        bool check = true;
-                                        if (snapshot.data != null) {
-                                          for (var document
-                                              in snapshot.data!.docs) {
-                                            Map<String, dynamic> data =
-                                                document.data()!
-                                                    as Map<String, dynamic>;
-                                            if (DateFormat('dd-MM-yyyy').format(
-                                                    data["booking_time"]
-                                                        .toDate()) ==
-                                                DateFormat('dd-MM-yyyy').format(
-                                                    documentSnapshot[
-                                                            "booking_time"]
-                                                        .toDate())) {
-                                              check = false;
-                                            }
-                                          }
-                                        }
+                                          snapshot) {
+                                        // bool check = true;
+                                        // if (snapshot.data != null) {
+                                        //   for (var document
+                                        //   in snapshot.data!.docs) {
+                                        //     Map<String, dynamic> data =
+                                        //     document.data()!
+                                        //     as Map<String, dynamic>;
+                                        //     if (documentSnapshot["status"] !=
+                                        //         3) {
+                                        //       if (DateFormat('dd-MM-yyyy')
+                                        //           .format(
+                                        //           data["booking_time"]
+                                        //               .toDate()) ==
+                                        //           DateFormat('dd-MM-yyyy')
+                                        //               .format(documentSnapshot[
+                                        //           "booking_time"]
+                                        //               .toDate())) {
+                                        //         check = false;
+                                        //       }
+                                        //     }
+                                        //   }
+                                        // }
 
-                                        if (check) {
+                                        // if (check) {
                                           print(documentSnapshot["user_id"]);
-                                          return Schedule_card_not_receive(
+                                          return ScheduleCardNotReceive(
                                               booking: documentSnapshot,
                                               driverId: widget.driverId);
-                                        } else {
-                                          return Container();
-                                        }
-                                        // Hiển thị danh sách các tài liệu (ví dụ)
+                                        // } else {
+                                        //   return Container();
+                                        // }
                                       },
                                     )),
                               ),
@@ -190,59 +241,5 @@ class _DriverScreenState extends State<DriverScreen> {
           ),
         ));
 
-    // Scaffold(
-    //   backgroundColor: Colors.blue[100],
-    //   appBar: AppBar(
-    //     backgroundColor: Colors.blue,
-    //     title: const Text(
-    //       'Driver Screen',
-    //       style: TextStyle(
-    //         color: Colors.white,
-    //         fontWeight: FontWeight.bold,
-    //       ),
-    //     ),
-    //     centerTitle: true,
-    //   ),
-    //   body: Column(
-    //     children: [
-    //       // searchInput(),
-    //       Flexible(
-    //         child: StreamBuilder(
-    //           stream: myItems
-    //               .where('driver_id', isEqualTo: widget.driverId)
-    //               .snapshots(),
-    //           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-    //             if (streamSnapshot.hasData) {
-    //               final items = streamSnapshot.data!.docs;
-    //               return ListView.builder(
-    //                 itemCount: items.length,
-    //                 itemBuilder: (context, index) {
-    //                   final DocumentSnapshot documentSnapshot = items[index];
-
-    //                   return Padding(
-    //                     padding: const EdgeInsets.all(8.0),
-    //                     child: Container(
-    //                       // borderRadius: BorderRadius.circular(20),
-    //                       child: Padding(
-    //                           padding: const EdgeInsets.all(8.0),
-    //                           child: Schedule_card(
-    //                             booking: documentSnapshot,
-    //                           )),
-    //                     ),
-    //                   );
-    //                 },
-    //               );
-    //             }
-    //             return const Center(
-    //               child: CircularProgressIndicator(
-    //                 color: Colors.blue,
-    //               ),
-    //             );
-    //           },
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 }

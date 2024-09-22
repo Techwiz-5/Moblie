@@ -147,7 +147,7 @@ class _BookingCardState extends State<BookingCard> {
   Widget build(BuildContext context) {
     // print(widget.ambulance['hospital_id']);
     return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // Thêm khoảng cách đều
+    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(15),
@@ -173,7 +173,7 @@ class _BookingCardState extends State<BookingCard> {
               // Hiển thị thời gian
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.calendar_today,
                     color: Colors.redAccent,
                     size: 18,

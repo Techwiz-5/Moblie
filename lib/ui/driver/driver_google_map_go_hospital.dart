@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -16,6 +17,7 @@ class DriverGoogleMapGoHospital extends StatefulWidget {
       required this.bookerLocaitonLat,
       required this.bookerLocaitonLong,
       required this.bookingId});
+
   final String hospitalId;
   final double bookerLocaitonLat;
   final double bookerLocaitonLong;
@@ -31,6 +33,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   List<LatLng> routePointNotPass = [];
   List<LatLng> routePointPassed = [];
   List<Marker> markers = [];
+
   //location for driver and hospital
   // LatLng startPoint = const LatLng(37.42138907886784, -122.08582363492577);
   // LatLng endPoint = const LatLng(37.41948907876784, -122.07982363292577);
@@ -212,6 +215,21 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         .update({
       'status': 2,
     });
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+
+    DocumentSnapshot docSnapshot =
+        await _firestore.collection('driver').doc(uid).get();
+
+    if (docSnapshot.exists) {
+      await _firestore.collection('driver').doc(uid).update({
+        'enable': 0,
+      });
+      print("Document updated successfully.");
+    } else {
+      print("Document does not exist.");
+    }
   }
 
   void _addMarker() {

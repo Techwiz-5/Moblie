@@ -2,218 +2,214 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
-import 'package:techwiz_5/ui/user/hospital_detail_screen.dart';
 
 class Schedule_card extends StatefulWidget {
-  const Schedule_card(
-      {super.key, required this.booking, required this.roleCurrent});
+  const Schedule_card({super.key, required this.booking, required this.roleCurrent});
+
   final dynamic booking;
   final dynamic roleCurrent;
+
   @override
   State<Schedule_card> createState() => _ScheduleCardState();
 }
 
 class _ScheduleCardState extends State<Schedule_card> {
-  bool isAdmin = false;
-  final CollectionReference myItems =
-      FirebaseFirestore.instance.collection('booking');
-
+  final CollectionReference myItems = FirebaseFirestore.instance.collection('booking');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final CollectionReference hospital = FirebaseFirestore.instance.collection('hospital');
+  late final QuerySnapshot querySnapshot;
   @override
   void initState() {
     super.initState();
+    gethospital();
   }
 
+  gethospital() async{
+    querySnapshot = await hospital.where("id", isEqualTo: widget.booking['hospital_id']).get();
+  }
   String statusText(int status) {
-    if (status == 0)
-      return 'Pending';
-    else if (status == 1) return 'Received';
+    if (status == 0) return 'Pending';
+    if (status == 1) return 'Received';
     return 'Finish';
   }
 
-  setColor(int status) {
-    if (status == 0)
-      return Colors.red;
-    else if (status == 1) return Colors.red;
+  Color setColor(int status) {
+    if (status == 0) return Colors.red;
+    if (status == 1) return Colors.green;
     return Colors.blue;
+  }
+
+  bool showDriverButton() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    String bookingDate = DateFormat('yyyy-MM-dd').format(widget.booking['booking_time'].toDate());
+    return widget.roleCurrent == 'driver' &&
+        bookingDate == formattedDate &&
+        statusText(widget.booking['status']) != 'Finish';
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: const Border(
-            left: BorderSide(
-              //                   <--- left side
-              color: Colors.blue,
-              width: 6.0,
-            ),
-            top: BorderSide(
-              //                    <--- top side
-              color: Colors.blue,
-              width: 1.0,
-            ),
-            right: BorderSide(
-              //                    <--- top side
-              color: Colors.blue,
-              width: 1.0,
-            ),
-            bottom: BorderSide(
-              //                    <--- top side
-              color: Colors.blue,
-              width: 1.0,
-            ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.blue, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
-              spreadRadius: 0,
-              blurRadius: 10,
-            ),
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 0.5, left: 0.5),
-            child: Card(
-              color: Colors.white,
-              borderOnForeground: false,
-              shadowColor: Colors.white,
-              child: ListTile(
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            DateFormat('dd-MM-yyyy hh:mm').format(
-                              widget.booking['booking_time'].toDate(),
-                            ),
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Badge(
-                            backgroundColor: setColor(widget.booking['status']),
-                            label: Text(statusText(widget.booking['status'])),
-                          ),
-                        ],
+                    const Icon(
+                      Icons.calendar_today,
+                      color: Colors.redAccent,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      DateFormat('dd-MM-yyyy hh:mm').format(widget.booking['booking_time'].toDate()),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.redAccent,
+                        fontSize: 16,
                       ),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          color: Color.fromARGB(255, 147, 148, 148),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Address : ${widget.booking['address']} ' ?? '',
-                            // maxLines: ,
-                            // overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              height: 1.5,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.accessible_rounded,
-                          color: Color.fromARGB(255, 147, 148, 148),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Name Patient : ${widget.booking['name_patient']}' ??
-                                '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              height: 1.5,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.phone,
-                          color: Color.fromARGB(255, 147, 148, 148),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Phone : ${widget.booking['phone_number']}' ?? '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              height: 1.5,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    if (widget.roleCurrent == 'driver')
-                      Center(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DriverGoogleMapPickupPoint(
-                                  bookingId: widget.booking['id'],
-                                ),
-                              ),
-                            ),
-                            child: const Text("View Google Map"),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue[100]),
-                          ),
-                        ),
-                      ),
                   ],
                 ),
-              ),
+                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: setColor(widget.booking['status']),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    statusText(widget.booking['status']),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          )
-        ],
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: Colors.grey,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Address: ${widget.booking['address'] ?? ''}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: Colors.grey,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'From: ${querySnapshot.docs.toList()[0]['address'] ?? ''}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(
+                  Icons.person,
+                  color: Colors.grey,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Name Patient: ${widget.booking['name_patient'] ?? ''}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(
+                  Icons.phone,
+                  color: Colors.grey,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Phone: ${widget.booking['phone_number'] ?? ''}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            if (showDriverButton())
+              Center(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DriverGoogleMapPickupPoint(
+                          bookingId: widget.booking['id'],
+                        ),
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[100],
+                    ),
+                    child: const Text("View Google Map"),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
