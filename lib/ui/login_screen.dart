@@ -93,26 +93,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
         switch (userRole['role']) {
           case 'admin':
-            Navigator.of(context).pushReplacement(
+            Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (context) => const AdminScreen(),
-              ),
+              ),(route) => false
             );
             break;
           case 'driver':
-            Navigator.of(context).pushReplacement(
+            Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (context) => DriverPage(
                   driverId: userRole['uid'],
                 ),
-              ),
+              ),(route) => false
             );
             break;
           case 'user':
-            Navigator.of(context).pushReplacement(
+            Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (context) => const HomeScreen(),
-              ),
+              ),(route) => false
             );
             break;
           default:
