@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:techwiz_5/ui/driver/driver_google_map_pickup.dart';
 
 class Schedule_card extends StatefulWidget {
-  const Schedule_card({super.key, required this.booking, required this.roleCurrent});
+  const Schedule_card(
+      {super.key, required this.booking, required this.roleCurrent});
 
   final dynamic booking;
   final dynamic roleCurrent;
@@ -14,19 +15,30 @@ class Schedule_card extends StatefulWidget {
 }
 
 class _ScheduleCardState extends State<Schedule_card> {
-  final CollectionReference myItems = FirebaseFirestore.instance.collection('booking');
+  final CollectionReference myItems =
+      FirebaseFirestore.instance.collection('booking');
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late final CollectionReference hospital = FirebaseFirestore.instance.collection('hospital');
+  late final CollectionReference hospital =
+      FirebaseFirestore.instance.collection('hospital');
   late final QuerySnapshot querySnapshot;
+
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
     gethospital();
   }
 
-  gethospital() async{
-    querySnapshot = await hospital.where("id", isEqualTo: widget.booking['hospital_id']).get();
+  gethospital() async {
+    querySnapshot = await hospital
+        .where("id", isEqualTo: widget.booking['hospital_id'])
+        .get();
+    setState(() {
+      isLoading = false;
+    });
   }
+
   String statusText(int status) {
     if (status == 0) return 'Pending';
     if (status == 1) return 'Received';
@@ -42,7 +54,8 @@ class _ScheduleCardState extends State<Schedule_card> {
   bool showDriverButton() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    String bookingDate = DateFormat('yyyy-MM-dd').format(widget.booking['booking_time'].toDate());
+    String bookingDate = DateFormat('yyyy-MM-dd')
+        .format(widget.booking['booking_time'].toDate());
     return widget.roleCurrent == 'driver' &&
         bookingDate == formattedDate &&
         statusText(widget.booking['status']) != 'Finish';
@@ -50,6 +63,10 @@ class _ScheduleCardState extends State<Schedule_card> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
@@ -83,7 +100,8 @@ class _ScheduleCardState extends State<Schedule_card> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      DateFormat('dd-MM-yyyy hh:mm').format(widget.booking['booking_time'].toDate()),
+                      DateFormat('dd-MM-yyyy hh:mm')
+                          .format(widget.booking['booking_time'].toDate()),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.redAccent,
@@ -94,7 +112,8 @@ class _ScheduleCardState extends State<Schedule_card> {
                 ),
                 const SizedBox(width: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                   decoration: BoxDecoration(
                     color: setColor(widget.booking['status']),
                     borderRadius: BorderRadius.circular(8),

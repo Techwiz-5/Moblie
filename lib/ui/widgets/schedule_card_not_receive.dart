@@ -18,6 +18,26 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
   final CollectionReference myItems =
   FirebaseFirestore.instance.collection('booking');
   late final Stream<QuerySnapshot<Map<String, dynamic>>> bookingOfDriver;
+  bool isLoading = true;
+
+  late final CollectionReference hospital =
+  FirebaseFirestore.instance.collection('hospital');
+  late final QuerySnapshot querySnapshot;
+
+  @override
+  void initState() {
+    super.initState();
+    gethospital();
+  }
+
+  gethospital() async {
+    querySnapshot = await hospital
+        .where("id", isEqualTo: widget.booking['hospital_id'])
+        .get();
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   String statusText(int status) {
     if (status == 0) return 'Pending';
@@ -71,6 +91,10 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -128,6 +152,9 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
             const SizedBox(height: 15),
             _buildInfoRow(Icons.location_on, 'Address: ',
                 widget.booking['address'] ?? 'No address provided'),
+            const SizedBox(height: 10),
+            _buildInfoRow(Icons.location_on, 'From: ',
+                querySnapshot.docs.toList()[0]['address'] ?? 'No address provided'),
             const SizedBox(height: 10),
             _buildInfoRow(Icons.person, 'Patient Name: ',
                 widget.booking['name_patient'] ?? 'No name provided'),
