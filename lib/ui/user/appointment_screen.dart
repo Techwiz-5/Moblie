@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:techwiz_5/data/notification.dart';
+import 'package:techwiz_5/ui/user/booking_history.dart';
 import 'package:techwiz_5/ui/user/home_page.dart';
 import 'package:techwiz_5/ui/widgets/location_input.dart';
 import 'package:techwiz_5/ui/widgets/snackbar.dart';
@@ -257,225 +259,318 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     });
   }
 
+  Future<void> _showDialogSuccess() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Center(
+            child: Text(
+              'Successfully',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          content: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle, size: 40, color: Colors.green,),
+                Text("Your has booked ambulance successfully \nOur driver will contact you soon.\nThankyou.", textAlign: TextAlign.center,),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Column(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(),
+                        ),
+                       (route) => false);
+                    },
+                    child: const Text(
+                      'Back to Home',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  ),
+                ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookingHistoryScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Booking history',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  ),
+                )
+              ],
+            ),
+
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _showDialogConfirm() async {
     return showModalBottomSheet(
       context: context,
       // barrierDismissible: false,
       builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text("Confirm information"),
-            centerTitle: true,
-          ),
-          body: Container(
-            margin: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: Color.fromARGB(255, 92, 91, 91),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Text(
-                        _address,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.local_hospital,
-                      color: Color.fromARGB(255, 92, 91, 91),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Text(
-                        selectHospital['name'],
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.date_range,
-                      color: Color.fromARGB(255, 92, 91, 91),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Text(
-                        dateFormat.format(selectedDate),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                      ),
-                    ),
-                  ],
-                ),
-                InkWell(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ]),
-                    margin: EdgeInsets.all(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Image.asset(
-                            'images/pngwing.png',
-                            width: 60,
-                          ),
-                          const SizedBox(width: 6),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Basic Life Saver',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(
-                                  'This ambulance is only for those paients who do not need any medical help like oxygen any other.',
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 3,
-                                  style: TextStyle(fontSize: 13),
-                                )
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '\$${totalMoney(selectHospital).toStringAsFixed(2)}',
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ]),
-                    margin: const EdgeInsets.all(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'images/pngwing.png',
-                            width: 60,
-                          ),
-                          const SizedBox(width: 6),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Advanced Life Saver',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(
-                                  'This ambulance is for paients who need oxygen Facility.',
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 3,
-                                  style: TextStyle(fontSize: 13),
-                                )
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '\$${(totalMoney(selectHospital)*1.2).toStringAsFixed(2)}',
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(builder: (context, setState) {
+          void chooseAmbulanceType(int value) {
+            setState(() {
+              _ambulanceType = value;
+            });
+            print(_ambulanceType);
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("Confirm information"),
+              centerTitle: true,
+            ),
+            body: Container(
+              margin: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Text('Plate number:', style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold
-                      ),),
-                      Text('$plate_number', style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold
-                      ))
+                      const Icon(
+                        Icons.location_on,
+                        color: Color.fromARGB(255, 92, 91, 91),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Text(
+                          _address,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
                     ],
                   ),
-                )
-              ],
-            ),
-          ),
-          bottomNavigationBar: Container(
-            margin: EdgeInsets.all(20),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
-                foregroundColor: Colors.white,
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.local_hospital,
+                        color: Color.fromARGB(255, 92, 91, 91),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Text(
+                          selectHospital['name'],
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.date_range,
+                        color: Color.fromARGB(255, 92, 91, 91),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Text(
+                          dateFormat.format(selectedDate),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  InkWell(
+                    onTap: () {
+                      chooseAmbulanceType(0);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: (_ambulanceType == 0)
+                              ? Colors.blue[50]
+                              : Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]),
+                      margin: EdgeInsets.all(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Image.asset(
+                              'images/pngwing.png',
+                              width: 60,
+                            ),
+                            const SizedBox(width: 6),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Basic Life Saver',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Text(
+                                    'This ambulance is only for those paients who do not need any medical help like oxygen any other.',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                    style: TextStyle(fontSize: 13),
+                                  )
+                                ],
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '\$${totalMoney(selectHospital).toStringAsFixed(2)}',
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      chooseAmbulanceType(1);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: (_ambulanceType == 1)
+                              ? Colors.blue[50]
+                              : Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]),
+                      margin: const EdgeInsets.all(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              'images/pngwing.png',
+                              width: 60,
+                            ),
+                            const SizedBox(width: 6),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Advanced Life Saver',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Text(
+                                    'This ambulance is for paients who need oxygen Facility.',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                    style: TextStyle(fontSize: 13),
+                                  )
+                                ],
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '\$${(totalMoney(selectHospital) * 1.2).toStringAsFixed(2)}',
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Plate number:',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text('$plate_number',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  )
+                ],
               ),
-              child: const Text("Confirm and Book", style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20
-              ),),
             ),
-          ),
-        );
+            bottomNavigationBar: Container(
+              margin: EdgeInsets.all(20),
+              child: ElevatedButton(
+                onPressed: () async {
+                  await _createBooking();
+                  Navigator.pop(context);
+                  await _showDialogSuccess();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.lightBlueAccent,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text(
+                  "Confirm and Book",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+              ),
+            ),
+          );
+        });
       },
     );
   }
@@ -496,7 +591,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         actions: [
           ElevatedButton(
             onPressed: () async {
-              await _showDialogConfirm();
+              if(_formKeyAmbulance.currentState!.validate()){
+                await _showDialogConfirm();
+              }
               // Navigator.pushReplacement(
               //     context,
               //     MaterialPageRoute(
@@ -547,6 +644,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     TextFormField(
                       controller: _phoneController, // Link controller here
                       decoration: ambulanceFormField('Phone Number'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
                       autocorrect: true,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -559,29 +660,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    // TextFormField(
-                    //   decoration: ambulanceFormField('Address'),
-                    //   autocorrect: true,
-                    //   validator: (value) {
-                    //     if (value == null || value.trim().isEmpty) {
-                    //       return 'Please fill in address';
-                    //     }
-                    //     return null;
-                    //   },
-                    //   onSaved: (value) {
-                    //     _address = value!;
-                    //   },
-                    // ),
                     SizedBox(
                       height: 330, // Specify a height
                       child: MapSearchAndPickWidget(
                         onPicked: (pickedData) {
-                          // print('===================================');
-                          // print(pickedData.latLong.latitude);
-                          // print(pickedData.latLong.longitude);
-                          // print(pickedData.address);
-                          // print(pickedData.addressName);
-                          // print('===================================');
                           setState(() {
                             _selectedLocation = LatLng(
                               pickedData.latLong.latitude,
@@ -589,7 +671,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             );
                             _address = pickedData.addressName;
                           });
-                          print(_selectedLocation);
                         },
                       ),
                     ),
@@ -618,6 +699,20 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         controller: TextEditingController(text: _address),
                         enabled: false,
                       ),
+                    if (_address == '' || _address == null)
+                      TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        minLines: 1,
+                        maxLines: 2,
+                        decoration: ambulanceFormField('Address'),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter in Address';
+                          }
+                          return null;
+                        },
+                        enabled: false,
+                      ),
                     isEmergency
                         ? const SizedBox.shrink()
                         : const SizedBox(height: 16),
@@ -626,6 +721,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         : TextFormField(
                             decoration: ambulanceFormField('Zip code'),
                             autocorrect: true,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please fill in Zip code';
+                              }
+                              return null;
+                            },
                             onSaved: (value) {
                               _zipCode = value!;
                             },
@@ -856,7 +957,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                     bottomNavigationBar: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: ElevatedButton(
-                                        onPressed: () {
+                                        onPressed: () async {
+                                          await _createBooking();
                                           Navigator.pop(context);
                                         },
                                         style: ElevatedButton.styleFrom(
