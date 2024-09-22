@@ -19,7 +19,7 @@ class AccessBooking extends StatefulWidget {
 
 class _AccessBookingState extends State<AccessBooking> {
   final CollectionReference myItems =
-  FirebaseFirestore.instance.collection('booking');
+      FirebaseFirestore.instance.collection('booking');
   @override
   void setState(VoidCallback fn) {
     print("testokroinha");
@@ -38,34 +38,40 @@ class _AccessBookingState extends State<AccessBooking> {
         length: 2,
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 241, 242, 243),
-          appBar:
-          AppBar(backgroundColor: const Color.fromARGB(255, 223, 113, 17), title: Text("Booking new")),
+          appBar: AppBar(
+              backgroundColor: const Color.fromARGB(255, 223, 113, 17),
+              title: Text("Booking new")),
           body: StreamBuilder(
-            stream: myItems
-                .where('id', isEqualTo: widget.bookingId)
-                .snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-              final items = streamSnapshot.data!.docs;
-              return ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final DocumentSnapshot documentSnapshot = items[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      // borderRadius: BorderRadius.circular(20),
-                      child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ScheduleCardNotReceive(
-                            booking: documentSnapshot,
-                            driverId: widget.driverId,
-                          )),
-                    ),
+              stream:
+                  myItems.where('id', isEqualTo: widget.bookingId).snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                if (streamSnapshot.hasData) {
+                  final items = streamSnapshot.data!.docs;
+                  return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final DocumentSnapshot documentSnapshot = items[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          // borderRadius: BorderRadius.circular(20),
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ScheduleCardNotReceive(
+                                booking: documentSnapshot,
+                                driverId: widget.driverId,
+                              )),
+                        ),
+                      );
+                    },
                   );
-                },
-              );
-            },
-          ),
+                } else {
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.blue,
+                  ));
+                }
+              }),
         ));
 
     // Scaffold(
