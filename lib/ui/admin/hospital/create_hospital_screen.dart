@@ -104,6 +104,7 @@ class _HospitalFromScreenState extends State<HospitalFormScreen> {
         'price': _price,
         'latitude': _selectedLocation!.latitude.toString(),
         'longitude': _selectedLocation!.longitude.toString(),
+        'availableSlot': 0,
         'image': imageUrl ?? 'https://i.pravatar.cc/150',
       });
       await docRef.update({
