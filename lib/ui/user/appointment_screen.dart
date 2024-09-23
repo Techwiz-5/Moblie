@@ -149,6 +149,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   _createBooking() async {
+    if (selectHospital == null || selectHospital.isEmpty) {
+      showSnackBar(context, 'Please select hospital');
+      return;
+    }
     if (_selectedLocation == null || _address == null || _address!.isEmpty) {
       setState(() {
         _showError = true;
@@ -248,7 +252,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   double totalMoney(var hospital) {
+
     if (selectHospital != null) {
+      print(selectHospital['distance']);
+      print(selectHospital['price']);
       double mn = (selectHospital['distance'] * selectHospital['price']);
       return mn;
     }
@@ -342,6 +349,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   Future<void> _showDialogConfirm() async {
+    if (selectHospital == null || selectHospital.isEmpty) {
+      showSnackBar(context, 'Please select hospital');
+      return;
+    }
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -359,6 +370,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               money = mn;
             });
           }
+
           return Container(
             height: 550,
             child: Scaffold(
@@ -512,7 +524,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       // margin: const EdgeInsets.all(12),
                       child: InkWell(
                         onTap: () {
-                          chooseAmbulanceType(1, (totalMoney(selectHospital) * 1.2));
+                          chooseAmbulanceType(
+                              1, (totalMoney(selectHospital) * 1.2));
                         },
                         borderRadius: BorderRadius.circular(12),
                         child: Padding(
@@ -637,18 +650,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   children: [
                     const SizedBox(height: 10),
                     TextFormField(
-                            decoration: ambulanceFormField('Patient name'),
-                            autocorrect: true,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please fill type';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _namePatient = value!;
-                            },
-                          ),
+                      decoration: ambulanceFormField('Patient name'),
+                      autocorrect: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please fill type';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _namePatient = value!;
+                      },
+                    ),
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: _phoneController, // Link controller here
@@ -724,73 +737,70 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       ),
                     const SizedBox(height: 16),
                     TextFormField(
-                            decoration: ambulanceFormField('Zip code'),
-                            autocorrect: true,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please fill in Zip code';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _zipCode = value!;
-                            },
-                          ),
+                      decoration: ambulanceFormField('Zip code'),
+                      autocorrect: true,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please fill in Zip code';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _zipCode = value!;
+                      },
+                    ),
                     const SizedBox(height: 16),
                     Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => _selectDate(context),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        border:
-                                            Border.all(color: Colors.black)),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          selectedDate == null
-                                              ? 'Select date'
-                                              : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
-                                        ),
-                                        const Icon(
-                                            Icons.calendar_month_outlined)
-                                      ],
-                                    ),
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(color: Colors.black)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    selectedDate == null
+                                        ? 'Select date'
+                                        : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
                                   ),
-                                ),
+                                  const Icon(Icons.calendar_month_outlined)
+                                ],
                               ),
-                              const SizedBox(width: 30),
-                              const Text('am'),
-                              Radio(
-                                value: 'am',
-                                groupValue: _timeRange,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _timeRange = value!;
-                                  });
-                                },
-                              ),
-                              const Text('pm'),
-                              Radio(
-                                value: 'pm',
-                                groupValue: _timeRange,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _timeRange = value!;
-                                  });
-                                },
-                              ),
-                            ],
+                            ),
                           ),
+                        ),
+                        const SizedBox(width: 30),
+                        const Text('am'),
+                        Radio(
+                          value: 'am',
+                          groupValue: _timeRange,
+                          onChanged: (value) {
+                            setState(() {
+                              _timeRange = value!;
+                            });
+                          },
+                        ),
+                        const Text('pm'),
+                        Radio(
+                          value: 'pm',
+                          groupValue: _timeRange,
+                          onChanged: (value) {
+                            setState(() {
+                              _timeRange = value!;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
@@ -838,6 +848,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                                     i++) {
                                                   var object =
                                                       dataList[i].data() as Map;
+
                                                   object.putIfAbsent(
                                                       'distance',
                                                       () => FlutterMapMath()
@@ -867,12 +878,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                                           'kilometers');
                                                   outputData.add(object);
                                                 }
-                                          
+
                                                 outputData.sort((a, b) =>
                                                     a['distance'].compareTo(
                                                         b['distance']));
                                                 outputData.reversed;
-                                          
+
                                                 return StatefulBuilder(builder:
                                                     (BuildContext context,
                                                         setState) {
@@ -881,7 +892,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                                       isLoading2 = false;
                                                     });
                                                   }
-                                          
+
                                                   return isLoading2
                                                       ? const CircularProgressIndicator()
                                                       : SingleChildScrollView(
