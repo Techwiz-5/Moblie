@@ -27,7 +27,7 @@ class _HospitalGalleryScreenState extends State<HospitalGalleryScreen> {
   }
 
   getBookedSlot() async {
-    QuerySnapshot querySnapshot = await myItems.get();
+    QuerySnapshot querySnapshot = await myItems.where("hospital_id",isEqualTo: widget.hospital["id"]).get();
     final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
     setState(() {
       imageList = allData;

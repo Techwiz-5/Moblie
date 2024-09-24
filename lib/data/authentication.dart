@@ -40,9 +40,10 @@ class AuthServices {
           'address': address,
           'image': '',
           'role': 'driver',
-          'enable': 1,
+          'enable': 0,
           'status': 0,
           'online': false,
+          'fcm_token': "",
           'uid': credential.user!.uid,
         });
         res = 'Successfully';

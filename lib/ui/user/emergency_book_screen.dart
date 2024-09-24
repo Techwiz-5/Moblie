@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enefty_icons/enefty_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -331,18 +332,27 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.directions_bus_filled, color: Colors.green,),
-                    SizedBox(width: 6,),
-                    Text("$plate_number", style: TextStyle(fontSize: 18, color: Colors.green),),
+                    const Icon(EneftyIcons.hospital_bold, color: Colors.green,),
+                    const SizedBox(width: 6,),
+                    Flexible(child: Text("${selectHospital['name']}", style: const TextStyle(fontSize: 18, color: Colors.green),)),
                   ],
                 ),
                 const SizedBox(height: 10,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.monetization_on, color: Colors.green,),
-                    SizedBox(width: 6,),
-                    Text("\$${money.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green),)
+                    const Icon(Icons.directions_bus_filled, color: Colors.green,),
+                    const SizedBox(width: 6,),
+                    Text(plate_number, style: const TextStyle(fontSize: 18, color: Colors.green),),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.monetization_on, color: Colors.green,),
+                    const SizedBox(width: 6,),
+                    Text("\$${money.toStringAsFixed(2)}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green),)
                   ],
                 ),
               ],
@@ -411,156 +421,155 @@ class _EmergencyBookScreenState extends State<EmergencyBookScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  'You are making an Emergency Booking',
-                  style: TextStyle(
-                      color: Colors.red[400],
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Text(
+                'You are making an Emergency Booking',
+                style: TextStyle(
+                    color: Colors.red[400],
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 12),
-                child: Text(
-                  'Emergency booking allows you to book a ambulance from your current location to the nearest hospital with a single click.',
-                  style: TextStyle(
-                      color: Colors.black54,
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 12),
+              child: Text(
+                'Emergency booking allows you to book a ambulance from your current location to the nearest hospital with a single click.',
+                style: TextStyle(
+                    color: Colors.black54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Form(
+              key: _formKeyAmbulance,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: TextFormField(
+                          controller: _nameController,
+                          decoration: ambulanceFormField('Patient name'),
+                          autocorrect: true,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please fill type';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _namePatient = value!;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: TextFormField(
+                          controller: _phoneController, // Link controller here
+                          decoration: ambulanceFormField('Phone Number'),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          autocorrect: true,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please fill in phone number';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _phoneNumber = value!;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Form(
-                key: _formKeyAmbulance,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: TextFormField(
-                            controller: _nameController,
-                            decoration: ambulanceFormField('Patient name'),
-                            autocorrect: true,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please fill type';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _namePatient = value!;
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Flexible(
-                          child: TextFormField(
-                            controller: _phoneController, // Link controller here
-                            decoration: ambulanceFormField('Phone Number'),
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            autocorrect: true,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please fill in phone number';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _phoneNumber = value!;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectDate(context),
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(color: Colors.black)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    selectedDate == null
-                                        ? 'Select date'
-                                        : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
-                                  ),
-                                  const Icon(Icons.calendar_month_outlined)
-                                ],
-                              ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                border: Border.all(color: Colors.black)),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  selectedDate == null
+                                      ? 'Select date'
+                                      : '${selectedDate?.day.toString()}-${selectedDate?.month.toString()}-${selectedDate?.year.toString()}',
+                                ),
+                                const Icon(Icons.calendar_month_outlined)
+                              ],
                             ),
                           ),
                         ),
-                        const SizedBox(width: 30),
-                        const Text('am'),
-                        Radio(
-                          value: 'am',
-                          groupValue: _timeRange,
-                          onChanged: (value) {
-                            setState(() {
-                              _timeRange = value!;
-                            });
-                          },
-                        ),
-                        const Text('pm'),
-                        Radio(
-                          value: 'pm',
-                          groupValue: _timeRange,
-                          onChanged: (value) {
-                            setState(() {
-                              _timeRange = value!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 420, // Specify a height
-                      child: MapSearchAndPickWidget(
-                        buttonText: 'One Click To Book',
-                          buttonHeight: 45,
-                        onPicked: (pickedData) {
-                          createEmergencyBooking(pickedData);
+                      ),
+                      const SizedBox(width: 30),
+                      const Text('am'),
+                      Radio(
+                        value: 'am',
+                        groupValue: _timeRange,
+                        onChanged: (value) {
+                          setState(() {
+                            _timeRange = value!;
+                          });
                         },
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (_showError)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          'Please select a valid location and address before creating.',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 14,
-                          ),
+                      const Text('pm'),
+                      Radio(
+                        value: 'pm',
+                        groupValue: _timeRange,
+                        onChanged: (value) {
+                          setState(() {
+                            _timeRange = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  if (_showError)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Please select a valid location and address before creating.',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 14,
                         ),
                       ),
-                  ],
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                // height: 320, // Specify a height
+                child: MapSearchAndPickWidget(
+                  buttonText: 'One Click To Book',
+                  buttonHeight: 45,
+                  onPicked: (pickedData) {
+                    createEmergencyBooking(pickedData);
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

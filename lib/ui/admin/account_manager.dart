@@ -65,12 +65,8 @@ class _AccountManagerScreenState extends State<AccountManagerScreen>
           unselectedLabelColor: Colors.white54,
           dividerColor: Colors.transparent,
           tabs: const [
-            Expanded(
-              child: Tab(text: 'User Manager'),
-            ),
-            Expanded(
-              child: Tab(text: 'Driver Manager'),
-            ),
+            Tab(text: 'User Manager'),
+            Tab(text: 'Driver Manager'),
           ],
         ),
       ),
