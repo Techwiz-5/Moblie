@@ -3,6 +3,7 @@
     <application
         android:label="techwiz_5"
         android:name="${applicationName}"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAOz406oyWzjEMHlghknA2kZt6AjSIdPSM"/>

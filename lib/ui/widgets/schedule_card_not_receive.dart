@@ -17,45 +17,41 @@ class ScheduleCardNotReceive extends StatefulWidget {
 class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late final CollectionReference hospital =
-  FirebaseFirestore.instance.collection('hospital');
+      FirebaseFirestore.instance.collection('hospital');
   late final QuerySnapshot querySnapshot;
   bool isLoading = true;
-  bool check = false;
 
   @override
   void initState() {
     super.initState();
     gethospital();
-    checkStatusDriver();
+    // checkStatusDriver();
   }
 
-  checkStatusDriver() async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-
-    DocumentSnapshot docSnapshot =
-    await _firestore.collection('driver').doc(uid).get();
-
-    if (docSnapshot.exists && docSnapshot.data() != null) {
-      Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
-
-      if (data != null && data.containsKey('status')) {
-        String status = data['status'];
-
-        setState(() {
-          check = status != "1";
-        });
-      }
-    }
-  }
+  // checkStatusDriver() async {
+  //   String uid = FirebaseAuth.instance.currentUser!.uid;
+  //
+  //   DocumentSnapshot docSnapshot =
+  //       await _firestore.collection('driver').doc(uid).get();
+  //
+  //   if (docSnapshot.exists && docSnapshot.data() != null) {
+  //     Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+  //
+  //     if (data != null && data.containsKey('enable')) {
+  //       String status = data['enable'].toString();
+  //
+  //     }
+  //   }
+  // }
 
   Future<void> gethospital() async {
     try {
-      querySnapshot = await hospital
-          .where("id", isEqualTo: widget.booking['hospital_id'])
-          .get();
+      querySnapshot = await hospital.get();
+
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
-      print(e);
-    } finally {
       setState(() {
         isLoading = false;
       });
@@ -70,7 +66,7 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
       'driver_id': widget.driverId,
       'status': 1,
     });
-    Navigator.pop(context);
+    // Navigator.pop(context);
   }
 
   // Hiển thị hộp thoại xác nhận
@@ -106,7 +102,7 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
     String uid = FirebaseAuth.instance.currentUser!.uid;
 
     DocumentSnapshot driverSnapshot =
-    await FirebaseFirestore.instance.collection('driver').doc(uid).get();
+        await FirebaseFirestore.instance.collection('driver').doc(uid).get();
     DateTime now = DateTime.now();
     DateTime startOfDay = DateTime(now.year, now.month, now.day, 0, 0, 0);
     DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
