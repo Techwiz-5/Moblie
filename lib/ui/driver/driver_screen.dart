@@ -18,12 +18,15 @@ class DriverScreen extends StatefulWidget with WidgetsBindingObserver {
   State<DriverScreen> createState() => _DriverScreenState();
 }
 class _DriverScreenState extends State<DriverScreen> with WidgetsBindingObserver {
-  final CollectionReference myItems = FirebaseFirestore.instance.collection('booking');
+  late CollectionReference myItems;
   bool check = false;
+  bool _isMounted = false;
 
   @override
   void initState() {
     super.initState();
+
+    myItems = FirebaseFirestore.instance.collection('booking');
     WidgetsBinding.instance.addObserver(this);
     checkStatusDriver();
   }
@@ -127,10 +130,7 @@ class _DriverScreenState extends State<DriverScreen> with WidgetsBindingObserver
     return Column(children: [
       Flexible(
         child: StreamBuilder(
-          stream: myItems
-              .where(field, isEqualTo: value)
-              .where('status', isEqualTo: status)
-              .snapshots(),
+          stream: myItems.where(field, isEqualTo: value).where('status', isEqualTo: status).snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
             if (streamSnapshot.hasData) {
               final items = streamSnapshot.data!.docs;
@@ -219,7 +219,6 @@ class _DriverScreenState extends State<DriverScreen> with WidgetsBindingObserver
       ),
     ]);
   }
-
 }
 
 

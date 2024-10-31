@@ -23,8 +23,9 @@ class DriverGoogleMapPickupPoint extends StatefulWidget {
 
 class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   final MapController mapController = MapController();
-
+  DocumentSnapshot? bookingSnapshot;
   bool isLoading = true;
+  String? address;
 
   LocationData? currentLocation;
   List<LatLng> routePoints = [];
@@ -35,8 +36,15 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   checkBooking() async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    DocumentSnapshot bookingSnapshot =
+    bookingSnapshot =
         await _firestore.collection('booking').doc(widget.bookingId).get();
+
+    if(bookingSnapshot?['address'] != null && bookingSnapshot?['address'].isNotEmpty){
+      setState(() {
+        address = bookingSnapshot?['address'];
+      });
+    }
+
     if (bookingSnapshot!['status'] == 3) {
       Navigator.push(
         context,
@@ -81,9 +89,6 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
   }
 
   Future<void> updateBookingStatus() async {
-    setState(() {
-      isLoading = false;
-    });
 
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -131,11 +136,14 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
 
   @override
   void initState() {
+    super.initState();
     checkBooking();
     getData();
     updateSttus();
     updateBookingStatus();
-    super.initState();
+    setState(() {
+      isLoading = false;
+    });
     Timer.periodic(Duration(seconds: 10), (timer) {
       _getCurrentLocation();
       _addDestinationMarker(LatLng(37.41948907876784, -122.07982363292577));
@@ -283,28 +291,65 @@ class _GoogleMapScreen extends State<DriverGoogleMapPickupPoint> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          TextButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        height: 200,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Address',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DriverGoogleMapGoHospital(
-                        hospitalId: hospitalId,
-                        bookerLocaitonLat: bookerLocation.latitude,
-                        bookerLocaitonLong: bookerLocation.longitude,
-                        bookingId: widget.bookingId)),
-              );
-            },
-            child: const Text('The patient has been picked up'),
-          )
-        ]),
+            Text(
+              address != null && address!.isNotEmpty
+                  ? address!
+                  : 'Address not available',
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+              indent: 20,
+              endIndent: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DriverGoogleMapGoHospital(
+                          hospitalId: hospitalId,
+                          bookerLocaitonLat: bookerLocation.latitude,
+                          bookerLocaitonLong: bookerLocation.longitude,
+                          bookingId: widget.bookingId,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('The patient has been picked up'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
+
       // floatingActionButton: const FloatingActionButton(onPressed: null),
     );
   }

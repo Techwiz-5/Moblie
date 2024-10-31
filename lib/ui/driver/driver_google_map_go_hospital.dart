@@ -35,6 +35,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
   List<LatLng> routePointNotPass = [];
   List<LatLng> routePointPassed = [];
   List<Marker> markers = [];
+  String? address;
 
   final String orsApiKey =
       '5b3ce3597851110001cf6248ff5c186baf4c4938a8c97e952661a403'; // Replace with your OpenRouteService API key
@@ -48,6 +49,7 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
         var hospitalData = docSnapshot.data() as Map<String, dynamic>;
 
         setState(() {
+          address = hospitalData['address'] as String?;
           hospitalLocation = LatLng(double.parse(hospitalData['latitude']),
               double.parse(hospitalData["longitude"]));
           // hospitalId = hospitalData["hospital_id"].to;
@@ -375,19 +377,48 @@ class _GoogleMapScreen extends State<DriverGoogleMapGoHospital> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          TextButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        height: 200,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Hospital Address',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ),
-            onPressed: () {
-              _showMyDialog();
-            },
-            child: const Text('finished!'),
-          )
-        ]),
+            Text(
+              address != null && address!.isNotEmpty
+                  ? address!
+                  : 'Address not available',
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+              indent: 20,
+              endIndent: 20,
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+              TextButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                ),
+                onPressed: () {
+                  _showMyDialog();
+                },
+                child: const Text('Finished!'),
+              )
+            ]),
+          ],
+        ),
       ),
       // floatingActionButton: const FloatingActionButton(onPressed: null),
     );
