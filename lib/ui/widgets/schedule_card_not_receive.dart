@@ -28,22 +28,6 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
     // checkStatusDriver();
   }
 
-  // checkStatusDriver() async {
-  //   String uid = FirebaseAuth.instance.currentUser!.uid;
-  //
-  //   DocumentSnapshot docSnapshot =
-  //       await _firestore.collection('driver').doc(uid).get();
-  //
-  //   if (docSnapshot.exists && docSnapshot.data() != null) {
-  //     Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
-  //
-  //     if (data != null && data.containsKey('enable')) {
-  //       String status = data['enable'].toString();
-  //
-  //     }
-  //   }
-  // }
-
   Future<void> gethospital() async {
     try {
       querySnapshot = await hospital.get();
@@ -139,7 +123,6 @@ class _ScheduleCardNotReceiveState extends State<ScheduleCardNotReceive> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(

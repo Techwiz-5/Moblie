@@ -127,7 +127,10 @@ class _DriverScreenState extends State<DriverScreen> with WidgetsBindingObserver
     return Column(children: [
       Flexible(
         child: StreamBuilder(
-          stream: myItems.where(field, isEqualTo: value).where('status', isEqualTo: status).snapshots(),
+          stream: myItems
+              .where(field, isEqualTo: value)
+              .where('status', isEqualTo: status)
+              .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
             if (streamSnapshot.hasData) {
               final items = streamSnapshot.data!.docs;
@@ -183,12 +186,16 @@ class _DriverScreenState extends State<DriverScreen> with WidgetsBindingObserver
   }
 
   Widget _buildNotReceivedScheduleList() {
+    DateTime now = DateTime.now();
+    DateTime startOfDay = DateTime(now.year, now.month, now.day, 0, 0, 0);
+
     return Column(children: [
       Flexible(
         child: StreamBuilder(
           stream: myItems
               .where('driver_id', isEqualTo: "")
               .where('status', isEqualTo: 0)
+              .where('booking_time', isGreaterThanOrEqualTo: startOfDay)
               .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
             if (streamSnapshot.hasData) {
@@ -212,6 +219,7 @@ class _DriverScreenState extends State<DriverScreen> with WidgetsBindingObserver
       ),
     ]);
   }
+
 }
 
 
